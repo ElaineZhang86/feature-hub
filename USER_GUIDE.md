@@ -4,21 +4,27 @@
 
 ---
 
-## Opening the App
+## How to Open the App
 
-No installation required. Open the app directly in your browser:
+Feature Hub has no server — you open it directly in your browser. There are two ways:
+
+**Option A — GitHub Pages (recommended)**
+
+Open this URL in your browser:
 
 **https://elainezhang86.github.io/feature-hub/**
 
-Or open `index.html` locally:
+**Option B — Local file**
+
+Double-click `index.html` or run:
 
 ```bash
 open index.html
 ```
 
-Your data saves automatically to your browser's localStorage. It stays in your browser — no account, no server, no sign-in.
+Both options work. Data saves automatically to your browser's localStorage for that origin — so data entered on GitHub Pages stays on GitHub Pages, and data entered via the local file stays with the local file. Pick one and stick with it.
 
-> **Note:** If you clear your browser data or switch to a different browser or machine, your data will not carry over. For backup across machines, export your data from the Settings menu or maintain your own copy of the file.
+> **Note:** If you clear your browser data or switch to a different browser or machine, your data will not carry over. There is no server or git sync in this version.
 
 ---
 
