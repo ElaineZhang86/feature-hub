@@ -3417,10 +3417,18 @@ function saveHiddenBuiltins(ids) {
 
 function getAllFeatures() {
   const hidden = loadHiddenBuiltins();
-  return [
-    ...FEATURES.filter(f => !hidden.includes(f.id)),
-    ...loadCustomFeatures()
-  ];
+  const state = loadState();
+  const builtins = FEATURES.filter(f => !hidden.includes(f.id)).map(f => {
+    const ov = state[f.id] || {};
+    return {
+      ...f,
+      title:    ov._title    ?? f.title,
+      icon:     ov._icon     ?? f.icon,
+      customer: ov._customer ?? f.customer,
+      summary:  ov._summary  ?? f.summary,
+    };
+  });
+  return [...builtins, ...loadCustomFeatures()];
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -3661,9 +3669,9 @@ function buildFeatureView(f) {
         </div>
       </div>
       <div style="display:flex;gap:6px;flex-shrink:0">
-        ${f.isCustom ? `<button class="q-icon-btn" title="Edit feature info" onclick="openEditFeatureModal('${f.id}')">
+        <button class="q-icon-btn" title="Edit feature info" onclick="openEditFeatureModal('${f.id}')">
           <span class="material-symbols-rounded">edit</span>
-        </button>` : ''}
+        </button>
         <button class="q-icon-btn del" title="Delete feature" onclick="deleteFeature('${f.id}')">
           <span class="material-symbols-rounded">delete</span>
         </button>
@@ -6051,7 +6059,7 @@ function openAddFeatureModal() {
 }
 
 function openEditFeatureModal(featureId) {
-  const f = loadCustomFeatures().find(x => x.id === featureId);
+  const f = getAllFeatures().find(x => x.id === featureId);
   if (!f) return;
   _afEditingId = featureId;
   document.getElementById('af-modal-title').textContent = 'Edit Feature Info';
@@ -6109,13 +6117,23 @@ function submitNewFeature() {
   const newSummary  = document.getElementById('af-summary').value.trim();
 
   if (_afEditingId) {
-    // ── EDIT MODE: update existing custom feature ──────────────
-    const custom = loadCustomFeatures().map(f => {
-      if (f.id !== _afEditingId) return f;
-      return { ...f, title: newTitle, icon: newIcon, status: newStatus,
-               customer: newCustomer, due: newDue, summary: newSummary };
-    });
-    saveCustomFeatures(custom);
+    // ── EDIT MODE ──────────────────────────────────────────────
+    const isCustom = loadCustomFeatures().some(f => f.id === _afEditingId);
+    if (isCustom) {
+      const custom = loadCustomFeatures().map(f => {
+        if (f.id !== _afEditingId) return f;
+        return { ...f, title: newTitle, icon: newIcon, status: newStatus,
+                 customer: newCustomer, due: newDue, summary: newSummary };
+      });
+      saveCustomFeatures(custom);
+    } else {
+      // Built-in: save overrides to state
+      updateFeatureState(_afEditingId, {
+        _title: newTitle, _icon: newIcon, _customer: newCustomer, _summary: newSummary,
+      });
+      handleStatusChange(_afEditingId, newStatus);
+      handleDueChange(_afEditingId, toIsoDate(newDue === 'TBD' ? '' : newDue));
+    }
 
     // Update the feature header in the DOM (icon, title, status select, meta row)
     const titleH2 = document.querySelector(`#view-${_afEditingId} .feature-title-block h2`);
@@ -7256,8 +7274,8 @@ A persistent left sidebar with the top 5 destinations always visible reduces cli
       ],
       "questionAnswers": {
         "cq_0": "Based on usability testing benchmarks, icon + label performs best for first-time users. Icon-only works once users have learned the nav. **Decision:** Ship with icon + label in Phase 1; we can offer a collapsed icon-only mode in a future iteration.",
-        "cq_1": "",
-        "cq_2": ""
+        "cq_1": "**Option 1 — Top-level switcher (recommended for MVP)**\nA property selector in the sidebar header lets users switch context globally. All pages update to show data for the selected property.\n\n**Option 2 — Inline per-page**\nEach page has its own filter/switcher. More flexible but creates inconsistency across pages.\n\n**Decision:** Going with Option 1 for Phase 1. Revisit inline switching in Phase 2 if customers with 10+ properties need it.",
+        "cq_2": "Show a friendly illustration with the message: *\"No jobs yet — your completed and upcoming jobs will appear here.\"* with a link to the Jobs List.\n\nAvoid hiding the dashboard or redirecting automatically — customers need to know the page exists even before data is available."
       },
       "notesEntries": [
         {
