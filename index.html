@@ -7028,7 +7028,7 @@ function init() {
 
   renderSidebar();
   renderIdentity();
-  if (!localStorage.getItem('fh_user_name')) setTimeout(editIdentity, 400);
+  if (!localStorage.getItem('fh_user_name')) editIdentity();
   renderFeatureViews();
   renderScheduleCards();
   renderDeletedFeaturesSection();
