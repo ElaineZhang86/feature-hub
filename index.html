@@ -7222,13 +7222,16 @@ document.addEventListener('click', () => {
           "prepWhoTalking": "Marcus Webb, Operations Director at Acme Field Services. Managing 45 field technicians across 3 regions. Heavy portal user — logs in daily to review job status and approve invoices.",
           "prepWarmUpQs": "- How long have you been using the portal?\n- Walk me through a typical day — when do you open the portal and why?",
           "prepTopicQs": "- What are the top 3 things you do in the portal every week?\n- Is there anything you wish you could find faster?\n- Have you ever given up trying to do something and called support instead?",
-          "prepListenFor": "- Specific page names or features they mention repeatedly\n- Frustration signals around navigation or discoverability\n- Workarounds they have invented (these reveal the biggest gaps)"
+          "prepListenFor": "- Specific page names or features they mention repeatedly\n- Frustration signals around navigation or discoverability\n- Workarounds they have invented (these reveal the biggest gaps)",
+          "label": "",
+          "link": "",
+          "stage": ""
         }
       ],
       "domainKnowledge": [
         {
           "id": "dk-001",
-          "title": "What Domain Knowledge is for test",
+          "title": "What Domain Knowledge is for",
           "content": "Use this tab to capture things you **learned** — not things you were told.\n\nGood examples:\n- Edge cases you discovered while designing\n- Mental models customers use that are different from the product team's assumptions\n- Constraints that are not in the PRD but are real\n- Institutional knowledge from engineers or CS that would take hours to re-discover\n\nBad examples:\n- Copying the PRD summary here (that belongs in Context)\n- Meeting notes (those belong in Calls)\n\n> If you had to figure it out, write it down here so you never have to figure it out again."
         },
         {
@@ -7244,83 +7247,6 @@ document.addEventListener('click', () => {
           "content": "## Background\n\nThe current portal was built in 2021 using a top-nav + tab pattern inherited from a legacy enterprise app. Since then, the feature set has grown from 8 pages to 31 pages — the top nav has become a megamenu that users find overwhelming.\n\n## What the data shows\n\n| Page | % of sessions that include this page |\n|---|---|\n| Jobs List | 78% |\n| Job Detail | 71% |\n| Invoices | 52% |\n| Dashboard | 14% |\n| Settings | 8% |\n\n**Interpretation:** Jobs and Invoices are the core workflow. The dashboard is an afterthought. Settings is rarely needed.\n\n## Design direction\n\nA persistent left sidebar with the top 5 destinations always visible reduces click depth from an average of 3.2 to 1.4 for the most common tasks (Jobs List, Job Detail, Invoices).\n\n## Risks\n\n- Customers with very small screens (older Android devices) may struggle with a persistent sidebar — consider a collapsible version\n- The transition will require onboarding communication — power users have muscle memory for the current nav"
         }
       ],
-      "tasks": [
-        {
-          "id": "bd_0",
-          "text": "Completed 6 customer discovery interviews",
-          "status": "done",
-          "reason": "",
-          "builtin": true
-        },
-        {
-          "id": "bd_1",
-          "text": "Synthesized research — identified top 3 navigation pain points",
-          "status": "done",
-          "reason": "",
-          "builtin": true
-        },
-        {
-          "id": "bd_2",
-          "text": "Explored 3 layout directions; aligned with PM on left-nav direction",
-          "status": "done",
-          "reason": "",
-          "builtin": true
-        },
-        {
-          "id": "bd_3",
-          "text": "Kicked off with engineering — confirmed Phase 1 scope",
-          "status": "done",
-          "reason": "",
-          "builtin": true
-        },
-        {
-          "id": "bt_0",
-          "text": "Finalize information architecture (sitemap + nav labels)",
-          "status": "todo",
-          "reason": "",
-          "builtin": true
-        },
-        {
-          "id": "bt_1",
-          "text": "Design dashboard wireframes (v1)",
-          "status": "todo",
-          "reason": "",
-          "builtin": true
-        },
-        {
-          "id": "bt_2",
-          "text": "Run usability test on prototype — 5 participants",
-          "status": "todo",
-          "reason": "",
-          "builtin": true
-        },
-        {
-          "id": "bt_3",
-          "text": "Incorporate usability test findings",
-          "status": "postponed",
-          "reason": "Waiting on prototype to be ready first",
-          "builtin": true
-        },
-        {
-          "id": "bt_4",
-          "text": "Prepare handoff spec for engineering",
-          "status": "todo",
-          "reason": "",
-          "builtin": true
-        },
-        {
-          "id": "bt_5",
-          "text": "QA support during implementation",
-          "status": "todo",
-          "reason": "",
-          "builtin": true
-        }
-      ],
-      "questionAnswers": {
-        "base_0": "Based on usability testing benchmarks, icon + label performs best for first-time users. Icon-only works once users have learned the nav. **Decision:** Ship with icon + label in Phase 1; we can offer a collapsed icon-only mode in a future iteration.",
-        "base_1": "**Option 1 — Top-level switcher (recommended for MVP)**\nA property selector in the sidebar header lets users switch context globally. All pages update to show data for the selected property.\n\n**Option 2 — Inline per-page**\nEach page has its own filter/switcher. More flexible but creates inconsistency across pages.\n\n**Decision:** Going with Option 1 for Phase 1. Revisit inline switching in Phase 2 if customers with 10+ properties need it.",
-        "base_2": "Show a friendly illustration with the message: *\"No jobs yet — your completed and upcoming jobs will appear here.\"* with a link to the Jobs List.\n\nAvoid hiding the dashboard or redirecting automatically — customers need to know the page exists even before data is available."
-      },
       "notesEntries": [
         {
           "id": "note-001",
@@ -7351,6 +7277,78 @@ document.addEventListener('click', () => {
           "id": "sl-001",
           "label": "Handoff Spec (Figma)",
           "url": "https://figma.com"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "bt_0",
+          "text": "Finalize information architecture (sitemap + nav labels)",
+          "status": "todo",
+          "reason": "",
+          "builtin": true
+        },
+        {
+          "id": "bt_1",
+          "text": "Design dashboard wireframes (v1)",
+          "status": "todo",
+          "reason": "",
+          "builtin": true
+        },
+        {
+          "id": "bt_2",
+          "text": "Run usability test on prototype — 5 participants",
+          "status": "todo",
+          "reason": "",
+          "builtin": true
+        },
+        {
+          "id": "bt_3",
+          "text": "Incorporate usability test findings",
+          "status": "todo",
+          "reason": "",
+          "builtin": true
+        },
+        {
+          "id": "bt_4",
+          "text": "Prepare handoff spec for engineering",
+          "status": "todo",
+          "reason": "",
+          "builtin": true
+        },
+        {
+          "id": "bt_5",
+          "text": "QA support during implementation",
+          "status": "todo",
+          "reason": "",
+          "builtin": true
+        },
+        {
+          "id": "bd_0",
+          "text": "Completed 6 customer discovery interviews",
+          "status": "done",
+          "reason": "",
+          "builtin": true
+        },
+        {
+          "id": "bd_1",
+          "text": "Synthesized research — identified top 3 navigation pain points",
+          "status": "done",
+          "reason": "",
+          "builtin": true
+        },
+        {
+          "id": "bd_2",
+          "text": "Explored 3 layout directions; aligned with PM on left-nav direction",
+          "status": "done",
+          "reason": "",
+          "builtin": true
+        },
+        {
+          "id": "bd_3",
+          "text": "Kicked off with engineering — confirmed Phase 1 scope",
+          "status": "done",
+          "reason": "",
+          "builtin": true
         }
       ]
     }
