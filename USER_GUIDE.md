@@ -50,19 +50,19 @@ node server.js
 
 You should see:
 ```
-Feature Tracker running at http://localhost:3456
+Feature Hub running at http://localhost:3457
 Auto-sync will commit to git every 30 s after a change.
 ```
 
 **3. Open the app**
 
-Open **http://localhost:3456** in your browser. Keep the terminal open while you work.
+Open **http://localhost:3457** in your browser. Keep the terminal open while you work.
 
-> **Important:** When using git sync, always open at **http://localhost:3456** — not by double-clicking the file. Double-clicking opens `file://` which has separate storage and your data won't show up.
+> **Important:** When using git sync, always open at **http://localhost:3457** — not by double-clicking the file. Double-clicking opens `file://` which has separate storage and your data won't show up.
 
 **Daily workflow with git sync:**
 1. `node server.js` — run once at the start of your session
-2. Open **http://localhost:3456**
+2. Open **http://localhost:3457**
 3. Work normally — data syncs every 30 seconds automatically
 4. Before closing, confirm the sync indicator turned green at least once
 
@@ -72,7 +72,7 @@ git clone https://github.com/YOUR_USERNAME/feature-hub.git
 cd feature-hub
 node server.js
 ```
-Open `http://localhost:3456` — your data loads automatically from the snapshot in `index.html`.
+Open `http://localhost:3457` — your data loads automatically from the snapshot in `index.html`.
 
 ---
 

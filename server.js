@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 // Feature Tracker — local git-sync server
 // Run with: node server.js
-// Then open: http://localhost:3456
+// Then open: http://localhost:3457
 
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const PORT = 3456;
+const PORT = 3457;
 const DIR = __dirname;
 const INDEX = path.join(DIR, 'index.html');
 
@@ -122,6 +122,6 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, '127.0.0.1', () => {
-  console.log(`Feature Tracker running at http://localhost:${PORT}`);
+  console.log(`Feature Hub running at http://localhost:${PORT}`);
   console.log('Auto-sync will commit to git every 30 s after a change.');
 });

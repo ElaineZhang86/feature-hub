@@ -7045,7 +7045,7 @@ function init() {
 // ══════════════════════════════════════════════════════════════════════════
 // GIT SYNC
 // ══════════════════════════════════════════════════════════════════════════
-const GIT_SYNC_URL = 'http://localhost:3456/sync';
+const GIT_SYNC_URL = 'http://localhost:3457/sync';
 const GIT_SYNC_DELAY = 30000; // 30 seconds debounce
 let _syncTimer = null;
 let _syncStatus = 'idle'; // idle | pending | syncing | synced | error
@@ -7170,7 +7170,7 @@ function initSampleDefaults() {
 async function initGitSync() {
   // Probe server
   try {
-    const res = await fetch(GIT_SYNC_URL.replace('/sync', '/'), { method: 'GET', signal: AbortSignal.timeout(2000) });
+    const res = await fetch(GIT_SYNC_URL.replace('/sync', ''), { method: 'GET', signal: AbortSignal.timeout(2000) });
     if (res.ok) {
       _gitSyncAvailable = true;
       _syncStatus = 'idle';
