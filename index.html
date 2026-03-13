@@ -7053,38 +7053,21 @@ let _lastSyncTime = null;
 let _gitSyncAvailable = false;
 
 // Seed localStorage from embedded <script id="fh-seed"> on fresh load
-// Uses a version key so fixes to the seed are picked up on existing browsers.
-const SEED_VERSION = '3';
 function loadFromSeed() {
   const seed = document.getElementById('fh-seed');
   if (!seed) return;
   try {
     const data = JSON.parse(seed.textContent);
-    const storedVersion = localStorage.getItem('fh_seed_version');
-    if (storedVersion === SEED_VERSION) return; // already up to date
-    // Merge seed into existing state — only fill keys that are missing or empty arrays.
-    // Safe to run even when the user has edits, because we never overwrite existing values.
-    if (data.fh_state) {
-      const current = JSON.parse(localStorage.getItem('fh_state') || '{}');
-      Object.entries(data.fh_state).forEach(([featureId, defaults]) => {
-        const existing = current[featureId] || {};
-        const merged = { ...existing };
-        Object.entries(defaults).forEach(([k, v]) => {
-          if (merged[k] === undefined || (Array.isArray(merged[k]) && merged[k].length === 0)) {
-            merged[k] = v;
-          }
-        });
-        current[featureId] = merged;
-      });
-      localStorage.setItem('fh_state', JSON.stringify(current));
-    }
-    if (data.fh_custom_features && !localStorage.getItem('fh_custom_features')) localStorage.setItem('fh_custom_features', JSON.stringify(data.fh_custom_features));
-    if (data.fh_hidden_builtins && !localStorage.getItem('fh_hidden_builtins'))   localStorage.setItem('fh_hidden_builtins', JSON.stringify(data.fh_hidden_builtins));
-    if (data.fh_deleted_features && !localStorage.getItem('fh_deleted_features')) localStorage.setItem('fh_deleted_features', JSON.stringify(data.fh_deleted_features));
-    localStorage.setItem('fh_seed_version', SEED_VERSION);
-    console.log('[fh-seed] Merged seed into localStorage (v' + SEED_VERSION + ').');
+    // Only seed if localStorage has no state — preserves unsaved in-session work
+    const existing = localStorage.getItem('fh_state');
+    if (existing && Object.keys(JSON.parse(existing)).length > 0) return;
+    if (data.fh_state)           localStorage.setItem('fh_state', JSON.stringify(data.fh_state));
+    if (data.fh_custom_features) localStorage.setItem('fh_custom_features', JSON.stringify(data.fh_custom_features));
+    if (data.fh_hidden_builtins) localStorage.setItem('fh_hidden_builtins', JSON.stringify(data.fh_hidden_builtins));
+    if (data.fh_deleted_features)localStorage.setItem('fh_deleted_features', JSON.stringify(data.fh_deleted_features));
+    console.log('[git-sync] Seeded localStorage from embedded snapshot.');
   } catch(e) {
-    console.warn('[fh-seed] Failed to parse seed:', e);
+    console.warn('[git-sync] Failed to parse fh-seed:', e);
   }
 }
 
@@ -7185,7 +7168,6 @@ function initSampleDefaults() {
 }
 
 async function initGitSync() {
-  loadFromSeed();
   // Probe server
   try {
     const res = await fetch(GIT_SYNC_URL.replace('/sync', '/'), { method: 'GET', signal: AbortSignal.timeout(2000) });
@@ -7200,11 +7182,7 @@ async function initGitSync() {
   updateSyncIndicator();
 }
 
-loadFromSeed();
-STATE = loadState();
-initSampleDefaults();
-init();
-initGitSync();
+// startup triggered after fh-seed tag is parsed — see script below
 
 // Close add-call dropdown when clicking outside
 document.addEventListener('click', () => {
@@ -7381,5 +7359,6 @@ document.addEventListener('click', () => {
   "fh_deleted_features": []
 }
 </script>
+<script>loadFromSeed();STATE=loadState();initSampleDefaults();init();initGitSync();</script>
 </body>
 </html>

@@ -6,32 +6,75 @@
 
 ## How to Open the App
 
-Feature Hub has no server — you open it directly in your browser. There are two ways:
+There are two ways to use Feature Hub — browser only, or with git sync for backup across machines.
 
-**Option A — GitHub Pages (recommended)**
+---
 
-Open this URL in your browser:
+### Option A — Browser only (no setup)
+
+Open the app directly:
 
 **https://elainezhang86.github.io/feature-hub/**
 
-**Option B — Local file**
+Or double-click `index.html` locally.
 
-Double-click `index.html` or run:
+Data saves automatically to your browser's localStorage. Pick one way to open and stick with it — GitHub Pages and the local file have separate localStorage.
+
+**To keep your data safe:**
+1. Always use the same browser — switching browsers means starting fresh
+2. Do not clear your browser history or site data — this will wipe your data
+3. Do not use private/incognito mode — localStorage does not persist when the window closes
+
+> Data only lives in your browser. If you clear browser data or switch machines, data will not carry over unless you set up git sync below.
+
+---
+
+### Option B — With git sync (recommended for backup)
+
+This setup auto-saves your data to git every 30 seconds, so it follows you across machines.
+
+**What you need:** [Node.js](https://nodejs.org) v18 or later, [Git](https://git-scm.com)
+
+**1. Clone the repo**
 
 ```bash
-open index.html
+git clone https://github.com/YOUR_USERNAME/feature-hub.git
+cd feature-hub
 ```
 
-Both options work. Data saves automatically to your browser's localStorage for that origin — so data entered on GitHub Pages stays on GitHub Pages, and data entered via the local file stays with the local file. Pick one and stick with it.
+**2. Start the server**
 
-### To make sure your data is stored correctly
+```bash
+node server.js
+```
 
-1. **Always use the same way to open the app** — GitHub Pages URL or local file, not both
-2. **Always use the same browser** — localStorage is per browser; switching browsers means starting fresh
-3. **Do not clear your browser history or site data** — this will wipe your data
-4. **Do not use private/incognito mode** — localStorage does not persist when the window closes
+You should see:
+```
+Feature Tracker running at http://localhost:3456
+Auto-sync will commit to git every 30 s after a change.
+```
 
-> **Note:** There is no server or git sync in this version. Data only lives in your browser. If you need backup across machines, use the **feature-tracker** version instead, which includes auto-sync to git.
+**3. Open the app**
+
+Open **http://localhost:3456** in your browser. Keep the terminal open while you work.
+
+> **Important:** When using git sync, always open at **http://localhost:3456** — not by double-clicking the file. Double-clicking opens `file://` which has separate storage and your data won't show up.
+
+**Daily workflow with git sync:**
+1. `node server.js` — run once at the start of your session
+2. Open **http://localhost:3456**
+3. Work normally — data syncs every 30 seconds automatically
+4. Before closing, confirm the sync indicator turned green at least once
+
+**Restoring on a new machine:**
+```bash
+git clone https://github.com/YOUR_USERNAME/feature-hub.git
+cd feature-hub
+node server.js
+```
+Open `http://localhost:3456` — your data loads automatically from the snapshot in `index.html`.
+
+---
 
 ---
 
