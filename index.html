@@ -5049,7 +5049,7 @@ function buildCallCard(featureId, call) {
   const hasSummary = !!(call.summary && call.summary.trim());
   const notesLink = call.notesLink || call.link || '';
   const hasLink = !!notesLink.trim();
-  const status = call.status || 'scheduled';
+  const status = (call.status || 'scheduled').toLowerCase().replace(/\s+/g, '-');
   const statusLabels = { scheduled: 'Scheduled', completed: 'Completed', 'action-items-pending': 'Action Items' };
   const callCategory = call.callCategory || call.stage || '';
   const callName = call.callName || call.customer || call.label || '';
