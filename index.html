@@ -1783,48 +1783,23 @@
   }
 
   /* ── CALLS: row chips ───────────────────────────── */
-  .call-type-chip {
+  .call-type-chip, .call-cat-chip, .call-status-chip {
     font-size: 10px; font-weight: 700; letter-spacing: .04em;
-    text-transform: uppercase; padding: 2px 7px; border-radius: 20px;
-    white-space: nowrap; flex-shrink: 0;
-  }
-  .call-type-chip.customer { background: var(--blue-bg);  color: var(--blue);  }
-  .call-type-chip.internal { background: var(--green-bg); color: var(--green); }
-
-  .call-cat-chip {
-    font-size: 10px; font-weight: 700; padding: 2px 8px;
-    border-radius: 20px; background: var(--surface2);
-    border: 1px solid var(--border); color: var(--text-muted);
-    white-space: nowrap; flex-shrink: 0;
-    text-transform: uppercase; letter-spacing: .04em;
-  }
-
-  .call-status-chip {
-    font-size: 10px; font-weight: 700; letter-spacing: .05em;
-    text-transform: uppercase; padding: 2px 8px; border-radius: 4px;
+    text-transform: uppercase; padding: 2px 8px; border-radius: 20px;
     white-space: nowrap; flex-shrink: 0; border: 1px solid transparent;
+    display: inline-block;
   }
-  .call-status-chip.scheduled {
-    background: rgba(96,165,250,.15); color: #60a5fa;
-    border-color: rgba(96,165,250,.3);
-  }
-  .call-status-chip.completed {
-    background: rgba(52,211,153,.15); color: #34d399;
-    border-color: rgba(52,211,153,.3);
-  }
-  .call-status-chip.action-items-pending {
-    background: rgba(251,191,36,.15); color: #fbbf24;
-    border-color: rgba(251,191,36,.3);
-  }
-  [data-theme="light"] .call-status-chip.scheduled {
-    background: rgba(37,99,235,.1); color: #1d4ed8; border-color: rgba(37,99,235,.25);
-  }
-  [data-theme="light"] .call-status-chip.completed {
-    background: rgba(22,163,74,.1); color: #15803d; border-color: rgba(22,163,74,.25);
-  }
-  [data-theme="light"] .call-status-chip.action-items-pending {
-    background: rgba(217,119,6,.1); color: #b45309; border-color: rgba(217,119,6,.25);
-  }
+  .call-type-chip.customer { background: var(--blue-bg);  color: var(--blue);  border-color: var(--blue-bg); }
+  .call-type-chip.internal { background: var(--green-bg); color: var(--green); border-color: var(--green-bg); }
+  .call-cat-chip { background: var(--surface2); border-color: var(--border); color: var(--text-muted); }
+  .call-status-chip.scheduled { background: rgba(96,165,250,.15); color: #60a5fa; border-color: rgba(96,165,250,.3); }
+  .call-status-chip.completed { background: rgba(52,211,153,.15); color: #34d399; border-color: rgba(52,211,153,.3); }
+  .call-status-chip.action-items-pending { background: rgba(251,191,36,.15); color: #fbbf24; border-color: rgba(251,191,36,.3); }
+  [data-theme="light"] .call-status-chip.scheduled { background: rgba(37,99,235,.1); color: #1d4ed8; border-color: rgba(37,99,235,.25); }
+  [data-theme="light"] .call-status-chip.completed { background: rgba(22,163,74,.1); color: #15803d; border-color: rgba(22,163,74,.25); }
+  [data-theme="light"] .call-status-chip.action-items-pending { background: rgba(217,119,6,.1); color: #b45309; border-color: rgba(217,119,6,.25); }
+  .call-entry-details input::placeholder,
+  .call-entry-details textarea::placeholder { color: var(--text-dim); }
 
   /* ── CALLS: entry rows ──────────────────────────── */
   .call-entry { margin-bottom: 8px; }
@@ -5127,9 +5102,9 @@ function buildCallCard(featureId, call) {
         onclick="setCallTab('${featureId}','${call.id}','prep')">Call Prep</button>
       <button class="call-inner-tab${activeTab === 'post' ? ' active' : ''}"
         onclick="setCallTab('${featureId}','${call.id}','post')">Post Meeting</button>
-      <button class="btn${isEditing ? ' btn-primary' : ''}" style="margin-left:auto;font-size:11px;padding:3px 12px;flex-shrink:0"
+      <button class="q-icon-btn${isEditing ? ' active' : ''}" style="margin-left:auto;flex-shrink:0" title="${isEditing ? 'Done editing' : 'Edit'}"
         onclick="event.stopPropagation();toggleCallEditMode('${featureId}','${call.id}')">
-        ${isEditing ? 'Done' : 'Edit'}
+        <span class="material-symbols-rounded">${isEditing ? 'check' : 'edit'}</span>
       </button>
     </div>`;
 
@@ -5192,13 +5167,14 @@ function buildCallCard(featureId, call) {
     ${resourcesHtml}`;
 
   const infoViewHtml = `
-    <div style="display:flex;flex-direction:column;gap:10px;padding:4px 0 12px">
+    <div style="display:flex;flex-direction:column;gap:12px;padding:0 0 12px">
       ${callName ? `<div><div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Call Name</div><div style="font-size:13px;color:var(--text)">${escHtml(callName)}</div></div>` : ''}
       ${customer ? `<div><div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Customer</div><div style="font-size:13px;color:var(--text)">${escHtml(customer)}</div></div>` : ''}
-      <div style="display:flex;gap:20px;flex-wrap:wrap">
-        <div><div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Status</div><span class="call-status-chip ${status}">${statusLabels[status] || status}</span></div>
-        ${dateDisplay ? `<div><div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Date</div><div style="font-size:13px;color:var(--text)">${escHtml(dateDisplay)}</div></div>` : ''}
-        <div><div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Type</div><div style="font-size:13px;color:var(--text)">${callType === 'customer' ? 'Customer' : 'Internal'}</div></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+        <span class="call-status-chip ${status}">${statusLabels[status] || status}</span>
+        <span class="call-type-chip ${callType}">${callType === 'customer' ? 'Customer' : 'Internal'}</span>
+        ${catLabel ? `<span class="call-cat-chip">${escHtml(catLabel)}</span>` : ''}
+        ${dateDisplay ? `<span style="font-size:11px;color:var(--text-dim);margin-left:4px">${escHtml(dateDisplay)}</span>` : ''}
       </div>
       ${call.attendees ? `<div><div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Attendees</div><div style="font-size:13px;color:var(--text)">${escHtml(call.attendees)}</div></div>` : ''}
       ${callType === 'internal' && call.departments ? `<div><div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Departments</div><div style="font-size:13px;color:var(--text)">${escHtml(call.departments)}</div></div>` : ''}
