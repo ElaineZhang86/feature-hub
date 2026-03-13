@@ -295,6 +295,14 @@
       <span class="material-symbols-rounded nav-icon">menu</span>
       <span class="nav-label">Navigation</span>
     </a>
+    <a class="nav-item" href="#identity" onclick="setActive(this)">
+      <span class="material-symbols-rounded nav-icon">account_circle</span>
+      <span class="nav-label">Your Identity</span>
+    </a>
+    <a class="nav-item" href="#settings" onclick="setActive(this)">
+      <span class="material-symbols-rounded nav-icon">settings</span>
+      <span class="nav-label">Settings</span>
+    </a>
     <a class="nav-item" href="#schedule" onclick="setActive(this)">
       <span class="material-symbols-rounded nav-icon">grid_view</span>
       <span class="nav-label">Schedule Overview</span>
@@ -441,20 +449,14 @@ node server.js</code></pre>
   <div class="section" id="navigation">
     <h2 class="section-title">Navigation</h2>
     <p>The left sidebar lists every feature with its current status badge. Click any feature to open it. At the top is <strong>Schedule Overview</strong>, a dashboard showing all features at once.</p>
+    <h3>Sidebar header</h3>
+    <p>Your name and role appear below the app title. Click them to edit. The theme toggle (sun/moon icon) is also here, next to the title.</p>
     <h3>Sidebar footer</h3>
     <table>
       <tr><th>Icon</th><th>Action</th></tr>
       <tr><td>↻</td><td>Force sync to git now</td></tr>
       <tr><td>⚙</td><td>Open Settings</td></tr>
     </table>
-
-    <h3>Settings</h3>
-    <p>Click the <strong>settings icon (⚙)</strong> in the sidebar footer to open the Settings panel. It has three sections:</p>
-    <ul>
-      <li><strong>Account</strong> — update your name and role. These appear in the sidebar header beneath the app title.</li>
-      <li><strong>Help</strong> — opens this User Guide in a new tab</li>
-      <li><strong>Appearance</strong> — toggle light / dark theme</li>
-    </ul>
 
     <h3>Sync indicator</h3>
     <p>Next to the ↻ button is a small dot that shows the current sync status:</p>
@@ -471,6 +473,33 @@ node server.js</code></pre>
       <span class="material-symbols-rounded">warning</span>
       <span>Confirm the dot has turned <strong>green at least once</strong> before closing your browser at the end of a session. If it never turns green, your changes are in localStorage but not yet committed to git.</span>
     </div>
+  </div>
+
+  <!-- YOUR IDENTITY -->
+  <div class="section" id="identity">
+    <h2 class="section-title">Your Identity</h2>
+    <p>On first launch, a welcome modal prompts you to enter your name and role. These appear in the sidebar header beneath the app title so you always know whose workspace this is.</p>
+    <ul>
+      <li><strong>Edit at any time</strong> — click your name in the sidebar header, or go to <strong>Settings → Account</strong></li>
+      <li>Name is required; role is optional</li>
+      <li>Identity is stored locally in your browser — it is not synced to git</li>
+    </ul>
+    <div class="callout callout-success">
+      <span class="material-symbols-rounded">account_circle</span>
+      <span>Once saved, the welcome modal never appears again. Your name and role persist across sessions in localStorage.</span>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="section" id="settings">
+    <h2 class="section-title">Settings</h2>
+    <p>Click the <strong>⚙ icon</strong> in the sidebar footer to open the Settings panel.</p>
+    <table>
+      <tr><th>Section</th><th>What you can do</th></tr>
+      <tr><td><strong>Account</strong></td><td>Update your name and role</td></tr>
+      <tr><td><strong>Help</strong></td><td>Open this User Guide in a new tab</td></tr>
+      <tr><td><strong>Appearance</strong></td><td>Toggle light / dark theme</td></tr>
+    </table>
   </div>
 
   <!-- SCHEDULE OVERVIEW -->
@@ -689,6 +718,7 @@ node server.js</code></pre>
       <li><strong>Use markdown in Q&amp;A answers</strong> — tables work well for comparing options; headers make long answers scannable</li>
       <li><strong>Domain Knowledge is for things you learned, not things you were told</strong> — if you had to figure it out, write it down so you never have to again</li>
       <li><strong>A well-maintained feature page can replace most of a handoff meeting</strong> — the more you put in, the faster someone else can pick it up</li>
+      <li><strong>Export before you hand off</strong> — share a feature's full context with a teammate as a single file</li>
     </ul>
   </div>
 
@@ -696,7 +726,7 @@ node server.js</code></pre>
 
 <script>
   // Theme
-  const saved = localStorage.getItem('fh_theme') || 'dark';
+  const saved = localStorage.getItem('fh_theme') || 'light';
   document.documentElement.setAttribute('data-theme', saved);
   document.getElementById('theme-icon').textContent = saved === 'dark' ? 'light_mode' : 'dark_mode';
 
