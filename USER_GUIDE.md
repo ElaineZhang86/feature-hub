@@ -4,7 +4,55 @@
 
 ---
 
-## How to Open the App
+## User Guide
+
+---
+
+**Getting Started**
+- [Why Use Feature Context Hub?](#why-use-feature-context-hub)
+- [How to Set Up](#how-to-set-up)
+
+---
+
+**Using the App**
+- [Navigation](#navigation)
+- [Schedule Overview](#schedule-overview)
+- [Adding a New Feature](#adding-a-new-feature)
+- [Feature Detail Page](#feature-detail-page)
+
+---
+
+**Tabs**
+- [Context](#context)
+- [Domain Knowledge](#domain-knowledge)
+- [Feature Brief](#feature-brief)
+- [Calls](#calls)
+- [Q&A](#qa)
+- [Design Spec](#design-spec)
+- [Design Files](#design-files)
+- [Notes](#notes)
+- [To Do](#to-do)
+
+---
+
+**Reference**
+- [Deleted Features](#deleted-features)
+- [Status Workflow](#status-workflow)
+- [Tips](#tips)
+
+---
+
+## Why Use Feature Context Hub?
+
+As a product designer juggling multiple features at once, context is constantly slipping — what was decided and why, what a customer said last week, what's blocked and waiting. Feature Context Hub keeps everything in one place, per feature, so you can pick up any feature in seconds instead of spending 20 minutes reconstructing context from Confluence, Slack, and your notes app.
+
+- **One place per feature** — context, calls, research, tasks, and design files all under one roof
+- **No account, no sync service** — runs in your browser or locally, data stays yours
+- **Designed for designers** — not a Jira replacement, but a personal layer on top of your existing tools
+
+---
+
+## How to Set Up
 
 There are two ways to use Feature Hub — browser only, or with git sync for backup across machines.
 
@@ -76,8 +124,6 @@ Open `http://localhost:3457` — your data loads automatically from the snapshot
 
 ---
 
----
-
 ## Navigation
 
 The left sidebar lists every feature with its current status badge. Click any feature to open it. At the top is **Schedule Overview**, a dashboard showing all features at once.
@@ -86,6 +132,7 @@ The left sidebar lists every feature with its current status badge. Click any fe
 
 | Icon | Action |
 |------|--------|
+| ↻ | Force sync to git now (only visible when using git sync) |
 | Sun/Moon | Toggle light / dark theme |
 
 ---
