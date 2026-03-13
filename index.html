@@ -3441,6 +3441,7 @@ function loadState() {
 
 function saveState(state) {
   localStorage.setItem('fh_state', JSON.stringify(state));
+  localStorage.setItem('fh_user_edited', '1');
   document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric'
   });
@@ -7025,22 +7026,27 @@ let _lastSyncTime = null;
 let _gitSyncAvailable = false;
 
 // Seed localStorage from embedded <script id="fh-seed"> on fresh load
+// Uses a version key so fixes to the seed are picked up on existing browsers.
+const SEED_VERSION = '2';
 function loadFromSeed() {
   const seed = document.getElementById('fh-seed');
   if (!seed) return;
   try {
     const data = JSON.parse(seed.textContent);
-    // Only seed if localStorage is empty for this app
-    const keys = ['fh_state', 'fh_custom_features', 'fh_hidden_builtins', 'fh_deleted_features'];
-    const hasAny = keys.some(k => localStorage.getItem(k) !== null);
-    if (hasAny) return; // user has local data — don't overwrite
+    // Re-seed if version changed (allows seed fixes to propagate)
+    // but only when the user has NOT made any real edits themselves.
+    const storedVersion = localStorage.getItem('fh_seed_version');
+    const hasUserEdits = localStorage.getItem('fh_user_edited') === '1';
+    if (storedVersion === SEED_VERSION) return; // already up to date
+    if (hasUserEdits) return; // user has real data — never overwrite
     if (data.fh_state)           localStorage.setItem('fh_state', JSON.stringify(data.fh_state));
     if (data.fh_custom_features) localStorage.setItem('fh_custom_features', JSON.stringify(data.fh_custom_features));
     if (data.fh_hidden_builtins) localStorage.setItem('fh_hidden_builtins', JSON.stringify(data.fh_hidden_builtins));
     if (data.fh_deleted_features)localStorage.setItem('fh_deleted_features', JSON.stringify(data.fh_deleted_features));
-    console.log('[git-sync] Seeded localStorage from embedded snapshot.');
+    localStorage.setItem('fh_seed_version', SEED_VERSION);
+    console.log('[fh-seed] Seeded localStorage (v' + SEED_VERSION + ').');
   } catch(e) {
-    console.warn('[git-sync] Failed to parse fh-seed:', e);
+    console.warn('[fh-seed] Failed to parse seed:', e);
   }
 }
 
@@ -7268,33 +7274,34 @@ A persistent left sidebar with the top 5 destinations always visible reduces cli
         { "id": "bt_4", "text": "Prepare handoff spec for engineering", "status": "todo", "reason": "", "builtin": true },
         { "id": "bt_5", "text": "QA support during implementation", "status": "todo", "reason": "", "builtin": true }
       ],
-      "customQuestions": [
-        "Should the nav show feature icons or text labels only? Or both?",
-        "How do we handle customers with multiple properties — top-level switcher or inline?",
-        "What is the empty state for the dashboard when a customer has no recent jobs?"
-      ],
       "questionAnswers": {
-        "cq_0": "Based on usability testing benchmarks, icon + label performs best for first-time users. Icon-only works once users have learned the nav. **Decision:** Ship with icon + label in Phase 1; we can offer a collapsed icon-only mode in a future iteration.",
-        "cq_1": "**Option 1 — Top-level switcher (recommended for MVP)**\nA property selector in the sidebar header lets users switch context globally. All pages update to show data for the selected property.\n\n**Option 2 — Inline per-page**\nEach page has its own filter/switcher. More flexible but creates inconsistency across pages.\n\n**Decision:** Going with Option 1 for Phase 1. Revisit inline switching in Phase 2 if customers with 10+ properties need it.",
-        "cq_2": "Show a friendly illustration with the message: *\"No jobs yet — your completed and upcoming jobs will appear here.\"* with a link to the Jobs List.\n\nAvoid hiding the dashboard or redirecting automatically — customers need to know the page exists even before data is available."
+        "base_0": "Based on usability testing benchmarks, icon + label performs best for first-time users. Icon-only works once users have learned the nav. **Decision:** Ship with icon + label in Phase 1; we can offer a collapsed icon-only mode in a future iteration.",
+        "base_1": "**Option 1 — Top-level switcher (recommended for MVP)**\nA property selector in the sidebar header lets users switch context globally. All pages update to show data for the selected property.\n\n**Option 2 — Inline per-page**\nEach page has its own filter/switcher. More flexible but creates inconsistency across pages.\n\n**Decision:** Going with Option 1 for Phase 1. Revisit inline switching in Phase 2 if customers with 10+ properties need it.",
+        "base_2": "Show a friendly illustration with the message: *\"No jobs yet — your completed and upcoming jobs will appear here.\"* with a link to the Jobs List.\n\nAvoid hiding the dashboard or redirecting automatically — customers need to know the page exists even before data is available."
       },
       "notesEntries": [
         {
           "id": "note-001",
-          "text": "Slack from Jordan (Mar 6): Engineering confirmed they can support a collapsible sidebar without backend changes. Just CSS + localStorage preference. Green light for Phase 1."
+          "text": "Slack from Jordan (Mar 6): Engineering confirmed they can support a collapsible sidebar without backend changes. Just CSS + localStorage preference. Green light for Phase 1.",
+          "createdAt": 1741305600000
         },
         {
           "id": "note-002",
-          "text": "TODO: follow up with CS team on top 5 support ticket categories — they track these in Zendesk. Could validate our nav priorities."
+          "text": "TODO: follow up with CS team on top 5 support ticket categories — they track these in Zendesk. Could validate our nav priorities.",
+          "createdAt": 1741219200000
         }
       ],
       "designFiles": [
         {
           "id": "df-001",
-          "label": "Portal Redesign — Figma",
-          "url": "https://figma.com",
+          "title": "Portal Redesign — Working File",
+          "figmaLabel": "Open in Figma",
+          "figmaUrl": "https://figma.com",
+          "protoLabel": "View Prototype",
+          "protoUrl": "https://figma.com",
           "screenshots": [],
-          "notes": "Main working file. Includes: discovery synthesis, IA map, wireframes v1–v3, final prototype."
+          "notes": "Main working file. Includes: discovery synthesis, IA map, wireframes v1–v3, final prototype.",
+          "createdAt": 1741219200000
         }
       ],
       "specLinks": [
