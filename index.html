@@ -7077,6 +7077,8 @@ function toggleTheme() {
 // ═══════════════════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════════════════
+let _firstLaunch = false;
+
 function init() {
   const savedTheme = localStorage.getItem('fh_theme') || 'light';
   document.documentElement.setAttribute('data-theme', savedTheme);
@@ -7085,7 +7087,7 @@ function init() {
 
   renderSidebar();
   renderIdentity();
-  if (!localStorage.getItem('fh_user_name')) editIdentity();
+  if (!localStorage.getItem('fh_user_name')) { _firstLaunch = true; editIdentity(); }
   renderFeatureViews();
   renderScheduleCards();
   renderDeletedFeaturesSection();
@@ -7218,6 +7220,11 @@ function saveIdentity() {
   localStorage.setItem('fh_user_role', role);
   document.getElementById('identity-modal').style.display = 'none';
   renderIdentity();
+  if (_firstLaunch) {
+    _firstLaunch = false;
+    const firstFeature = getAllFeatures()[0];
+    if (firstFeature) showFeature(firstFeature.id);
+  }
 }
 
 // Settings panel
