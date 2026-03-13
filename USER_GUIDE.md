@@ -24,7 +24,14 @@ open index.html
 
 Both options work. Data saves automatically to your browser's localStorage for that origin — so data entered on GitHub Pages stays on GitHub Pages, and data entered via the local file stays with the local file. Pick one and stick with it.
 
-> **Note:** If you clear your browser data or switch to a different browser or machine, your data will not carry over. There is no server or git sync in this version.
+### To make sure your data is stored correctly
+
+1. **Always use the same way to open the app** — GitHub Pages URL or local file, not both
+2. **Always use the same browser** — localStorage is per browser; switching browsers means starting fresh
+3. **Do not clear your browser history or site data** — this will wipe your data
+4. **Do not use private/incognito mode** — localStorage does not persist when the window closes
+
+> **Note:** There is no server or git sync in this version. Data only lives in your browser. If you need backup across machines, use the **feature-tracker** version instead, which includes auto-sync to git.
 
 ---
 
