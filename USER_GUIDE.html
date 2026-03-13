@@ -444,8 +444,25 @@ node server.js</code></pre>
     <h3>Sidebar footer</h3>
     <table>
       <tr><th>Icon</th><th>Action</th></tr>
+      <tr><td>↻</td><td>Force sync to git now</td></tr>
       <tr><td>Sun / Moon</td><td>Toggle light / dark theme</td></tr>
     </table>
+
+    <h3>Sync indicator</h3>
+    <p>Next to the ↻ button is a small dot that shows the current sync status:</p>
+    <table>
+      <tr><th>Dot color</th><th>Meaning</th></tr>
+      <tr><td>Grey</td><td>Server offline or idle — no changes to sync</td></tr>
+      <tr><td>Blue (pulsing)</td><td>Change detected — sync queued, waiting 30 seconds</td></tr>
+      <tr><td>Green</td><td>Synced — shows the time of the last successful commit</td></tr>
+      <tr><td>Red</td><td>Sync failed — check that <code>node server.js</code> is still running</td></tr>
+    </table>
+    <p>Every time you make a change, a 30-second timer starts. When it fires, the server embeds your full state into <code>index.html</code>, commits it to git, and pushes to your remote. Rapid edits are batched — only one commit is made after you stop typing.</p>
+    <p>You do <strong>not</strong> need to click ↻ manually. It is there if you want to force a commit immediately — for example, before closing your laptop.</p>
+    <div class="callout callout-warn">
+      <span class="material-symbols-rounded">warning</span>
+      <span>Confirm the dot has turned <strong>green at least once</strong> before closing your browser at the end of a session. If it never turns green, your changes are in localStorage but not yet committed to git.</span>
+    </div>
   </div>
 
   <!-- SCHEDULE OVERVIEW -->
