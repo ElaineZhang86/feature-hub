@@ -2207,7 +2207,12 @@
 <!-- ═══════════════════════════════ SIDEBAR ═══════════════════════════════ -->
 <div id="sidebar">
   <div class="sidebar-header">
-    <h1>Feature Hub</h1>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+      <h1>Feature Hub</h1>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark" style="padding:4px 6px">
+        <span class="material-symbols-rounded" id="theme-icon" style="font-size:17px">dark_mode</span>
+      </button>
+    </div>
     <p id="user-identity" onclick="editIdentity()" title="Click to edit" style="cursor:pointer;transition:color .15s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color=''">—</p>
   </div>
   <nav class="sidebar-nav">
@@ -7016,7 +7021,7 @@ function toggleTheme() {
 //  INIT
 // ═══════════════════════════════════════════════════════════════
 function init() {
-  const savedTheme = localStorage.getItem('fh_theme') || 'dark';
+  const savedTheme = localStorage.getItem('fh_theme') || 'light';
   document.documentElement.setAttribute('data-theme', savedTheme);
   const themeIcon = document.getElementById('theme-icon');
   if (themeIcon) themeIcon.textContent = savedTheme === 'dark' ? 'light_mode' : 'dark_mode';
@@ -7265,7 +7270,7 @@ document.addEventListener('click', () => {
 
 <!-- ── SETTINGS PANEL ── -->
 <div id="settings-overlay" onclick="closeSettings()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998"></div>
-<div id="settings-panel" style="display:none;position:fixed;left:260px;bottom:0;width:300px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 8px 32px rgba(0,0,0,.45);z-index:9999;overflow:hidden">
+<div id="settings-panel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:480px;max-width:92vw;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 16px 48px rgba(0,0,0,.5);z-index:9999;overflow:hidden">
   <!-- Header -->
   <div style="padding:16px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
     <span style="font-size:13px;font-weight:700;color:var(--text)">Settings</span>
@@ -7299,7 +7304,7 @@ document.addEventListener('click', () => {
   <div style="padding:14px 16px">
     <div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px">Appearance</div>
     <button onclick="toggleTheme()" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface2);border:none;width:100%;text-align:left;color:var(--text-muted);font-size:13px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='var(--accent-dim)';this.style.color='var(--text)'" onmouseout="this.style.background='var(--surface2)';this.style.color='var(--text-muted)'">
-      <span class="material-symbols-rounded" id="theme-icon" style="font-size:16px">light_mode</span>
+      <span class="material-symbols-rounded" style="font-size:16px">contrast</span>
       Toggle light / dark theme
     </button>
   </div>
