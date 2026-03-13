@@ -3911,12 +3911,12 @@ function buildTaskItem(featureId, t) {
       <button class="q-icon-btn" title="Postpone" onclick="startPostpone('${featureId}','${t.id}')">
         <span class="material-symbols-rounded">pause_circle</span>
       </button>
-      ${!t.builtin ? `<button class="remove-btn" title="Delete" onclick="removeTask('${featureId}','${t.id}')"><span class="material-symbols-rounded">delete</span></button>` : ''}
+      <button class="remove-btn" title="Delete" onclick="removeTask('${featureId}','${t.id}')"><span class="material-symbols-rounded">delete</span></button>
     ` : t.status === 'done' ? `
       <button class="q-icon-btn" title="Reset to To Do" onclick="setTaskStatus('${featureId}','${t.id}','todo')">
         <span class="material-symbols-rounded">undo</span>
       </button>
-      ${!t.builtin ? `<button class="remove-btn" title="Delete" onclick="removeTask('${featureId}','${t.id}')"><span class="material-symbols-rounded">delete</span></button>` : ''}
+      <button class="remove-btn" title="Delete" onclick="removeTask('${featureId}','${t.id}')"><span class="material-symbols-rounded">delete</span></button>
     ` : `
       <button class="q-icon-btn" title="Reset to To Do" onclick="setTaskStatus('${featureId}','${t.id}','todo')">
         <span class="material-symbols-rounded">undo</span>
@@ -3924,7 +3924,7 @@ function buildTaskItem(featureId, t) {
       <button class="q-icon-btn" title="Mark done" onclick="setTaskStatus('${featureId}','${t.id}','done')">
         <span class="material-symbols-rounded">check</span>
       </button>
-      ${!t.builtin ? `<button class="remove-btn" title="Delete" onclick="removeTask('${featureId}','${t.id}')"><span class="material-symbols-rounded">delete</span></button>` : ''}
+      <button class="remove-btn" title="Delete" onclick="removeTask('${featureId}','${t.id}')"><span class="material-symbols-rounded">delete</span></button>
     `;
   return `
     <li class="task-item">
@@ -4597,7 +4597,12 @@ function saveDDEdit(featureId, id) {
 }
 
 function cancelDDEdit(featureId, id) {
-  const entry        = getDDEntries(featureId).find(e => e.id === id);
+  const entry = getDDEntries(featureId).find(e => e.id === id);
+  if (entry && !entry.title && !entry.content) {
+    saveDDEntries(featureId, getDDEntries(featureId).filter(e => e.id !== id));
+    _reRenderDD(featureId);
+    return;
+  }
   const titleInput   = document.getElementById(`dd_title_input_${featureId}_${id}`);
   const titleDisplay = document.getElementById(`dd_title_display_${featureId}_${id}`);
   const ta           = document.getElementById(`dd_ta_${featureId}_${id}`);
@@ -5677,7 +5682,12 @@ function saveDKEdit(featureId, id) {
 }
 
 function cancelDKEdit(featureId, id) {
-  const entry        = getDomainKnowledge(featureId).find(e => e.id === id);
+  const entry = getDomainKnowledge(featureId).find(e => e.id === id);
+  if (entry && !entry.title && !entry.content) {
+    updateFeatureState(featureId, { domainKnowledge: getDomainKnowledge(featureId).filter(e => e.id !== id) });
+    renderDomainKnowledgeList(featureId);
+    return;
+  }
   const titleInput   = document.getElementById(`dk_title_input_${featureId}_${id}`);
   const titleDisplay = document.getElementById(`dk_title_display_${featureId}_${id}`);
   const ta           = document.getElementById(`dk_ta_${featureId}_${id}`);
