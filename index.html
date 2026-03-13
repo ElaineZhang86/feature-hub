@@ -5170,11 +5170,11 @@ function buildCallCard(featureId, call) {
     <div style="display:flex;flex-direction:column;gap:12px;padding:0 0 12px">
       ${callName ? `<div><div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Call Name</div><div style="font-size:13px;color:var(--text)">${escHtml(callName)}</div></div>` : ''}
       ${customer ? `<div><div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Customer</div><div style="font-size:13px;color:var(--text)">${escHtml(customer)}</div></div>` : ''}
-      <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
-        <span class="call-status-chip ${status}">${statusLabels[status] || status}</span>
-        <span class="call-type-chip ${callType}">${callType === 'customer' ? 'Customer' : 'Internal'}</span>
-        ${catLabel ? `<span class="call-cat-chip">${escHtml(catLabel)}</span>` : ''}
-        ${dateDisplay ? `<span style="font-size:11px;color:var(--text-dim);margin-left:4px">${escHtml(dateDisplay)}</span>` : ''}
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+        <div><div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Status</div><span class="call-status-chip ${status}">${statusLabels[status] || status}</span></div>
+        <div><div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Type</div><span class="call-type-chip ${callType}">${callType === 'customer' ? 'Customer' : 'Internal'}</span></div>
+        ${catLabel ? `<div><div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Category</div><span class="call-cat-chip">${escHtml(catLabel)}</span></div>` : ''}
+        ${dateDisplay ? `<div><div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Date</div><div style="font-size:13px;color:var(--text)">${escHtml(dateDisplay)}</div></div>` : ''}
       </div>
       ${call.attendees ? `<div><div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Attendees</div><div style="font-size:13px;color:var(--text)">${escHtml(call.attendees)}</div></div>` : ''}
       ${callType === 'internal' && call.departments ? `<div><div style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px">Departments</div><div style="font-size:13px;color:var(--text)">${escHtml(call.departments)}</div></div>` : ''}
