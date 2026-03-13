@@ -4781,7 +4781,23 @@ function toggleAddCallMenu(featureId) {
 
 function addCallOfType(featureId, type) {
   _addCallOpen[featureId] = false;
-  openNewCallModal(featureId, type);
+  const newCall = {
+    id: Date.now().toString(),
+    callName: '', callType: type || 'customer', status: 'scheduled',
+    customer: '', relatedCustomer: '', callCategory: '', date: '',
+    attendees: '', departments: '', notesLink: '', links: [],
+    transcript: '', summary: '',
+    prepResearchQs: '', prepWhoTalking: '', prepCompanySegment: '', prepTenure: '',
+    prepUsageIndicators: '', prepTypesOfWork: '', prepWarmUpQs: '', prepTopicQs: '', prepListenFor: '',
+    label: '', link: '', stage: '',
+  };
+  saveCalls(featureId, [...getCalls(featureId), newCall]);
+  const key = featureId + '_' + newCall.id;
+  _callExpanded[key] = true;
+  _callTab[key] = 'info';
+  _callEditMode[key] = true;
+  _callTypeTab[featureId] = type || 'customer';
+  renderCallsList(featureId);
 }
 
 const _newCallModal = { featureId: null };
