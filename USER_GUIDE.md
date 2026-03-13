@@ -4,75 +4,21 @@
 
 ---
 
-## Quick Start (Browser Only)
+## Opening the App
 
-Open the app in your browser — no installation required:
+No installation required. Open the app directly in your browser:
 
 **https://elainezhang86.github.io/feature-hub/**
 
+Or open `index.html` locally:
+
+```bash
+open index.html
+```
+
 Your data saves automatically to your browser's localStorage. It stays in your browser — no account, no server, no sign-in.
 
-> **Note:** If you clear your browser data or switch to a different browser or machine, your data will not carry over. For persistent backup across machines, follow the Git Sync setup below.
-
----
-
-## Git Sync Setup (Recommended)
-
-This setup gives you automatic backups to git — every change you make is committed and pushed every 30 seconds. Your data follows you across machines via `git clone`.
-
-### What you need
-
-- [Node.js](https://nodejs.org) (v18 or later)
-- [Git](https://git-scm.com)
-- A GitHub account
-
-### Step 1 — Fork the repo
-
-Go to **https://github.com/ElaineZhang86/feature-hub** and click **Fork**. This creates your own copy of the app under your GitHub account.
-
-### Step 2 — Clone your fork
-
-```bash
-git clone https://github.com/YOUR_USERNAME/feature-hub.git
-cd feature-hub
-```
-
-### Step 3 — Start the server
-
-```bash
-node server.js
-```
-
-You should see:
-```
-Feature Tracker running at http://localhost:3456
-Auto-sync will commit to git every 30 s after a change.
-```
-
-### Step 4 — Open the app
-
-Open **http://localhost:3456** in your browser. Keep the terminal open while you work.
-
-### Step 5 — Work normally
-
-Every time you make a change, a 30-second timer starts. When it fires, the server commits your full state to git and pushes to your fork on GitHub.
-
-### Restoring on a new machine
-
-```bash
-git clone https://github.com/YOUR_USERNAME/feature-hub.git
-cd feature-hub
-node server.js
-```
-
-Open `http://localhost:3456` — your data loads automatically from the snapshot embedded in `index.html`.
-
-### Daily workflow
-
-1. `node server.js` — run once at the start of your session
-2. Open `http://localhost:3456`
-3. Work normally — data syncs every 30 seconds
-4. Confirm the sync indicator in the sidebar turned green at least once before closing
+> **Note:** If you clear your browser data or switch to a different browser or machine, your data will not carry over. For backup across machines, export your data from the Settings menu or maintain your own copy of the file.
 
 ---
 
@@ -84,7 +30,6 @@ The left sidebar lists every feature with its current status badge. Click any fe
 
 | Icon | Action |
 |------|--------|
-| ↻ | Force sync to git now (only available with git sync setup) |
 | Sun/Moon | Toggle light / dark theme |
 
 ---
@@ -156,10 +101,36 @@ Structured background context — architecture decisions, data models, domain de
 
 Log all calls related to a feature — customer discovery, internal syncs, design reviews.
 
-- Click **+ Add** and choose Customer Call or Internal Call
-- Each call has three tabs: **General Info**, **Call Prep**, **Post Meeting**
-- Use **Copy prep prompt to Claude.ai** to generate AI-assisted call prep
-- Paste the transcript in Post Meeting and generate an AI summary
+#### Creating a call
+
+Click **+ Add** and choose **Customer Call** or **Internal Call**. The call opens immediately in edit mode — no modal or popup. Fill in the fields directly:
+
+- **Call Name** — primary identifier
+- **Type** — Customer or Internal
+- **Category** — Customer Discovery, Design Review, Internal Sync, etc.
+- **Status** — Scheduled / Completed / Action Items Pending
+- **Date**, **Customer**, **Attendees**, **Notes Link**
+- **External Resources** — attach slides, recordings, or docs with a label and URL
+
+Click the **edit icon** (pencil) on any existing call card to switch it to edit mode.
+
+#### Call status chips
+
+| Status | Color |
+|--------|-------|
+| Scheduled | Blue |
+| Completed | Green |
+| Action Items Pending | Yellow |
+
+#### Inside each call — three tabs
+
+**General Info** — call details, attendees, resources
+
+**Call Prep** — structured pre-call preparation:
+- Research Questions, Interviewee Background, Warm-up Questions, Topic Questions, Look For / Listen For
+- Use **Copy prep prompt to Claude.ai** to generate AI-assisted prep
+
+**Post Meeting** — paste the transcript; generate an AI summary with Claude
 
 ---
 
@@ -178,7 +149,7 @@ A question bank with tracked answers.
 Links and embeds for your design spec.
 
 - Add spec links with **+ Add**
-- Edit or delete pre-loaded specs
+- Edit or delete existing specs
 
 ---
 
@@ -187,7 +158,7 @@ Links and embeds for your design spec.
 Links to Figma files, prototypes, or other design assets.
 
 - Add links with **+ Add**
-- Direct links open in a new tab
+- Links open in a new tab
 
 ---
 
