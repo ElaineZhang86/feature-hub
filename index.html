@@ -2207,7 +2207,10 @@
 <!-- ═══════════════════════════════ SIDEBAR ═══════════════════════════════ -->
 <div id="sidebar">
   <div class="sidebar-header">
-    <h1>Feature Hub</h1>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+      <h1>Feature Hub</h1>
+      <a href="USER_GUIDE.html" target="_blank" style="font-size:11px;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:2px;transition:color .15s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-muted)'">User Guide <span class="material-symbols-rounded" style="font-size:13px">arrow_forward</span></a>
+    </div>
     <p>Ying Zhang · Staff Product Designer</p>
   </div>
   <nav class="sidebar-nav">
@@ -2237,14 +2240,9 @@
     </div>
     <div class="sidebar-footer-row">
       <span>Updated: <span id="last-updated">—</span></span>
-      <div style="display:flex;gap:4px;align-items:center">
-        <a href="USER_GUIDE.html" target="_blank" title="Open User Guide" style="display:flex;align-items:center;padding:5px;border-radius:6px;color:var(--text-muted);transition:background .15s,color .15s" onmouseover="this.style.background='var(--surface2)';this.style.color='var(--text)'" onmouseout="this.style.background='';this.style.color='var(--text-muted)'">
-          <span class="material-symbols-rounded" style="font-size:16px">help</span>
-        </a>
-        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark">
-          <span class="material-symbols-rounded" id="theme-icon">light_mode</span>
-        </button>
-      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light / dark">
+        <span class="material-symbols-rounded" id="theme-icon">light_mode</span>
+      </button>
     </div>
   </div>
 </div>
