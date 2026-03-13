@@ -5124,6 +5124,7 @@ function buildCallCard(featureId, call) {
       </div>
       <div style="display:flex;flex-direction:column">${_lbl('Status')}
         <select class="call-detail-select" onchange="updateCallField('${featureId}','${call.id}','status',this.value);renderCallsList('${featureId}')">
+          <option value="">— Select —</option>
           <option value="scheduled"            ${status === 'scheduled'            ? 'selected' : ''}>Scheduled</option>
           <option value="completed"            ${status === 'completed'            ? 'selected' : ''}>Completed</option>
           <option value="action-items-pending" ${status === 'action-items-pending' ? 'selected' : ''}>Action Items Pending</option>
@@ -5133,6 +5134,7 @@ function buildCallCard(featureId, call) {
     <div class="call-detail-row" style="align-items:flex-start">
       <div style="display:flex;flex-direction:column">${_lbl('Type')}
         <select class="call-detail-select" onchange="updateCallField('${featureId}','${call.id}','callType',this.value);renderCallsList('${featureId}')">
+          <option value="">— Select —</option>
           <option value="customer" ${callType === 'customer' ? 'selected' : ''}>Customer Call</option>
           <option value="internal" ${callType === 'internal' ? 'selected' : ''}>Internal Call</option>
         </select>
