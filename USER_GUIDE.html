@@ -377,37 +377,30 @@
   <!-- WHY -->
   <div class="section" id="why">
     <h2 class="section-title">Why Use Feature Context Hub?</h2>
-    <p>As a product designer juggling multiple features at once, context is constantly slipping — what was decided and why, what a customer said last week, what's blocked and waiting. Feature Context Hub keeps everything in one place, per feature, so you can pick up any feature in seconds instead of spending 20 minutes reconstructing context from Confluence, Slack, and your notes app.</p>
-    <ul>
-      <li><strong>One place per feature</strong> — context, calls, research, tasks, and design files all together</li>
-      <li><strong>No account, no sync service</strong> — runs in your browser or locally, data stays yours</li>
-      <li><strong>Designed for designers</strong> — not a Jira replacement, but a personal layer on top of your existing tools</li>
-    </ul>
+    <p>As a designer working across multiple features at once, context is your most expensive resource. Here's what this tool is designed to protect.</p>
+
+    <h3>Stay oriented across 5–8 features simultaneously</h3>
+    <p>At any given time, you might be deep in discovery for one feature, reviewing specs for another, and answering Slack questions about a third. Without a dedicated system, the mental overhead of context-switching compounds into real productivity loss.</p>
+    <p><strong>Schedule Overview</strong> is the antidote to Monday morning confusion. Open it once, scan every feature's status, current focus, and task progress in one view — no Jira, no Confluence, no Slack scrolling.</p>
+
+    <h3>Context-switch without losing your place</h3>
+    <p>The biggest tax on design work isn't the switching itself — it's the ramp-up time after. Every feature has a <strong>Current Focus ribbon</strong> — one sentence: what specifically needs to happen next. Update it before you switch away. When you come back, you know exactly where to pick up.</p>
+
+    <h3>Never lose domain knowledge you worked hard to earn</h3>
+    <p>Tax law nuances. API quirks. Edge cases your PM didn't know about until you surfaced them in a discovery call. This kind of knowledge is invisible in PRDs — it lives in your head, or gets buried in a Notion page nobody finds again.</p>
+    <p>The <strong>Domain Knowledge tab</strong> keeps it next to the feature it belongs to, making your future self faster, your design rationale sharper, and your call prep significantly better.</p>
+
+    <h3>Hand off to another designer without a 2-hour catch-up call</h3>
+    <p>When a feature changes hands, the outgoing designer's context usually evaporates. With Feature Context Hub, a handoff means sharing the repo. The incoming designer gets the full context tab, every discovery call with prep notes and AI summaries, every answered design question, and a clear task list showing what's blocked and why.</p>
+    <div class="callout callout-success">
+      <span class="material-symbols-rounded">handshake</span>
+      <span>A well-maintained feature page can replace most of a handoff meeting.</span>
+    </div>
   </div>
 
   <!-- SETUP -->
   <div class="section" id="setup">
     <h2 class="section-title">How to Set Up</h2>
-    <p>There are two ways to use Feature Hub — browser only with no setup, or with git sync for automatic backup across machines.</p>
-
-    <h3>Option A — Browser only (no setup)</h3>
-    <p>Open the app directly in your browser:</p>
-    <p><strong>https://elainezhang86.github.io/feature-hub/</strong></p>
-    <p>Or double-click <code>index.html</code> locally. Data saves automatically to your browser's localStorage. Pick one way to open and stick with it — GitHub Pages and the local file have separate storage.</p>
-    <p><strong>To keep your data safe:</strong></p>
-    <ul>
-      <li>Always use the same browser — switching browsers means starting fresh</li>
-      <li>Do not clear your browser history or site data — this will wipe your data</li>
-      <li>Do not use private/incognito mode — localStorage does not persist when the window closes</li>
-    </ul>
-    <div class="callout callout-warn">
-      <span class="material-symbols-rounded">warning</span>
-      <span>Data only lives in your browser. If you clear browser data or switch machines, data will not carry over unless you set up git sync below.</span>
-    </div>
-
-    <hr class="divider" />
-
-    <h3>Option B — With git sync (recommended for backup)</h3>
     <p>This setup auto-saves your data to git every 30 seconds, so it follows you across machines.</p>
     <p><strong>What you need:</strong> Node.js v18 or later, Git</p>
 
@@ -426,22 +419,22 @@ Auto-sync will commit to git every 30 s after a change.</code></pre>
 
     <div class="callout callout-warn">
       <span class="material-symbols-rounded">warning</span>
-      <span>When using git sync, always open at <strong>http://localhost:3457</strong> — not by double-clicking the file. Double-clicking opens <code>file://</code> which has separate storage and your data won't show up.</span>
+      <span>Always open at <strong>http://localhost:3457</strong> — not by double-clicking the file. Double-clicking opens <code>file://</code> which has separate storage and your data won't show up.</span>
     </div>
 
-    <p><strong>Daily workflow with git sync:</strong></p>
+    <h3>Daily workflow</h3>
     <ol>
       <li><code>node server.js</code> — run once at the start of your session</li>
-      <li>Open <strong>http://localhost:3457</strong> in your browser</li>
+      <li>Open <strong>http://localhost:3457</strong></li>
       <li>Work normally — data syncs every 30 seconds automatically</li>
       <li>Before closing, confirm the sync indicator turned green at least once</li>
     </ol>
 
-    <p><strong>Restoring on a new machine:</strong></p>
+    <h3>Restoring on a new machine</h3>
     <pre><code>git clone https://github.com/YOUR_USERNAME/feature-hub.git
 cd feature-hub
 node server.js</code></pre>
-    <p>Open <code>http://localhost:3457</code> — your data loads automatically from the snapshot embedded in <code>index.html</code>.</p>
+    <p>Open <code>http://localhost:3457</code> — your data loads automatically from the snapshot in <code>index.html</code>.</p>
   </div>
 
   <!-- NAVIGATION -->
@@ -451,7 +444,6 @@ node server.js</code></pre>
     <h3>Sidebar footer</h3>
     <table>
       <tr><th>Icon</th><th>Action</th></tr>
-      <tr><td>↻</td><td>Force sync to git now (only visible when using git sync)</td></tr>
       <tr><td>Sun / Moon</td><td>Toggle light / dark theme</td></tr>
     </table>
   </div>
@@ -467,6 +459,10 @@ node server.js</code></pre>
       <li><strong>Progress bar</strong> — percentage of To Do tasks marked Done (postponed tasks excluded)</li>
     </ul>
     <p>Click any card to jump to that feature's detail page.</p>
+    <div class="callout">
+      <span class="material-symbols-rounded">tips_and_updates</span>
+      <span>Start every week here. Scan current focus and progress for all features. Update anything stale before diving into work.</span>
+    </div>
   </div>
 
   <!-- ADDING A NEW FEATURE -->
@@ -478,6 +474,7 @@ node server.js</code></pre>
       <li>Summary, current focus</li>
       <li>Team members</li>
     </ul>
+    <p>Custom features can be edited or deleted later. Built-in features (pre-loaded) are read-only in the modal, but all their dynamic data — status, focus, tasks, calls, Q&amp;A — is fully editable.</p>
   </div>
 
   <!-- FEATURE DETAIL PAGE -->
@@ -498,6 +495,10 @@ node server.js</code></pre>
       <li><strong>Links</strong> — Jira tickets, PRDs, Gong calls, design files</li>
       <li><strong>Team</strong> — PM, Eng, stakeholders with their roles</li>
     </ul>
+    <div class="callout callout-success">
+      <span class="material-symbols-rounded">check_circle</span>
+      <span>Use this tab first whenever you're re-orienting to a feature after time away. It replaces the need to re-read the PRD or scroll Slack history.</span>
+    </div>
   </div>
 
   <!-- DOMAIN KNOWLEDGE -->
@@ -510,8 +511,8 @@ node server.js</code></pre>
       <li>Title autosaves when you click away</li>
     </ul>
     <div class="callout">
-      <span class="material-symbols-rounded">lightbulb</span>
-      <span>Domain Knowledge is for things you <strong>learned</strong>, not things you were told. If you had to figure it out, write it down here so you never have to figure it out again.</span>
+      <span class="material-symbols-rounded">handshake</span>
+      <span><strong>Handoff tip:</strong> A well-filled Domain Knowledge tab is the single biggest time-saver for an incoming designer. If you had to figure something out, write it here.</span>
     </div>
   </div>
 
@@ -556,6 +557,10 @@ node server.js</code></pre>
       <li><strong>Call Prep</strong> — Research Questions, Interviewee Background, Warm-up Questions, Topic Questions, Look For / Listen For. Use <strong>Copy prep prompt to Claude.ai</strong> to generate AI-assisted prep.</li>
       <li><strong>Post Meeting</strong> — paste the transcript; generate an AI summary with Claude</li>
     </ul>
+    <div class="callout">
+      <span class="material-symbols-rounded">tips_and_updates</span>
+      <span><strong>Context-switch tip:</strong> Create the call card as Scheduled before the call happens. Fill in prep. Paste the transcript after. Everything stays in one place and compounds over time.</span>
+    </div>
   </div>
 
   <!-- Q&A -->
@@ -567,6 +572,10 @@ node server.js</code></pre>
       <li>Answers support markdown</li>
       <li>Mark questions as <strong>Resolved</strong> when answered; filter by open / resolved</li>
     </ul>
+    <div class="callout">
+      <span class="material-symbols-rounded">handshake</span>
+      <span><strong>Handoff tip:</strong> The Q&amp;A tab is often the best signal of how thoroughly a feature has been explored. An incoming designer can read through it and immediately understand what was unknown, what got answered, and what's still open.</span>
+    </div>
   </div>
 
   <!-- DESIGN SPEC -->
@@ -610,6 +619,10 @@ node server.js</code></pre>
       <li>Postpone a task to record why it is blocked</li>
       <li>Progress bar on Schedule Overview counts Done / (To Do + Done) — postponed tasks excluded</li>
     </ul>
+    <div class="callout">
+      <span class="material-symbols-rounded">handshake</span>
+      <span><strong>Handoff tip:</strong> Postponed tasks are especially valuable during handoffs — they tell the incoming designer what's blocked and why, so nothing falls through the cracks.</span>
+    </div>
   </div>
 
   <!-- DELETED FEATURES -->
@@ -625,6 +638,7 @@ node server.js</code></pre>
   <!-- STATUS WORKFLOW -->
   <div class="section" id="status">
     <h2 class="section-title">Status Workflow</h2>
+    <p>Change status from the dropdown in the feature header. The sidebar badge and Schedule Overview card update immediately.</p>
     <table>
       <tr><th>Status</th><th>Meaning</th></tr>
       <tr><td><strong>Discovery</strong></td><td>Researching the problem</td></tr>
@@ -639,12 +653,14 @@ node server.js</code></pre>
   <div class="section" id="tips">
     <h2 class="section-title">Tips</h2>
     <ul>
-      <li><strong>Delete the sample feature</strong> and add your own once you are comfortable with the layout</li>
-      <li><strong>Use Current Focus as a daily intent</strong> — one sentence: what specifically needs to happen today on this feature</li>
-      <li><strong>Log calls even before they happen</strong> — create the call as Scheduled, fill in prep, paste the transcript after</li>
+      <li><strong>Start every session:</strong> <code>node server.js</code> → open <code>http://localhost:3457</code> → confirm the sync indicator turns green before doing any work</li>
+      <li><strong>Start every week on Schedule Overview</strong> — scan current focus and progress, update anything stale before diving in</li>
+      <li><strong>Use Current Focus as a daily intent</strong> — one sentence: what specifically needs to happen on this feature today</li>
+      <li><strong>Log calls even before they happen</strong> — create as Scheduled, fill in prep, paste the transcript after</li>
+      <li><strong>Postpone, don't delete</strong> — if a task is blocked, postpone it with a reason so the context survives a handoff</li>
+      <li><strong>Use markdown in Q&amp;A answers</strong> — tables work well for comparing options; headers make long answers scannable</li>
       <li><strong>Domain Knowledge is for things you learned, not things you were told</strong> — if you had to figure it out, write it down so you never have to again</li>
-      <li><strong>Postpone, don't delete</strong> — if a task is blocked, postpone it with a reason so the context is preserved</li>
-      <li><strong>Check the sync indicator is green</strong> before closing your browser at the end of the day (git sync only)</li>
+      <li><strong>A well-maintained feature page can replace most of a handoff meeting</strong> — the more you put in, the faster someone else can pick it up</li>
     </ul>
   </div>
 
