@@ -2211,7 +2211,7 @@
       <h1>Feature Hub</h1>
       <a href="USER_GUIDE.html" target="_blank" style="font-size:11px;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:2px;transition:color .15s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text-muted)'">User Guide <span class="material-symbols-rounded" style="font-size:13px">arrow_forward</span></a>
     </div>
-    <p>Ying Zhang · Staff Product Designer</p>
+    <p id="user-identity" onclick="editIdentity()" title="Click to edit" style="cursor:pointer;transition:color .15s" onmouseover="this.style.color='var(--text)'" onmouseout="this.style.color=''">—</p>
   </div>
   <nav class="sidebar-nav">
     <div class="nav-section-label">Overview</div>
@@ -7026,6 +7026,8 @@ function init() {
   if (themeIcon) themeIcon.textContent = savedTheme === 'dark' ? 'light_mode' : 'dark_mode';
 
   renderSidebar();
+  renderIdentity();
+  if (!localStorage.getItem('fh_user_name')) setTimeout(editIdentity, 400);
   renderFeatureViews();
   renderScheduleCards();
   renderDeletedFeaturesSection();
@@ -7043,6 +7045,56 @@ function init() {
   } else {
     lastUpdated.textContent = 'Mar 11, 2026';
   }
+}
+
+
+// ══════════════════════════════════════════════════════════════════════════
+// USER IDENTITY
+// ══════════════════════════════════════════════════════════════════════════
+function loadIdentity() {
+  return {
+    name: localStorage.getItem('fh_user_name') || '',
+    role: localStorage.getItem('fh_user_role') || '',
+  };
+}
+
+function renderIdentity() {
+  const { name, role } = loadIdentity();
+  const el = document.getElementById('user-identity');
+  if (!el) return;
+  if (name) {
+    el.textContent = role ? name + ' · ' + role : name;
+  } else {
+    el.innerHTML = '<span style="color:var(--accent);font-size:11px">+ Add your name & role</span>';
+  }
+}
+
+function editIdentity() {
+  const { name, role } = loadIdentity();
+  const isFirstTime = !name;
+  document.getElementById('identity-modal-title').textContent = isFirstTime ? 'Welcome to Feature Hub' : 'Edit your info';
+  document.getElementById('identity-modal-desc').textContent = isFirstTime
+    ? 'Enter your name and role — this appears in the sidebar and is saved locally.'
+    : 'Update your name and role.';
+  document.getElementById('identity-cancel-btn').style.display = isFirstTime ? 'none' : '';
+  document.getElementById('identity-name').value = name;
+  document.getElementById('identity-role').value = role;
+  document.getElementById('identity-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('identity-name').focus(), 50);
+}
+
+function saveIdentity() {
+  const name = document.getElementById('identity-name').value.trim();
+  const role = document.getElementById('identity-role').value.trim();
+  if (!name) { document.getElementById('identity-name').focus(); return; }
+  localStorage.setItem('fh_user_name', name);
+  localStorage.setItem('fh_user_role', role);
+  document.getElementById('identity-modal').style.display = 'none';
+  renderIdentity();
+}
+
+function cancelIdentity() {
+  document.getElementById('identity-modal').style.display = 'none';
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -7361,5 +7413,25 @@ document.addEventListener('click', () => {
   "fh_deleted_features": []
 }
 </script>
+
+<!-- ── IDENTITY MODAL ── -->
+<div id="identity-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 28px 24px;width:360px;box-shadow:0 8px 32px rgba(0,0,0,.5)">
+    <h2 id="identity-modal-title" style="font-size:16px;font-weight:700;margin-bottom:6px;color:var(--text)">Welcome to Feature Hub</h2>
+    <p id="identity-modal-desc" style="font-size:13px;color:var(--text-muted);margin-bottom:20px;line-height:1.5">Enter your name and role — this appears in the sidebar and is saved locally.</p>
+    <div style="margin-bottom:14px">
+      <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);display:block;margin-bottom:6px">Your Name</label>
+      <input id="identity-name" type="text" placeholder="e.g. Alex Kim" style="width:100%;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')document.getElementById('identity-role').focus()" />
+    </div>
+    <div style="margin-bottom:22px">
+      <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);display:block;margin-bottom:6px">Your Role</label>
+      <input id="identity-role" type="text" placeholder="e.g. Senior Product Designer" style="width:100%;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')saveIdentity()" />
+    </div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button id="identity-cancel-btn" onclick="cancelIdentity()" style="padding:7px 14px;background:none;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted);font-size:13px;cursor:pointer">Cancel</button>
+      <button onclick="saveIdentity()" style="padding:7px 16px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;font-size:13px;font-weight:600;cursor:pointer">Save</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
