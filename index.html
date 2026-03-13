@@ -2224,10 +2224,16 @@
 
     <div class="nav-section-label" style="margin-top:8px">
       Features
-      <button class="nav-section-add" onclick="openAddFeatureModal()" title="Add new feature">
-        <span class="material-symbols-rounded">add</span>
-      </button>
+      <div style="display:flex;gap:2px">
+        <button class="nav-section-add" title="Import feature from file" onclick="document.getElementById('import-feature-input').click()">
+          <span class="material-symbols-rounded">upload</span>
+        </button>
+        <button class="nav-section-add" onclick="openAddFeatureModal()" title="Add new feature">
+          <span class="material-symbols-rounded">add</span>
+        </button>
+      </div>
     </div>
+    <input type="file" id="import-feature-input" accept=".json" style="display:none" onchange="importFeature(event)" />
     <div id="nav-features"></div>
   </nav>
   <div class="sidebar-footer">
@@ -3506,8 +3512,9 @@ function progressOf(feature) {
   return Math.round((done / tasks.length) * 100);
 }
 
-function showToast() {
+function showToast(msg) {
   const t = document.getElementById('toast');
+  t.textContent = msg || 'Saved';
   t.classList.add('show');
   clearTimeout(t._timer);
   t._timer = setTimeout(() => t.classList.remove('show'), 1800);
@@ -3649,6 +3656,9 @@ function buildFeatureView(f) {
         </div>
       </div>
       <div style="display:flex;gap:6px;flex-shrink:0">
+        <button class="q-icon-btn" title="Export feature" onclick="exportFeature('${f.id}')">
+          <span class="material-symbols-rounded">download</span>
+        </button>
         <button class="q-icon-btn" title="Edit feature info" onclick="openEditFeatureModal('${f.id}')">
           <span class="material-symbols-rounded">edit</span>
         </button>
@@ -7048,6 +7058,89 @@ function init() {
   }
 }
 
+
+// ══════════════════════════════════════════════════════════════════════════
+// FEATURE EXPORT / IMPORT
+// ══════════════════════════════════════════════════════════════════════════
+function exportFeature(featureId) {
+  const feature = getAllFeatures().find(f => f.id === featureId);
+  if (!feature) return;
+  const state = loadState()[featureId] || {};
+  const payload = {
+    _type: 'feature-hub-export',
+    _version: 1,
+    _exportedAt: new Date().toISOString(),
+    feature,
+    state,
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const slug = (feature.title || featureId).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  a.href = url;
+  a.download = `feature-${slug}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importFeature(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const payload = JSON.parse(e.target.result);
+      if (payload._type !== 'feature-hub-export') throw new Error('Not a valid feature export file.');
+
+      const importedFeature = payload.feature;
+      const importedState   = payload.state || {};
+
+      // Generate a new unique ID to avoid collisions
+      const newId = 'custom_' + Date.now();
+      const newFeature = {
+        ...importedFeature,
+        id: newId,
+        isCustom: true,
+      };
+
+      // Remap state keys — calls/dk/etc use the old feature id in some places; update ids
+      const newState = JSON.parse(JSON.stringify(importedState));
+
+      // Save feature definition
+      const custom = loadCustomFeatures();
+      saveCustomFeatures([...custom, newFeature]);
+
+      // Save state
+      const fullState = loadState();
+      fullState[newId] = newState;
+      saveState(fullState);
+      STATE = fullState;
+
+      // Render new feature
+      const featureViews = document.getElementById('feature-views');
+      featureViews.insertAdjacentHTML('beforeend', buildFeatureView(newFeature));
+      renderTaskList(newId);
+      renderQuestionsList(newId);
+      renderCallsList(newId);
+      renderDomainKnowledgeList(newId);
+      renderNotesTab(newId);
+      renderDesignTab(newId);
+      renderDesignSpecTab(newId);
+      renderDocsList(newId);
+      renderDomainDocsList(newId);
+      renderSidebar();
+      renderScheduleCards();
+
+      // Navigate to the new feature
+      showView(newId, document.querySelector(`[data-view="${newId}"]`));
+      showToast('Feature imported successfully');
+    } catch (err) {
+      alert('Import failed: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
 
 // ══════════════════════════════════════════════════════════════════════════
 // USER IDENTITY & SETTINGS

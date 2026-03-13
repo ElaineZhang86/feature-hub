@@ -301,7 +301,7 @@
     </a>
     <a class="nav-item" href="#add-feature" onclick="setActive(this)">
       <span class="material-symbols-rounded nav-icon">add_circle</span>
-      <span class="nav-label">Adding a New Feature</span>
+      <span class="nav-label">Adding, Exporting &amp; Importing</span>
     </a>
     <a class="nav-item" href="#feature-detail" onclick="setActive(this)">
       <span class="material-symbols-rounded nav-icon">open_in_full</span>
@@ -500,6 +500,17 @@ node server.js</code></pre>
       <li>Team members</li>
     </ul>
     <p>Custom features can be edited or deleted later. Built-in features (pre-loaded) are read-only in the modal, but all their dynamic data — status, focus, tasks, calls, Q&amp;A — is fully editable.</p>
+
+    <h3>Exporting a feature</h3>
+    <p>Click the <strong>download icon</strong> (↓) in the feature header to export the feature as a <code>.json</code> file. The file includes the feature definition (title, status, customer, team) and all its data — calls, domain knowledge, notes, tasks, Q&amp;A, design files, and spec links.</p>
+    <p>Share this file with anyone who uses Feature Hub to give them a full copy of the feature with all its context intact.</p>
+
+    <h3>Importing a feature</h3>
+    <p>Click the <strong>upload icon</strong> (↑) next to "Features" in the sidebar. Pick a <code>.json</code> file exported from Feature Hub. The feature is added as a new custom feature and you are taken straight to it. All data — calls, domain knowledge, notes, tasks, Q&amp;A — is restored exactly as it was exported.</p>
+    <div class="callout">
+      <span class="material-symbols-rounded">handshake</span>
+      <span>Export + Import is the fastest way to hand off a feature to another designer. Export takes one click. The incoming designer gets everything — context, research, calls, decisions — without a catch-up meeting.</span>
+    </div>
   </div>
 
   <!-- FEATURE DETAIL PAGE -->
