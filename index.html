@@ -3427,9 +3427,6 @@ function loadState() {
 function saveState(state) {
   localStorage.setItem('fh_state', JSON.stringify(state));
   localStorage.setItem('fh_user_edited', '1');
-  document.getElementById('last-updated').textContent = new Date().toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric'
-  });
   showToast();
   if (typeof scheduleSyncToGit === 'function') scheduleSyncToGit();
 }
@@ -7047,15 +7044,7 @@ function init() {
   renderDocs();
   renderDomainDocs();
 
-  const lastUpdated = document.getElementById('last-updated');
-  const saved = localStorage.getItem('fh_state');
-  if (saved) {
-    lastUpdated.textContent = new Date().toLocaleDateString('en-US', {
-      month: 'short', day: 'numeric', year: 'numeric'
-    });
-  } else {
-    lastUpdated.textContent = 'Mar 11, 2026';
-  }
+
 }
 
 
