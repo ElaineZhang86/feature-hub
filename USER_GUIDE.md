@@ -89,7 +89,7 @@ This setup auto-saves your data to git every 30 seconds, so it follows you acros
 **1. Clone the repo**
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/feature-hub.git
+git clone https://github.com/ElaineZhang86/feature-hub.git
 cd feature-hub
 ```
 
@@ -119,7 +119,7 @@ Open **http://localhost:3457** in your browser. Keep the terminal open while you
 
 **Restoring on a new machine:**
 ```bash
-git clone https://github.com/YOUR_USERNAME/feature-hub.git
+git clone https://github.com/ElaineZhang86/feature-hub.git
 cd feature-hub
 node server.js
 ```
