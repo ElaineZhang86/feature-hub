@@ -4773,10 +4773,40 @@ const _callTypeTab = {};
 const _addCallOpen = {};
 const _callTab = {}; // 'info' | 'prep' | 'post' per call
 const _callEditMode = {};
+const _callSnapshot = {};
+const _callIsNew = {};
 
-function toggleCallEditMode(featureId, callId) {
+function enterCallEditMode(featureId, callId) {
   const key = featureId + '_' + callId;
-  _callEditMode[key] = !_callEditMode[key];
+  const call = getCalls(featureId).find(c => c.id === callId);
+  _callSnapshot[key] = JSON.parse(JSON.stringify(call));
+  _callEditMode[key] = true;
+  renderCallsList(featureId);
+}
+
+function saveCallEdit(featureId, callId) {
+  const key = featureId + '_' + callId;
+  delete _callSnapshot[key];
+  delete _callIsNew[key];
+  _callEditMode[key] = false;
+  renderCallsList(featureId);
+}
+
+function discardCallEdit(featureId, callId) {
+  const key = featureId + '_' + callId;
+  if (_callIsNew[key]) {
+    delete _callIsNew[key];
+    delete _callSnapshot[key];
+    _callEditMode[key] = false;
+    saveCalls(featureId, getCalls(featureId).filter(c => c.id !== callId));
+    renderCallsList(featureId);
+    return;
+  }
+  if (_callSnapshot[key]) {
+    saveCalls(featureId, getCalls(featureId).map(c => c.id === callId ? _callSnapshot[key] : c));
+    delete _callSnapshot[key];
+  }
+  _callEditMode[key] = false;
   renderCallsList(featureId);
 }
 
@@ -4811,6 +4841,8 @@ function addCallOfType(featureId, type) {
   const key = featureId + '_' + newCall.id;
   _callExpanded[key] = true;
   _callTab[key] = 'info';
+  _callIsNew[key] = true;
+  _callSnapshot[key] = JSON.parse(JSON.stringify(newCall));
   _callEditMode[key] = true;
   _callTypeTab[featureId] = type || 'customer';
   renderCallsList(featureId);
@@ -5134,10 +5166,10 @@ function buildCallCard(featureId, call) {
         onclick="setCallTab('${featureId}','${call.id}','prep')">Call Prep</button>
       <button class="call-inner-tab${activeTab === 'post' ? ' active' : ''}"
         onclick="setCallTab('${featureId}','${call.id}','post')">Post Meeting</button>
-      <button class="q-icon-btn${isEditing ? ' active' : ''}" style="margin-left:auto;flex-shrink:0" title="${isEditing ? 'Done editing' : 'Edit'}"
-        onclick="event.stopPropagation();toggleCallEditMode('${featureId}','${call.id}')">
-        <span class="material-symbols-rounded">${isEditing ? 'check' : 'edit'}</span>
-      </button>
+      ${!isEditing ? `<button class="q-icon-btn" style="margin-left:auto;flex-shrink:0" title="Edit"
+        onclick="event.stopPropagation();enterCallEditMode('${featureId}','${call.id}')">
+        <span class="material-symbols-rounded">edit</span>
+      </button>` : ''}
     </div>`;
 
   // ── General Info tab ──
@@ -5290,10 +5322,17 @@ function buildCallCard(featureId, call) {
 
   const postPanel = activeTab !== 'post' ? '' : isEditing ? postEditHtml : postViewHtml;
 
+  const callEditActions = isEditing ? `
+    <div class="dk-entry-actions" style="padding:12px 22px 16px;border-top:1px solid var(--border)">
+      <button class="btn btn-primary" onclick="saveCallEdit('${featureId}','${call.id}')">Save</button>
+      <button class="btn" onclick="discardCallEdit('${featureId}','${call.id}')">${_callIsNew[featureId+'_'+call.id] ? 'Discard' : 'Cancel'}</button>
+    </div>` : '';
+
   const detailsHtml = isExpanded ? `
     <div class="call-entry-details">
       ${tabBar}
       ${infoPanel}${prepPanel}${postPanel}
+      ${callEditActions}
     </div>` : '';
 
   return `
