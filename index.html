@@ -342,6 +342,110 @@
     transform: translateY(-1px);
   }
 
+  .schedule-card[draggable="true"], .sl-row[draggable="true"] { cursor: grab; }
+  .schedule-card[draggable="true"]:active, .sl-row[draggable="true"]:active { cursor: grabbing; }
+  .schedule-card.dragging { opacity: .35; transform: none; }
+  .sl-row.dragging { opacity: .35; }
+  .schedule-card.drag-over { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
+  .sl-row.drag-over { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+  /* ── VIEW TOGGLE ──────────────────────────────── */
+  .schedule-view-toggle {
+    display: flex;
+    gap: 2px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 2px;
+    flex-shrink: 0;
+  }
+  .schedule-view-btn {
+    background: none;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+  }
+  .schedule-view-btn:hover { background: var(--border); color: var(--text); }
+  .schedule-view-btn.active { background: var(--surface); color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.2); }
+  .schedule-view-btn .material-symbols-rounded { font-size: 15px; }
+
+  /* ── LIST VIEW ────────────────────────────────── */
+  .schedule-list { display: flex; flex-direction: column; margin-bottom: 40px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .sl-cols { display: grid; grid-template-columns: 32px 1fr 100px 160px 110px 140px; align-items: center; gap: 0; }
+  .sl-header {
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    padding: 8px 14px;
+  }
+  .sl-header-cell { font-size: 11px; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: .04em; }
+  .sl-row {
+    padding: 11px 14px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background .12s;
+  }
+  .sl-row:last-child { border-bottom: none; }
+  .sl-row:hover { background: var(--surface2); }
+  .sl-icon { font-size: 16px; color: var(--text-muted); }
+  .sl-title { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 12px; }
+  .sl-customer { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 12px; }
+  .sl-due { font-size: 12px; color: var(--text-dim); white-space: nowrap; }
+  .sl-progress-wrap { display: flex; align-items: center; gap: 6px; padding-right: 4px; }
+  .sl-progress { flex: 1; margin-top: 0; }
+  .sl-pct { font-size: 11px; color: var(--text-dim); width: 30px; text-align: right; flex-shrink: 0; }
+
+  /* ── TIMELINE (KANBAN) VIEW ───────────────────── */
+  .schedule-timeline { display: flex; gap: 12px; margin-bottom: 40px; overflow-x: auto; padding-bottom: 8px; align-items: flex-start; }
+  .tl-lane {
+    flex: 0 0 220px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .tl-lane-header {
+    padding: 10px 14px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .tl-lane-count {
+    background: var(--border);
+    border-radius: 99px;
+    padding: 1px 7px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+  }
+  .tl-lane-body { padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+  .tl-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: border-color .15s;
+  }
+  .tl-card:hover { border-color: var(--accent); }
+  .tl-card-title { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 6px; line-height: 1.4; }
+  .tl-card-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
+  .tl-card-due { font-size: 11px; color: var(--text-dim); }
+  .tl-empty { font-size: 12px; color: var(--text-dim); text-align: center; padding: 16px 0; }
+
   .sc-top {
     display: flex;
     align-items: flex-start;
@@ -2265,11 +2369,24 @@
         <h2>Schedule Overview</h2>
         <p>All active features at a glance. Click a card to dive into the details.</p>
       </div>
-      <button class="btn btn-primary" style="white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:5px" onclick="openAddFeatureModal()">
-        <span class="material-symbols-rounded" style="font-size:16px">add</span> Add Feature
-      </button>
+      <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;flex-wrap:wrap">
+        <div class="schedule-view-toggle">
+          <button class="schedule-view-btn active" id="svb-cards" onclick="setScheduleView('cards')" title="Card view">
+            <span class="material-symbols-rounded">grid_view</span> Cards
+          </button>
+          <button class="schedule-view-btn" id="svb-list" onclick="setScheduleView('list')" title="List view">
+            <span class="material-symbols-rounded">view_list</span> List
+          </button>
+          <button class="schedule-view-btn" id="svb-timeline" onclick="setScheduleView('timeline')" title="Timeline view">
+            <span class="material-symbols-rounded">view_kanban</span> Timeline
+          </button>
+        </div>
+        <button class="btn btn-primary" style="white-space:nowrap;display:flex;align-items:center;gap:5px" onclick="openAddFeatureModal()">
+          <span class="material-symbols-rounded" style="font-size:16px">add</span> Add Feature
+        </button>
+      </div>
     </div>
-    <div class="schedule-grid" id="schedule-grid"></div>
+    <div id="schedule-grid"></div>
     <div id="deleted-features-section"></div>
   </div>
 
@@ -3414,7 +3531,22 @@ function getAllFeatures() {
       summary:  ov._summary  ?? f.summary,
     };
   });
-  return [...builtins, ...loadCustomFeatures()];
+  const all = [...builtins, ...loadCustomFeatures()];
+  const order = loadFeatureOrder();
+  if (!order) return all;
+  const map = Object.fromEntries(all.map(f => [f.id, f]));
+  const ordered = order.map(id => map[id]).filter(Boolean);
+  const unordered = all.filter(f => !order.includes(f.id));
+  return [...ordered, ...unordered];
+}
+
+function loadFeatureOrder() {
+  try { return JSON.parse(localStorage.getItem('fh_feature_order') || 'null'); }
+  catch { return null; }
+}
+function saveFeatureOrder(ids) {
+  localStorage.setItem('fh_feature_order', JSON.stringify(ids));
+  if (typeof scheduleSyncToGit === 'function') scheduleSyncToGit();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -3569,6 +3701,7 @@ function showView(id, navEl) {
 }
 
 function showFeature(id) {
+  if (_dragJustEnded) return;
   const navEl = document.querySelector(`[data-feature="${id}"]`);
   showView(id, navEl);
   renderScheduleCards(); // refresh progress
@@ -3591,8 +3724,138 @@ function renderSidebar() {
 // ═══════════════════════════════════════════════════════════════
 //  RENDER SCHEDULE CARDS
 // ═══════════════════════════════════════════════════════════════
-function renderScheduleCards() {
+let _scheduleView = localStorage.getItem('fh_schedule_view') || 'cards';
+
+function setScheduleView(view) {
+  _scheduleView = view;
+  localStorage.setItem('fh_schedule_view', view);
+  ['cards','list','timeline'].forEach(v => {
+    const btn = document.getElementById('svb-' + v);
+    if (btn) btn.classList.toggle('active', v === view);
+  });
+  renderScheduleCards();
+}
+
+function renderScheduleList() {
   const grid = document.getElementById('schedule-grid');
+  grid.className = '';
+  const features = getAllFeatures();
+  if (!features.length) { grid.innerHTML = ''; return; }
+  const header = `
+    <div class="sl-cols sl-header">
+      <div class="sl-header-cell"></div>
+      <div class="sl-header-cell">Feature</div>
+      <div class="sl-header-cell">Status</div>
+      <div class="sl-header-cell">Customer</div>
+      <div class="sl-header-cell">Due Date</div>
+      <div class="sl-header-cell">Progress</div>
+    </div>`;
+  const rows = features.map(f => {
+    const status = getStatus(f);
+    const due = getDue(f);
+    const pct = progressOf(f);
+    return `
+    <div class="sl-cols sl-row" draggable="true" data-id="${f.id}" onclick="showFeature('${f.id}')">
+      <span class="material-symbols-rounded sl-icon">${f.icon}</span>
+      <div class="sl-title">${escHtml(f.title)}</div>
+      <div><span class="badge ${STATUS_BADGE[status] || 'badge-done'}">${status}</span></div>
+      <div class="sl-customer">${escHtml(f.customer !== 'TBD' ? f.customer : '')}</div>
+      <div class="sl-due">${due}</div>
+      <div class="sl-progress-wrap">
+        <div class="progress-bar sl-progress"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <span class="sl-pct">${pct}%</span>
+      </div>
+    </div>`;
+  }).join('');
+  grid.innerHTML = '<div class="schedule-list">' + header + rows + '</div>';
+  attachDragHandlers(grid.querySelector('.schedule-list'), '.sl-row');
+}
+
+function renderScheduleTimeline() {
+  const grid = document.getElementById('schedule-grid');
+  grid.className = '';
+  const features = getAllFeatures();
+  const statuses = ['Discovery', 'Design', 'Dev', 'QA', 'Done'];
+  const laneColors = { Discovery: 'var(--purple)', Design: 'var(--accent)', Dev: 'var(--blue)', QA: 'var(--yellow)', Done: 'var(--green)' };
+  grid.innerHTML = '<div class="schedule-timeline">' + statuses.map(s => {
+    const items = features.filter(f => getStatus(f) === s);
+    return `
+    <div class="tl-lane">
+      <div class="tl-lane-header" style="color:${laneColors[s]}">
+        ${s}
+        <span class="tl-lane-count">${items.length}</span>
+      </div>
+      <div class="tl-lane-body">
+        ${items.length ? items.map(f => {
+          const due = getDue(f);
+          const pct = progressOf(f);
+          return `
+        <div class="tl-card" onclick="showFeature('${f.id}')">
+          <div class="tl-card-title"><span class="material-symbols-rounded" style="font-size:13px;vertical-align:middle;margin-right:4px;opacity:.7">${f.icon}</span>${f.title}</div>
+          ${f.customer !== 'TBD' ? `<div class="tl-card-meta">${f.customer}</div>` : ''}
+          <div class="tl-card-due">Due: ${due}</div>
+          <div class="progress-bar" style="margin-top:8px"><div class="progress-fill" style="width:${pct}%"></div></div>
+        </div>`;
+        }).join('') : '<div class="tl-empty">No features</div>'}
+      </div>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+let _dragId = null;
+let _dragOverId = null;
+let _dragJustEnded = false;
+
+function attachDragHandlers(container, selector) {
+  container.addEventListener('dragstart', e => {
+    const el = e.target.closest(selector);
+    if (!el) return;
+    _dragId = el.dataset.id;
+    _dragJustEnded = false;
+    setTimeout(() => el.classList.add('dragging'), 0);
+  });
+  container.addEventListener('dragend', e => {
+    container.querySelectorAll('.dragging, .drag-over').forEach(x => x.classList.remove('dragging', 'drag-over'));
+    _dragId = null;
+    _dragOverId = null;
+    _dragJustEnded = true;
+    setTimeout(() => { _dragJustEnded = false; }, 200);
+  });
+  container.addEventListener('dragover', e => {
+    e.preventDefault();
+    const el = e.target.closest(selector);
+    if (!el || el.dataset.id === _dragId) return;
+    if (el.dataset.id !== _dragOverId) {
+      container.querySelectorAll('.drag-over').forEach(x => x.classList.remove('drag-over'));
+      el.classList.add('drag-over');
+      _dragOverId = el.dataset.id;
+    }
+  });
+  container.addEventListener('drop', e => {
+    e.preventDefault();
+    if (!_dragId || !_dragOverId || _dragId === _dragOverId) return;
+    const ids = getAllFeatures().map(f => f.id);
+    const from = ids.indexOf(_dragId);
+    const to = ids.indexOf(_dragOverId);
+    if (from === -1 || to === -1) return;
+    ids.splice(from, 1);
+    const insertAt = from < to ? to - 1 : to;
+    ids.splice(insertAt, 0, _dragId);
+    saveFeatureOrder(ids);
+    renderScheduleCards();
+  });
+}
+
+function renderScheduleCards() {
+  // Sync toggle button state
+  ['cards','list','timeline'].forEach(v => {
+    const btn = document.getElementById('svb-' + v);
+    if (btn) btn.classList.toggle('active', v === _scheduleView);
+  });
+  if (_scheduleView === 'list') return renderScheduleList();
+  if (_scheduleView === 'timeline') return renderScheduleTimeline();
+  const grid = document.getElementById('schedule-grid');
+  grid.className = 'schedule-grid';
   grid.innerHTML = getAllFeatures().map(f => {
     const status = getStatus(f);
     const due = getDue(f);
@@ -3601,7 +3864,7 @@ function renderScheduleCards() {
     const total = allTasks.filter(t => t.status !== 'postponed').length;
     const doneCount = allTasks.filter(t => t.status === 'done').length;
     return `
-    <div class="schedule-card" onclick="showFeature('${f.id}')">
+    <div class="schedule-card" draggable="true" data-id="${f.id}" onclick="showFeature('${f.id}')">
       <div class="sc-top">
         <div class="sc-title"><span class="material-symbols-rounded sc-icon">${f.icon}</span>${f.title}</div>
         <span class="badge ${STATUS_BADGE[status] || 'badge-done'}">${status}</span>
@@ -3617,6 +3880,7 @@ function renderScheduleCards() {
       </div>
     </div>`;
   }).join('');
+  attachDragHandlers(grid, '.schedule-card');
 }
 
 // ═══════════════════════════════════════════════════════════════
