@@ -421,7 +421,12 @@
 cd feature-hub</code></pre>
 
     <p><strong>2. Start the server</strong></p>
+    <p>Open a terminal, make sure you are inside the <code>feature-hub</code> folder, then run:</p>
     <pre><code>node server.js</code></pre>
+    <div class="callout callout-info">
+      <span class="material-symbols-rounded">info</span>
+      <span><code>node server.js</code> only works from inside the <code>feature-hub</code> folder. If you just opened a new terminal, run <code>cd feature-hub</code> first (or <code>cd</code> to wherever you cloned it).</span>
+    </div>
     <p>You should see:</p>
     <pre><code>Feature Hub running at http://localhost:3457
 Auto-sync will commit to git every 30 s after a change.</code></pre>
@@ -436,7 +441,8 @@ Auto-sync will commit to git every 30 s after a change.</code></pre>
 
     <h3>Daily workflow</h3>
     <ol>
-      <li><code>node server.js</code> — run once at the start of your session</li>
+      <li>Open a terminal and <code>cd</code> into the <code>feature-hub</code> folder</li>
+      <li>Run <code>node server.js</code></li>
       <li>Open <strong>http://localhost:3457</strong></li>
       <li>Work normally — data syncs every 30 seconds automatically</li>
       <li>Before closing, confirm the sync indicator turned green at least once</li>
@@ -450,8 +456,9 @@ node server.js</code></pre>
 
     <div style="background:color-mix(in srgb,#6366f1 8%,var(--surface,#f8f8f8));border-left:4px solid #6366f1;border-radius:6px;padding:14px 18px;margin-top:16px">
       <p style="margin:0 0 8px;font-weight:600;color:#6366f1">Getting updates</p>
-      <p style="margin:0 0 10px">When new features or fixes are published, you do not need to re-clone. Pull the latest code into your existing folder and restart the server:</p>
-      <pre style="background:var(--code-bg,#1e1e2e);color:#cdd6f4;border-radius:6px;padding:10px 14px;font-size:13px;margin:0 0 10px;overflow-x:auto">git pull
+      <p style="margin:0 0 10px">When new features or fixes are published, you do not need to re-clone. Pull the latest code into the <code>feature-hub</code> folder and run:</p>
+      <pre style="background:var(--code-bg,#1e1e2e);color:#cdd6f4;border-radius:6px;padding:10px 14px;font-size:13px;margin:0 0 10px;overflow-x:auto">cd feature-hub
+git pull
 node server.js</pre>
       <p style="margin:0 0 10px;font-size:13px">Your data is not affected — the pull only updates the app code.</p>
       <p style="margin:0 0 6px;font-weight:600;font-size:13px">In-app update notification</p>
