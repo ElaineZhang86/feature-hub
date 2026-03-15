@@ -4917,165 +4917,131 @@ function saveDDEntries(featureId, entries) {
   updateFeatureState(featureId, { ddocEntries: entries });
 }
 
-function _reRenderDD(featureId) {
-  const f = getAllFeatures().find(x => x.id === featureId);
-  if (!f) return;
-  const containerId = f.hasDomainDoc ? `${featureId}_ddocs_view` : `${featureId}_docs_view`;
-  _renderDDPanel(f, document.getElementById(containerId));
-}
+const _ddEditMode = {};
+const _ddCollapsed = {};
 
 function addDDEntry(featureId) {
   const id = 'dde_' + Date.now();
-  _ddOpen[featureId + '_' + id] = true;
-  saveDDEntries(featureId, [...getDDEntries(featureId), { id, title: '', content: '' }]);
-  _reRenderDD(featureId);
-  setTimeout(() => openDDEdit(featureId, id), 50);
+  saveDDEntries(featureId, [...getDDEntries(featureId), { id, title: '', content: '', createdAt: Date.now() }]);
+  _ddEditMode[featureId + '::' + id] = true;
+  renderDDList(featureId);
+  setTimeout(() => { const ti = document.getElementById('dd_title_' + featureId + '_' + id); if (ti) ti.focus(); }, 30);
 }
 
-async function removeDDEntry(featureId, id) {
-  if (!await showConfirm('Delete this entry?')) return;
-  saveDDEntries(featureId, getDDEntries(featureId).filter(e => e.id !== id));
-  _reRenderDD(featureId);
+function editDDEntry(featureId, id) {
+  _ddEditMode[featureId + '::' + id] = true;
+  renderDDList(featureId);
+  setTimeout(() => {
+    const ta = document.getElementById('dd_ta_' + featureId + '_' + id);
+    if (ta) { ta.focus(); ta.selectionStart = ta.selectionEnd = ta.value.length; }
+  }, 30);
 }
 
-function updateDDField(featureId, id, field, value) {
+function saveDDEntry(featureId, id) {
+  const titleEl = document.getElementById('dd_title_' + featureId + '_' + id);
+  const ta      = document.getElementById('dd_ta_' + featureId + '_' + id);
+  const title   = titleEl ? titleEl.value.trim() : '';
+  const content = ta ? ta.value.trim() : '';
+  if (!title && !content) { cancelDDEdit(featureId, id); return; }
   saveDDEntries(featureId, getDDEntries(featureId).map(e =>
-    e.id === id ? { ...e, [field]: value } : e
+    e.id === id ? { ...e, title, content } : e
   ));
-}
-
-function openDDEdit(featureId, id) {
-  const card = document.getElementById(`dd_card_${featureId}_${id}`);
-  if (card && !card.classList.contains('expanded')) {
-    card.classList.add('expanded');
-    _ddOpen[featureId + '_' + id] = true;
-  }
-  const rendered = document.getElementById(`dd_rendered_${featureId}_${id}`);
-  const editor   = document.getElementById(`dd_editor_${featureId}_${id}`);
-  const ti       = document.getElementById(`dd_title_input_${featureId}_${id}`);
-  const ta       = document.getElementById(`dd_ta_${featureId}_${id}`);
-  if (!editor) return;
-  if (rendered) rendered.style.display = 'none';
-  editor.style.display = 'block';
-  if (ti && !ti.value.trim()) ti.focus();
-  else if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
-}
-
-function saveDDEdit(featureId, id) {
-  const titleInput = document.getElementById(`dd_title_input_${featureId}_${id}`);
-  const ta         = document.getElementById(`dd_ta_${featureId}_${id}`);
-  const rendered   = document.getElementById(`dd_rendered_${featureId}_${id}`);
-  const editor     = document.getElementById(`dd_editor_${featureId}_${id}`);
-  if (!ta) return;
-  const titleVal   = titleInput ? titleInput.value.trim() : '';
-  const contentVal = ta.value;
-  updateDDField(featureId, id, 'title', titleVal);
-  updateDDField(featureId, id, 'content', contentVal);
-  editor.style.display = 'none';
-  rendered.innerHTML = contentVal.trim()
-    ? marked.parse(contentVal)
-    : '';
-  rendered.style.display = 'block';
+  delete _ddEditMode[featureId + '::' + id];
+  renderDDList(featureId);
+  showToast();
 }
 
 function cancelDDEdit(featureId, id) {
   const entry = getDDEntries(featureId).find(e => e.id === id);
   if (entry && !entry.title && !entry.content) {
     saveDDEntries(featureId, getDDEntries(featureId).filter(e => e.id !== id));
-    _reRenderDD(featureId);
-    return;
   }
-  const titleInput = document.getElementById(`dd_title_input_${featureId}_${id}`);
-  const ta         = document.getElementById(`dd_ta_${featureId}_${id}`);
-  const rendered   = document.getElementById(`dd_rendered_${featureId}_${id}`);
-  const editor     = document.getElementById(`dd_editor_${featureId}_${id}`);
-  if (!editor) return;
-  if (entry) {
-    if (titleInput) titleInput.value = entry.title || '';
-    if (ta)         ta.value = entry.content || '';
-  }
-  if (editor) editor.style.display = 'none';
-  if (rendered) rendered.style.display = 'block';
+  delete _ddEditMode[featureId + '::' + id];
+  renderDDList(featureId);
 }
 
-const _ddOpen = {};
+async function removeDDEntry(featureId, id) {
+  if (!await showConfirm('Delete this entry?')) return;
+  saveDDEntries(featureId, getDDEntries(featureId).filter(e => e.id !== id));
+  renderDDList(featureId);
+}
 
 function toggleDDCollapse(featureId, id) {
-  const card = document.getElementById(`dd_card_${featureId}_${id}`);
-  if (!card) return;
-  const isExpanded = card.classList.contains('expanded');
-  card.classList.toggle('expanded', !isExpanded);
-  _ddOpen[featureId + '_' + id] = !isExpanded;
+  const key = featureId + '::' + id;
+  _ddCollapsed[key] = !_ddCollapsed[key];
+  renderDDList(featureId);
 }
 
 function buildDDEntryCard(featureId, e) {
-  const hasContent = !!(e.content && e.content.trim());
-  const isExpanded = _ddOpen[featureId + '_' + e.id] !== false;
-  const renderedHtml = hasContent ? marked.parse(e.content) : '';
-  return `
-  <div class="context-card dk-entry${isExpanded ? ' expanded' : ''}" id="dd_card_${featureId}_${e.id}">
-    <div class="dk-entry-header" onclick="toggleDDCollapse('${featureId}','${e.id}')">
-      <div class="dk-entry-info" style="flex:1;min-width:0">
-        <input class="dk-entry-title-input" id="dd_title_input_${featureId}_${e.id}"
-          value="${escHtml(e.title)}" placeholder="Title..."
-          onclick="event.stopPropagation()"
-          onblur="updateDDField('${featureId}','${e.id}','title',this.value.trim())"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();openDDEdit('${featureId}','${e.id}');}" />
+  const ek = featureId + '::' + e.id;
+  if (_ddEditMode[ek]) {
+    return `<div class="note-entry note-editing">
+      <input class="note-title-input" id="dd_title_${featureId}_${e.id}" placeholder="Title..." value="${escHtml(e.title || '')}" />
+      ${mdToolbar('dd_ta_' + featureId + '_' + e.id)}
+      <textarea class="editable-note" id="dd_ta_${featureId}_${e.id}" style="min-height:80px;margin-top:0">${escHtml(e.content || '')}</textarea>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn btn-primary" style="font-size:12px;padding:4px 14px" onclick="saveDDEntry('${featureId}','${e.id}')">Save</button>
+        <button class="btn" style="font-size:12px;padding:4px 14px" onclick="cancelDDEdit('${featureId}','${e.id}')">Cancel</button>
       </div>
-      <button class="q-icon-btn" title="Delete entry" onclick="event.stopPropagation();removeDDEntry('${featureId}','${e.id}')">
-        <span class="material-symbols-rounded" style="font-size:16px;color:var(--text-muted)">delete</span>
-      </button>
-      <span class="material-symbols-rounded dk-expand-icon">expand_more</span>
+    </div>`;
+  }
+  const isCollapsed = _ddCollapsed[featureId + '::' + e.id];
+  return `<div class="note-entry${isCollapsed ? ' dk-collapsed' : ''}">
+    <div class="dk-collapse-header" onclick="toggleDDCollapse('${featureId}','${e.id}')">
+      <span class="dk-collapse-title">${e.title ? escHtml(e.title) : '<span style=\'color:var(--text-dim);font-weight:400\'>Untitled</span>'}</span>
+      <span class="material-symbols-rounded dk-collapse-chevron">expand_more</span>
     </div>
-    <div class="dk-entry-body">
-      <div id="dd_rendered_${featureId}_${e.id}" class="md-body dk-clickable" onclick="openDDEdit('${featureId}','${e.id}')">
-        ${renderedHtml || '<p class=\'dk-empty-hint\'>Click to add content…</p>'}
-      </div>
-      <div id="dd_editor_${featureId}_${e.id}" style="display:${hasContent ? 'none' : 'block'}">
-        ${mdToolbar(`dd_ta_${featureId}_${e.id}`)}
-        <textarea class="dk-entry-content" id="dd_ta_${featureId}_${e.id}"
-          placeholder="Paste or type markdown content…">${escHtml(e.content)}</textarea>
-        <div class="dk-entry-actions">
-          <button class="btn btn-primary" onclick="saveDDEdit('${featureId}','${e.id}')">Save</button>
-          <button class="btn" onclick="cancelDDEdit('${featureId}','${e.id}')">Cancel</button>
-        </div>
+    <div class="note-entry-body" style="margin-top:8px">${marked.parse(e.content || '')}</div>
+    <div class="note-entry-meta">
+      <span class="note-ts">${formatNoteDate(e.createdAt)}</span>
+      <div style="display:flex;gap:3px">
+        <button class="q-icon-btn" title="Edit" onclick="event.stopPropagation();editDDEntry('${featureId}','${e.id}')">
+          <span class="material-symbols-rounded">edit</span>
+        </button>
+        <button class="q-icon-btn del" title="Delete" onclick="event.stopPropagation();removeDDEntry('${featureId}','${e.id}')">
+          <span class="material-symbols-rounded">delete</span>
+        </button>
       </div>
     </div>
   </div>`;
 }
 
-function _renderDDPanel(f, container) {
-  if (!container) return;
-  const entries = getDDEntries(f.id);
+function renderDDList(featureId) {
+  const f = getAllFeatures().find(x => x.id === featureId);
+  if (!f) return;
+  const containerId = f.hasDomainDoc ? `${featureId}_ddocs_view` : `${featureId}_docs_view`;
+  const panel = document.getElementById(containerId);
+  if (!panel) return;
+  const entries = getDDEntries(featureId);
   if (!entries.length) {
-    container.innerHTML = `
+    panel.innerHTML = `
       <div class="context-card" style="text-align:center;padding:48px 20px">
         <span class="material-symbols-rounded" style="font-size:40px;color:var(--text-dim);display:block;margin-bottom:10px">auto_stories</span>
         <div style="font-size:13px;color:var(--text-muted);margin-bottom:16px">No feature brief entries yet.<br>Add background context, architecture notes, or domain deep-dives.</div>
-        <button class="btn btn-primary" style="font-size:12px;padding:6px 16px" onclick="addDDEntry('${f.id}')">+ Add</button>
+        <button class="btn btn-primary" style="font-size:12px;padding:6px 16px" onclick="addDDEntry('${featureId}')">+ Add</button>
       </div>`;
     return;
   }
-  container.innerHTML = `
+  panel.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
       <div>
         <div style="font-size:14px;font-weight:600;color:var(--text)">Feature Brief</div>
         <div style="font-size:12px;color:var(--text-dim);margin-top:2px">Background context, architecture notes, and domain deep-dives</div>
       </div>
       <button class="btn btn-primary" style="display:flex;align-items:center;gap:5px;font-size:12px;padding:5px 12px;flex-shrink:0"
-        onclick="addDDEntry('${f.id}')">
+        onclick="addDDEntry('${featureId}')">
         + Add
       </button>
     </div>
-    ${entries.map(e => buildDDEntryCard(f.id, e)).join('')}`;
+    <div class="context-card">
+      <div>${entries.map(e => buildDDEntryCard(featureId, e)).join('')}</div>
+    </div>`;
 }
 
 function renderDomainDocs() {
   getAllFeatures().forEach(f => {
-    if (f.hasDomainDoc) {
-      _renderDDPanel(f, document.getElementById(`${f.id}_ddocs_view`));
-    } else if (f.hasDoc && f.docLabel === 'Feature Understanding') {
-      _renderDDPanel(f, document.getElementById(`${f.id}_docs_view`));
+    if (f.hasDomainDoc || (f.hasDoc && f.docLabel === 'Feature Understanding')) {
+      renderDDList(f.id);
     }
   });
 }
