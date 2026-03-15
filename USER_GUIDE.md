@@ -95,9 +95,13 @@ cd feature-hub
 
 **2. Start the server**
 
+Open a terminal, make sure you are inside the `feature-hub` folder, then run:
+
 ```bash
 node server.js
 ```
+
+> **Important:** `node server.js` only works from inside the `feature-hub` folder. If you just opened a new terminal, run `cd feature-hub` first (or `cd` to wherever you cloned it).
 
 You should see:
 ```
@@ -109,13 +113,14 @@ Auto-sync will commit to git every 30 s after a change.
 
 Open **http://localhost:3457** in your browser. Keep the terminal open while you work.
 
-> **Important:** When using git sync, always open at **http://localhost:3457** — not by double-clicking the file. Double-clicking opens `file://` which has separate storage and your data won't show up.
+> **Important:** Always open at **http://localhost:3457** — not by double-clicking `index.html`. Double-clicking opens `file://` which has separate storage and your data won't show up.
 
 **Daily workflow with git sync:**
-1. `node server.js` — run once at the start of your session
-2. Open **http://localhost:3457**
-3. Work normally — data syncs every 30 seconds automatically
-4. Before closing, confirm the sync indicator turned green at least once
+1. Open a terminal and `cd` into the `feature-hub` folder
+2. Run `node server.js`
+3. Open **http://localhost:3457**
+4. Work normally — data syncs every 30 seconds automatically
+5. Before closing, confirm the sync indicator turned green at least once
 
 **Restoring on a new machine:**
 ```bash
@@ -127,9 +132,10 @@ Open `http://localhost:3457` — your data loads automatically from the snapshot
 
 **Getting updates:**
 
-When new features or fixes are published, you do not need to re-clone. Pull the latest code into your existing folder and restart the server:
+When new features or fixes are published, you do not need to re-clone. In your terminal, `cd` into the `feature-hub` folder and run:
 
 ```bash
+cd feature-hub
 git pull
 node server.js
 ```
