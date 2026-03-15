@@ -7778,14 +7778,32 @@ function loadFromSeed() {
   if (!seed) return;
   try {
     const data = JSON.parse(seed.textContent);
-    // Only seed if localStorage has no state — preserves unsaved in-session work
     const existing = localStorage.getItem('fh_state');
-    if (existing && Object.keys(JSON.parse(existing)).length > 0) return;
-    if (data.fh_state)           localStorage.setItem('fh_state', JSON.stringify(data.fh_state));
-    if (data.fh_custom_features) localStorage.setItem('fh_custom_features', JSON.stringify(data.fh_custom_features));
-    if (data.fh_hidden_builtins) localStorage.setItem('fh_hidden_builtins', JSON.stringify(data.fh_hidden_builtins));
-    if (data.fh_deleted_features)localStorage.setItem('fh_deleted_features', JSON.stringify(data.fh_deleted_features));
-    console.log('[git-sync] Seeded localStorage from embedded snapshot.');
+    if (!existing || Object.keys(JSON.parse(existing)).length === 0) {
+      // Fresh start — load everything from seed
+      if (data.fh_state)           localStorage.setItem('fh_state', JSON.stringify(data.fh_state));
+      if (data.fh_custom_features) localStorage.setItem('fh_custom_features', JSON.stringify(data.fh_custom_features));
+      if (data.fh_hidden_builtins) localStorage.setItem('fh_hidden_builtins', JSON.stringify(data.fh_hidden_builtins));
+      if (data.fh_deleted_features)localStorage.setItem('fh_deleted_features', JSON.stringify(data.fh_deleted_features));
+      console.log('[git-sync] Seeded localStorage from embedded snapshot.');
+    } else if (data.fh_state) {
+      // Merge: if seed has data for a field but localStorage has none, restore it
+      const state = JSON.parse(existing);
+      let changed = false;
+      Object.keys(data.fh_state).forEach(featureId => {
+        const seedFeature = data.fh_state[featureId];
+        if (!state[featureId]) return;
+        ['domainKnowledge', 'qanda', 'ddocEntries', 'notesEntries'].forEach(key => {
+          if (seedFeature[key] && seedFeature[key].length > 0 &&
+              (!state[featureId][key] || state[featureId][key].length === 0)) {
+            state[featureId][key] = seedFeature[key];
+            changed = true;
+            console.log('[git-sync] Restored ' + key + ' for ' + featureId + ' from snapshot.');
+          }
+        });
+      });
+      if (changed) localStorage.setItem('fh_state', JSON.stringify(state));
+    }
   } catch(e) {
     console.warn('[git-sync] Failed to parse fh-seed:', e);
   }
