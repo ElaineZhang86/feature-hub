@@ -47,7 +47,7 @@ Connect a local JSON file in **Settings → Data File**. Once connected:
 
 ## GitHub Sync Setup
 
-> **Tip:** Don't connect to the public `feature-hub` repo — your workspace data would be visible to anyone who clones it. Instead, create a private repo of your own (e.g. `feature-hub-data`) and connect to that.
+> ⚠️ **Don't connect to the public `feature-hub` repo** — your workspace data would be visible to anyone who clones it. Instead, create a private repo of your own (e.g. `feature-hub-data`) and connect to that.
 
 **What you need:** A GitHub account (you already have one if you cloned the repo).
 
