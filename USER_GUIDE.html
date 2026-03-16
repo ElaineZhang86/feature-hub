@@ -307,6 +307,10 @@
       <span class="material-symbols-rounded nav-icon">settings</span>
       <span class="nav-label">Settings</span>
     </a>
+    <a class="nav-item" href="#gh-setup" onclick="setActive(this)">
+      <span class="material-symbols-rounded nav-icon">cloud_sync</span>
+      <span class="nav-label">GitHub Sync Setup</span>
+    </a>
     <a class="nav-item" href="#schedule" onclick="setActive(this)">
       <span class="material-symbols-rounded nav-icon">grid_view</span>
       <span class="nav-label">Schedule Overview</span>
@@ -467,7 +471,7 @@ node server.js</code></pre>
     <p>When an update is available, a banner automatically appears at the top of the app:</p>
     <div class="callout">
       <span class="material-symbols-rounded">new_releases</span>
-      <span><strong>App update available</strong> — run <code>git pull</code> in your terminal, then restart <code>node server.js</code> to get the latest version.</span>
+      <span><strong>App update available</strong> — run <code>git pull</code> in your terminal, then refresh the page to get the latest version.</span>
     </div>
     <p>The banner only appears when the server detects that the remote has newer commits. Click × to dismiss it.</p>
 
@@ -482,7 +486,12 @@ node server.js</code></pre>
       <h3>What is the terminal doing? Can I use other terminals while it&#39;s open?</h3>
       <p>The terminal is just running the local server. As long as <code>node server.js</code> is running somewhere, the app works. You can freely use other terminals or work in other directories — that one just needs to stay open so the server keeps running.</p>
       <h3>Where is my data stored?</h3>
-      <p>Your feature data is stored locally in the repo folder. The server periodically commits a snapshot to git automatically, so everything stays backed up. If you ever move to a new machine, clone the repo and run <code>node server.js</code> — your data loads automatically.</p>
+      <p>Your browser's <strong>localStorage</strong> is always the live working copy — every edit lands there instantly. For backup and cross-machine access, the app supports three optional layers:</p>
+      <ul>
+        <li><strong>Git sync (server.js)</strong> — commits your data to the repo every 30 seconds while the server is running</li>
+        <li><strong>GitHub Sync</strong> — connects directly to a GitHub repo via the API; saves snapshots automatically without needing the server</li>
+        <li><strong>Data File</strong> — auto-saves to a local JSON file you pick; put it in iCloud Drive or Dropbox for a passive second copy</li>
+      </ul>
       <h3>Do I need to create a git branch?</h3>
       <p>If you are just using the tool — adding tasks, notes, calls, domain knowledge — you can stay on <code>main</code>. No branch needed.</p>
       <p>If you want to experiment with changing Feature Hub itself (modifying the UI, adding functionality), create your own branch so you can test things without affecting the working version.</p>
@@ -523,15 +532,43 @@ node server.js</code></pre>
   <!-- YOUR IDENTITY -->
   <div class="section" id="identity">
     <h2 class="section-title">Your Identity</h2>
-    <p>On first launch, a welcome modal prompts you to enter your name and role. These appear in the sidebar header beneath the app title so you always know whose workspace this is.</p>
+    <p>On first launch, a two-step welcome modal appears:</p>
+    <ul>
+      <li><strong>Step 1</strong> — enter your name and role</li>
+      <li><strong>Step 2</strong> — optionally connect GitHub Sync (recommended) so your data is backed up automatically</li>
+    </ul>
+    <p>You can skip Step 2 and set up GitHub Sync later in <strong>Settings → GitHub Sync</strong>.</p>
     <ul>
       <li><strong>Edit at any time</strong> — click your name in the sidebar header, or go to <strong>Settings → Account</strong></li>
       <li>Name is required; role is optional</li>
-      <li>Identity is stored locally in your browser — it is not synced to git</li>
     </ul>
+  </div>
+
+  <!-- GITHUB SYNC SETUP -->
+  <div class="section" id="gh-setup">
+    <h2 class="section-title">GitHub Sync Setup</h2>
+    <p><strong>What you need:</strong> A GitHub account.</p>
+    <h3 style="font-size:13px;font-weight:700;margin:16px 0 8px">1. Create a Personal Access Token</h3>
+    <p>Go to GitHub → <strong>Settings → Developer settings → Personal access tokens → Fine-grained tokens</strong> → Generate new token.</p>
+    <ul>
+      <li>Set <strong>Repository access</strong> to your <code>feature-hub</code> repo</li>
+      <li>Under <strong>Permissions → Repository permissions</strong>, set <strong>Contents</strong> to <strong>Read and Write</strong></li>
+      <li>Copy the token (starts with <code>github_pat_</code> or <code>ghp_</code>)</li>
+    </ul>
+    <h3 style="font-size:13px;font-weight:700;margin:16px 0 8px">2. Connect in the app</h3>
+    <p>Open <strong>Settings → GitHub Sync</strong> and fill in:</p>
+    <table>
+      <tr><th>Field</th><th>Value</th></tr>
+      <tr><td>Owner</td><td>Your GitHub username</td></tr>
+      <tr><td>Repository</td><td><code>feature-hub</code></td></tr>
+      <tr><td>Branch</td><td>Your working branch (e.g. <code>main</code>)</td></tr>
+      <tr><td>Token</td><td>Paste your token</td></tr>
+      <tr><td>File path</td><td><code>data.json</code> (default)</td></tr>
+    </table>
+    <p>Click <strong>Connect</strong>. The app verifies access and writes an initial snapshot to GitHub immediately.</p>
     <div class="callout callout-success">
-      <span class="material-symbols-rounded">account_circle</span>
-      <span>Once saved, the welcome modal never appears again. Your name and role persist across sessions in localStorage.</span>
+      <span class="material-symbols-rounded">check_circle</span>
+      <span>The sidebar footer shows a green dot and the time of the last successful save. From this point on, the app automatically saves snapshots in the background — no action required.</span>
     </div>
   </div>
 
@@ -541,10 +578,25 @@ node server.js</code></pre>
     <p>Click the <strong>⚙ icon</strong> in the sidebar footer to open the Settings panel.</p>
     <table>
       <tr><th>Section</th><th>What you can do</th></tr>
-      <tr><td><strong>Account</strong></td><td>Update your name and role</td></tr>
+      <tr><td><strong>Account</strong></td><td>Update your name and role — name, role, and Save in one row</td></tr>
+      <tr><td><strong>GitHub Sync</strong></td><td>Connect a GitHub repo to back up your data automatically on every change</td></tr>
+      <tr><td><strong>Data File</strong></td><td>Auto-save to a local JSON file, or restore your full workspace from a backup</td></tr>
       <tr><td><strong>Help</strong></td><td>Open this User Guide in a new tab</td></tr>
       <tr><td><strong>Appearance</strong></td><td>Toggle light / dark theme</td></tr>
     </table>
+
+    <h3 style="font-size:13px;font-weight:700;margin:18px 0 8px">GitHub Sync</h3>
+    <p>Fill in Owner, Repository, Branch, File path, and Personal Access Token. The <strong>Connect</strong> button is disabled until the three required fields (owner, repo, token) are filled. Once all fields are filled, click Connect — the app tests the connection and writes your data to GitHub immediately. On success, the fields collapse and a <strong>Disconnect</strong> button appears.</p>
+    <p>To change your settings, click <strong>Disconnect</strong> (a confirmation modal appears first), then re-enter your details and reconnect.</p>
+
+    <h3 style="font-size:13px;font-weight:700;margin:18px 0 8px">Data File</h3>
+    <table>
+      <tr><th>Button</th><th>What it does</th></tr>
+      <tr><td><strong>Connect file</strong></td><td>Browser prompts you to pick a save location. The app automatically writes updated snapshots to that file. Once connected the button becomes <strong>Download</strong>.</td></tr>
+      <tr><td><strong>Download</strong></td><td>Downloads the current workspace as <code>feature-hub-data.json</code> to your Downloads folder.</td></tr>
+      <tr><td><strong>Load from backup</strong></td><td>Pick any <code>.json</code> backup file to restore your full workspace. Replaces everything in your current session.</td></tr>
+    </table>
+    <p>When a file is connected, the status row shows the filename and file size.</p>
   </div>
 
   <!-- SCHEDULE OVERVIEW -->
@@ -568,6 +620,7 @@ node server.js</code></pre>
     </ul>
     <p>Click any card or row to jump to that feature's detail page.</p>
     <p><strong>Drag to reorder</strong> — drag any card or list row to rearrange the feature order. The order is saved automatically and persists across sessions.</p>
+    <p><strong>Timeline drag</strong> — in the Timeline view, drag a card to a different status column to change the feature's status immediately.</p>
     <div class="callout">
       <span class="material-symbols-rounded">tips_and_updates</span>
       <span>Start every week here. Scan current focus and progress for all features. Update anything stale before diving into work.</span>
@@ -744,6 +797,7 @@ node server.js</code></pre>
     <ol>
       <li>Open your terminal and navigate to the <code>feature-hub</code> folder</li>
       <li>Run <code>git pull</code></li>
+      <li>If using <code>node server.js</code>, restart it: <code>node server.js</code></li>
       <li>Refresh the page in your browser</li>
     </ol>
     <p>Your data is stored in localStorage and is not affected by pulling updates. If GitHub Sync or a Data File is connected, your snapshots are also unaffected.</p>

@@ -71,12 +71,7 @@ Or double-click `index.html` locally.
 
 Data saves automatically to your browser's localStorage. Pick one way to open and stick with it — GitHub Pages and the local file have separate localStorage.
 
-**To keep your data safe:**
-1. Always use the same browser — switching browsers means starting fresh
-2. Do not clear your browser history or site data — this will wipe your data
-3. Do not use private/incognito mode — localStorage does not persist when the window closes
-
-> Data only lives in your browser. If you clear browser data or switch machines, data will not carry over unless you set up git sync below.
+> Data saves automatically to localStorage. For backup, set up GitHub Sync or connect a Data File — see **Settings → GitHub Sync** and **Settings → Data File**.
 
 ---
 
@@ -144,9 +139,41 @@ Your data is not affected — the pull only updates the app code.
 
 **In-app update notification:** When an update is available, a banner automatically appears at the top of the app (above Schedule Overview):
 
-> ⬆ **App update available** — run `git pull` in your terminal, then restart `node server.js` to get the latest version.
+> ⬆ **App update available** — run `git pull` in your terminal, then refresh the page to get the latest version.
 
 The banner only appears when the server is running and detects that the remote has newer commits than your local copy. Click × to dismiss it. It does not appear if you are already up to date.
+
+---
+
+## GitHub Sync Setup
+
+**What you need:** A GitHub account.
+
+**1. Create a Personal Access Token**
+
+Go to GitHub → **Settings → Developer settings → Personal access tokens → Fine-grained tokens** → Generate new token.
+
+- Set **Repository access** to your `feature-hub` repo
+- Under **Permissions → Repository permissions**, set **Contents** to **Read and Write**
+- Copy the token (starts with `github_pat_` or `ghp_`)
+
+**2. Connect in the app**
+
+Open **Settings → GitHub Sync** and fill in:
+
+| Field | Value |
+|-------|-------|
+| Owner | Your GitHub username |
+| Repository | `feature-hub` |
+| Branch | Your working branch (e.g. `main`) |
+| Token | Paste your token |
+| File path | `data.json` (default) |
+
+Click **Connect**. The app verifies access and writes an initial snapshot to GitHub immediately.
+
+**3. Done**
+
+The sidebar footer shows a green dot and the time of the last successful save. From this point on, the app automatically saves snapshots in the background — no action required.
 
 ---
 
@@ -163,7 +190,12 @@ The terminal is just running the local server. As long as `node server.js` is ru
 ---
 
 **Where is my data stored?**
-Your feature data is stored locally in the repo folder. The server periodically commits a snapshot to git automatically, so everything stays backed up. If you ever move to a new machine, clone the repo and run `node server.js` — your data loads automatically.
+Your browser's **localStorage** is always the live working copy — every edit lands there instantly with no save button needed.
+
+For backup and cross-machine access, the app supports three optional layers:
+- **Git sync (server.js)** — when the local server is running, your data is committed to the repo every 30 seconds
+- **GitHub Sync** — connects directly to a GitHub repo via the API; saves snapshots automatically on every change without needing the server
+- **Data File** — auto-saves to a local JSON file you pick; put it in iCloud Drive or Dropbox for a passive second copy
 
 ---
 
@@ -199,11 +231,17 @@ The theme toggle (sun/moon) is in the sidebar header, next to the app title.
 
 ## Your Identity
 
-On first launch, a welcome modal asks for your name and role. These appear in the sidebar header so you always know whose workspace this is.
+On first launch, a two-step welcome modal appears:
+
+- **Step 1** — enter your name and role
+- **Step 2** — optionally connect GitHub Sync (recommended) so your data is backed up automatically
+
+You can skip Step 2 and set up GitHub Sync later in **Settings → GitHub Sync**.
+
+Your name and role appear in the sidebar header.
 
 - **Edit at any time** — click your name in the sidebar, or go to **Settings → Account**
 - Name is required; role is optional
-- Identity is stored locally in your browser — it is not synced to git
 
 ---
 
@@ -213,9 +251,27 @@ Click the **⚙ icon** in the sidebar footer to open Settings.
 
 | Section | What you can do |
 |---------|----------------|
-| Account | Update your name and role |
+| Account | Update your name and role — name, role, and Save in one row |
+| GitHub Sync | Connect a GitHub repo to back up your data automatically on every change |
+| Data File | Auto-save to a local JSON file, or restore your full workspace from a backup |
 | Help | Open the User Guide |
 | Appearance | Toggle light / dark theme |
+
+### GitHub Sync
+
+Fill in Owner, Repository, Branch, File path, and Personal Access Token. The **Connect** button is disabled until the three required fields (owner, repo, token) are filled. Once all fields are filled, click Connect — the app tests the connection and writes your data to GitHub immediately. On success, the fields collapse and a **Disconnect** button appears.
+
+To change your settings, click **Disconnect** (a confirmation modal appears first), then re-enter your details and reconnect.
+
+### Data File
+
+| Button | What it does |
+|--------|-------------|
+| **Connect file** | Browser prompts you to pick a save location. The app automatically writes updated snapshots to that file. Once connected the button becomes **Download**. |
+| **Download** | Downloads the current workspace as `feature-hub-data.json` to your Downloads folder. |
+| **Load from backup** | Pick any `.json` backup file to restore your full workspace. Replaces everything in your current session. |
+
+When a file is connected, the status row shows the filename and file size.
 
 ---
 
@@ -239,6 +295,8 @@ Each card or row shows:
 Click any card to jump to that feature's detail page.
 
 **Drag to reorder** — drag any card or list row to rearrange the feature order. The order is saved automatically and persists across sessions.
+
+**Timeline drag** — in the Timeline view, drag a card to a different status column to change the feature's status immediately.
 
 ---
 
@@ -403,11 +461,12 @@ If you cloned the repo, you can pull in the latest version of the app at any tim
 
 1. Open your terminal and navigate to the `feature-hub` folder
 2. Run `git pull`
-3. Refresh the page in your browser
+3. If using `node server.js`, restart it: `node server.js`
+4. Refresh the page in your browser
 
 Your data is stored in localStorage and is not affected by pulling updates. If GitHub Sync or a Data File is connected, your snapshots are also unaffected.
 
-If an update is available, a banner appears at the top of the app with the same instructions.
+If an update is available, a banner appears at the top of the app.
 
 ---
 
@@ -435,6 +494,7 @@ Deleted features appear in the **Deleted** section at the bottom of the sidebar.
 
 ## Tips
 
+- **Set up GitHub Sync** — connect once and your workspace is backed up automatically from then on
 - **Delete the sample feature** and add your own once you are comfortable with the layout
 - **Use Current Focus as a daily intent** — one sentence: what specifically needs to happen today on this feature
 - **Log calls even before they happen** — create the call as Scheduled, fill in prep, paste the transcript after

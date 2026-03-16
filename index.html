@@ -371,7 +371,64 @@
   .schedule-card.drag-over { border-color: var(--accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 25%, transparent); }
   .sl-row.drag-over { outline: 2px solid var(--accent); outline-offset: -2px; }
 
-  /* ── VIEW TOGGLE ──────────────────────────────── */
+  .sc-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .sc-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+
+  .sc-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .sc-focus {
+    font-size: 12px;
+    color: var(--text-dim);
+    padding: 6px 10px;
+    background: var(--bg);
+    border-radius: var(--radius-sm);
+    border-left: 2px solid var(--accent-dim);
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 99px;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: var(--accent);
+    transition: width .4s ease;
+  }
+
+  .sc-tasks {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+
+  .sc-tasks span {
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+
+  /* ── SCHEDULE VIEW TOGGLE ─────────────────────── */
   .schedule-view-toggle {
     display: flex;
     gap: 2px;
@@ -471,62 +528,6 @@
   .tl-card[draggable="true"]:active { cursor: grabbing; }
   .tl-card.dragging { opacity: .35; }
   .tl-lane-body.drag-over { background: color-mix(in srgb, var(--accent) 8%, transparent); outline: 2px dashed var(--accent); outline-offset: -4px; border-radius: 4px; }
-
-  .sc-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
-
-  .sc-title {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.4;
-  }
-
-  .sc-meta {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-  }
-
-  .sc-focus {
-    font-size: 12px;
-    color: var(--text-dim);
-    padding: 6px 10px;
-    background: var(--bg);
-    border-radius: var(--radius-sm);
-    border-left: 2px solid var(--accent-dim);
-  }
-
-  .progress-bar {
-    height: 3px;
-    background: var(--border);
-    border-radius: 99px;
-    margin-top: 12px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    border-radius: 99px;
-    background: var(--accent);
-    transition: width .4s ease;
-  }
-
-  .sc-tasks {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 8px;
-  }
-
-  .sc-tasks span {
-    font-size: 11px;
-    color: var(--text-dim);
-  }
 
   /* ── FEATURE DETAIL ───────────────────────────── */
   .feature-header {
@@ -2412,18 +2413,14 @@
   </nav>
   <div class="sidebar-footer">
     <div class="sidebar-footer-row">
-      <div class="sync-indicator" id="sync-indicator">
-        <div class="sync-dot" id="sync-dot"></div>
-        <span id="sync-label">Not synced</span>
+      <div id="gh-sync-row" style="display:none;align-items:center;gap:6px;flex:1;min-width:0;overflow:hidden">
+        <div class="sync-dot" id="gh-sync-dot"></div>
+        <span id="gh-sync-label" style="font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
       </div>
-      <div style="display:flex;gap:4px;align-items:center">
-        <button class="theme-toggle" onclick="manualSync()" id="sync-btn" title="Sync to git now" style="font-size:10px;width:auto;padding:0 7px;gap:4px">
-          <span class="material-symbols-rounded" style="font-size:14px">sync</span>
-        </button>
-        <button class="theme-toggle" onclick="openSettings()" title="Settings">
-          <span class="material-symbols-rounded" style="font-size:17px">settings</span>
-        </button>
-      </div>
+      <div id="gh-sync-empty" style="flex:1"></div>
+      <button class="theme-toggle" onclick="openSettings()" title="Settings">
+        <span class="material-symbols-rounded" style="font-size:17px">settings</span>
+      </button>
     </div>
   </div>
 </div>
@@ -2444,7 +2441,7 @@
 
 <!-- SCHEDULE VIEW -->
   <div id="view-schedule" class="view active">
-    <div class="schedule-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px">
+    <div class="schedule-header" style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px">
       <div>
         <h2>Schedule Overview</h2>
         <p>All active features at a glance. Click a card to dive into the details.</p>
@@ -3514,56 +3511,456 @@ Key commits:
 // ═══════════════════════════════════════════════════════════════
 const FEATURES = [
   {
-    id: "sample-feature",
-    icon: "web",
-    title: "Customer Portal Redesign",
+    id: "index-cost",
+    icon: "folder_open",
+    title: "Index Cost (Cost Catalogue)",
     status: "Design",
+    hasDoc: true,
+    docLabel: "Design Spec",
+    docSrc: "docs/index-cost-component-preview.html",
     hasDomainDoc: true,
-    customer: "Acme Field Services",
-    due: "Jul 1, 2026",
-    currentFocus: "Finalizing the new dashboard layout and information architecture",
-    summary: "Customers are struggling to find key information in the portal — support tickets about navigation have increased 40% this quarter. This feature redesigns the portal to improve discoverability, reduce time-to-task, and create a consistent visual hierarchy aligned with the new design system.",
+    customer: "SmartCare",
+    due: "Jun 30, 2026",
+    team: [
+      { name: "Priyanka Satish", role: "PM" },
+      { name: "Miguel Vesco Galvez", role: "Eng" },
+      { name: "Guilherme Cabo", role: "TDD" },
+    ],
+    currentFocus: "UX flows for Cost Catalogue + Job Report",
+    summary: "Customers (SmartCare) can't define a stable cost reference independent of purchasing volatility. Pricing today is tied to PO/inventory costs which fluctuate, causing margin leakage and manual overrides. Index Cost introduces a Cost Catalogue — a stable, intentionally managed cost used as the markup basis at the job report level.",
     decisions: [
-      "Adopt a left-nav sidebar layout — replaces the current top-nav + tabs pattern",
-      "Keep the existing color system — this is a UX restructure, not a visual rebrand",
-      "Phase 1 ships the dashboard and jobs list only; invoicing portal deferred to Phase 2",
-      "Mobile web is in scope; native app is out of scope for this release",
+      "Solution: Introduce a Cost Catalogue entity (similar to Pricebooks) with per-item indexed costs",
+      "Index cost catalog is tied to Property (not tenant-wide) — property inherits a catalog, job inherits from property",
+      "Phase 1: No manual override of cost catalog at the job level (auto-inherits)",
+      "Pricing logic: use max(Index Cost, Purchase Cost) as markup base, applied per line item on Job Report",
+      "Index cost ≠ vendor catalog (SmartCare's is a BuildOps-managed pricing baseline)",
+      "True cost (actual purchase/inventory cost) remains unchanged on job costing",
     ],
     constraints: [
-      "Must use existing design system components — no new patterns without design system approval",
-      "No backend changes in Phase 1 — all data surfaces that exist today must remain accessible",
-      "Must pass WCAG 2.1 AA accessibility audit before handoff",
-      "Launch window is locked: must ship before the Q3 customer summit",
+      "No GL / accounting changes",
+      "No pricebook-level cost override in Phase 1",
+      "No inventory valuation methods (FIFO, LIFO)",
+      "Feature Flag: indexed-cost-pricebooks | Pre-req: dynamic-pricebooks",
     ],
     links: [
-      { label: "Jira Epic", url: "#" },
-      { label: "PRD (Confluence)", url: "#" },
-      { label: "Figma File", url: "#" },
-      { label: "Discovery Research Readout", url: "#" },
-    ],
-    team: [
-      { name: "Jordan Lee", role: "PM" },
-      { name: "Sam Rivera", role: "Eng Lead" },
-      { name: "Priya Nair", role: "Stakeholder (CS)" },
+      { label: "Draft PRD", url: "https://buildops.atlassian.net/wiki/spaces/BPD/pages/4156850184" },
+      { label: "TDD", url: "https://buildops.atlassian.net/wiki/spaces/EN/pages/4164387003" },
+      { label: "Design Ticket SERVICE-4335", url: "https://buildops.atlassian.net/browse/SERVICE-4335" },
+      { label: "Epic SERVICE-4214", url: "https://buildops.atlassian.net/browse/SERVICE-4214" },
+      { label: "JPD INVOICE-20", url: "https://buildops.atlassian.net/browse/INVOICE-20" },
+      { label: "SIP — Index Cost on Job Report", url: "https://buildops.atlassian.net/browse/SIP-8787" },
+      { label: "SmartCare Debrief Jan 23", url: "https://buildops.atlassian.net/wiki/spaces/BPD/pages/4211441745" },
     ],
     done: [
-      "Completed 6 customer discovery interviews",
-      "Synthesized research — identified top 3 navigation pain points",
-      "Explored 3 layout directions; aligned with PM on left-nav direction",
-      "Kicked off with engineering — confirmed Phase 1 scope",
+      "Discovery call with SmartCare (Jan 23, 2026) — design attended, key decisions captured",
+      "Alignment with Priyanka on Phase 1 scope (property-level catalog inheritance, no job-level override)",
+      "TDD drafted (data model: CostCatalogue, CostCatalogueEntry, Job.costCatalogueId)",
+      "Design ticket created (SERVICE-4335)",
     ],
     todo: [
-      "Finalize information architecture (sitemap + nav labels)",
-      "Design dashboard wireframes (v1)",
-      "Run usability test on prototype — 5 participants",
-      "Incorporate usability test findings",
-      "Prepare handoff spec for engineering",
-      "QA support during implementation",
+      "UX flows for Cost Catalogue List page",
+      "Cost Catalogue creation modal/page",
+      "Cost Catalogue detail page (item list vs entries, similar to Pricebook entries)",
+      "Update/archive flows for Cost Catalogue",
+      "UI for upsert/remove CostCatalogueEntry",
+      "Job creation: where/how user selects (or sees) the assigned cost catalogue",
+      "Job Report: new column showing indexed cost alongside line item cost",
+      "Creation modals for Inventory/PO lines: show indexed cost, use it for price preview",
     ],
     questions: [
-      "Should the nav show feature icons or text labels only? Or both?",
-      "How do we handle customers with multiple properties — top-level switcher or inline?",
-      "What is the empty state for the dashboard when a customer has no recent jobs?",
+      "What is the fallback behavior when a job has no cost catalogue ID or the item has no entry in the selected catalogue?",
+      "Can we make cost catalogue selection required when index cost feature is enabled?",
+      "UnitCostWithTax behavior — needs discussion with IP team (IP-1865 referenced)",
+      "When PB is inactive but activated later — which cost should it pick? (Priyanka to verify)",
+    ],
+  },
+  {
+    id: "bulk-po",
+    icon: "inventory_2",
+    title: "Bulk PO Creation from Maintenance Jobs",
+    status: "Design",
+    hasDoc: true,
+    docLabel: "Feature Understanding",
+    customer: "ServiceLogic (Tolin Mechanical, Piedmont, IES)",
+    due: "Jun 15, 2026",
+    team: [
+      { name: "Tamara Mekhantseva", role: "PM" },
+      { name: "Jon Rodness", role: "Eng Mgr" },
+      { name: "Manvi Gupta", role: "Domain Expert" },
+    ],
+    currentFocus: "Bulk action UI + flag settings",
+    summary: "ServiceLogic manages 700+ contracts and needs to generate bulk POs for consumables (filters, belts) ~6 weeks in advance, grouped by vendor and location. Today BuildOps only supports per-maintenance PO creation — creating 3,000+ filters manually is operationally impossible. Feature needs a bulk action on the Maintenance List.",
+    decisions: [
+      "Entry point: \"Create Purchase Orders\" bulk action on Maintenance List (select multiple → create POs)",
+      "POs auto-grouped by vendor (option to also group by department being considered)",
+      "Confirmation dialog shows preview of POs before creation",
+      "POs created in Draft status",
+      "New includeInBulkPO boolean flag on TaskMaterial — defaults false; propagates to generated maintenances with per-instance override",
+      "PO Status column on Maintenance List and SA → Maintenances tab",
+      "Out of scope Phase 1: Automated/scheduled PO generation, SA-level bulk PO entry point, bill of materials view, automated vendor emailing",
+    ],
+    constraints: [
+      "Non-inventory, expense-only flow",
+      "Committed costs tracked at PO creation",
+      "Intacct integration must work without inventory complexity",
+      "Feature gated behind feature flag",
+    ],
+    links: [
+      { label: "IPP-326 Initiative", url: "https://buildops.atlassian.net/browse/IPP-326" },
+      { label: "DRAFT PRD", url: "https://buildops.atlassian.net/wiki/spaces/BPD/pages/4324327450" },
+      { label: "Confluence Meeting Notes", url: "https://buildops.atlassian.net/wiki/spaces/BPD/pages/4093607949" },
+      { label: "Epic IP-5171", url: "https://buildops.atlassian.net/browse/IP-5171" },
+      { label: "Cycle 0 Spec PR #22890", url: "https://github.com/BuildHero/buildhero-webapp/pull/22890" },
+      { label: "Tech Spike IP-5593", url: "https://buildops.atlassian.net/browse/IP-5593" },
+      { label: "🎙 Dec 12 Discovery Call (Gong)", url: "https://us-1330.app.gong.io/call?id=4381445529237724212" },
+      { label: "ServiceLogic Product Blockers Doc", url: "https://docs.google.com/document/d/1xIxATPeOGw-w33-6emPAo5kvOJJTYHtfCwIn1YlhPJc" },
+    ],
+    done: [
+      "Discovery calls with ServiceLogic complete",
+      "PRD in draft (Tamara); Cycle 0 spec authored (PR #22890 filed)",
+      "Alignment on PO grouping by vendor, draft status, confirmed with ServiceLogic",
+      "Intacct integration export timing confirmed",
+      "SA team import timeline confirmed",
+      "Questions sent async to Manvi Gupta on checklist/task material inheritance",
+    ],
+    todo: [
+      "Bulk action on Maintenance List (select + trigger)",
+      "PO preview / confirmation dialog (grouped by vendor)",
+      "\"Include in Bulk PO\" flag setting UI (on task material / checklist)",
+      "PO Status column on Maintenance List",
+      "Settings pages (vendor grouping config, department grouping option)",
+      "Post-creation feedback / success + failure states",
+    ],
+    questions: [
+      "For maintenances with different locations — when creating PO, does vendor auto-fill based on vendor location default tied to job location?",
+      "Can checklist templates carry parts & materials to SAs? (Manvi async question)",
+      "Can property tasks be auto-added to SAs?",
+      "Can items assigned to assets flow anywhere / auto-add to tasks or SAs?",
+      "Vendor location resolution risk — unclear how preferred vendors are selected by default",
+      "Performance limits: how many items/POs can be processed in a single bulk operation?",
+      "Redis de-duplication: Lekha noted this should be rolled out before this capability",
+    ],
+  },
+  {
+    id: "avalara-tax",
+    icon: "receipt_long",
+    title: "Avalara Tax Exemption",
+    status: "Design",
+    hasDoc: true,
+    docLabel: "Design Spec",
+    docSrc: "docs/IP-5363-avalara-tax-exemptions.html",
+    hasDomainDoc: true,
+    customer: "SmartCare / Haynes",
+    due: "TBD",
+    team: [
+      { name: "Tamara Mekhantseva", role: "PM" },
+      { name: "Lucas Torres", role: "Eng" },
+      { name: "Sam Seo", role: "Coordination" },
+    ],
+    currentFocus: "Exemption cert display + Customer taxability UI",
+    summary: "BuildOps already syncs customers to Avalara so exemption certificates can be applied in Avalara. The gap: BuildOps doesn't currently display exemption certificate info back in the BuildOps UI. Also need to expose AP & AR Work Taxability at the Customer level.",
+    decisions: [
+      "Avalara integration already exists (IP-3505); this extends it",
+      "Design owns: (a) showing exemption cert info from Avalara, and (b) Customer-level AP & AR Work Taxability UI",
+      "Sam Seo's team (web) and Mobile (Wendy) are building in parallel — coordinate to avoid duplicate FE work",
+      "Use Taxable checkbox: show on all vendor types as long as ap-taxes = true (even when Avalara disabled)",
+      "Sales taxable bills → Sales Invoice type (no Avalara consumer use transaction)",
+      "Use taxable bills → Purchase Invoice type → creates Avalara Consumer Use Transaction",
+      "Switching use tax on/off for line items → must void/regenerate transaction in Avalara (known bug area)",
+    ],
+    constraints: [
+      "Coordinate FE patterns with Sam Seo's PPC taxability feature to avoid duplication",
+    ],
+    links: [
+      { label: "IP-5363 Spike", url: "https://buildops.atlassian.net/browse/IP-5363" },
+      { label: "Avalara Integration Hub", url: "https://buildops.atlassian.net/wiki/spaces/BPD/pages/2618458169" },
+    ],
+    done: [
+      "Spike ticket reviewed; scope clarified with Tamara (Feb 24)",
+      "Avalara sync behavior understood (sales vs use taxable flow)",
+      "Design spec started locally (noted in Slack Mar 10 in #ip-private)",
+      "Coordination started with Sam Seo re: shared FE patterns with PPC taxability feature",
+    ],
+    todo: [
+      "Where/how exemption certificate info is shown in BuildOps (from Avalara)",
+      "Customer-level AP & AR Work Taxability UI",
+      "Sync pattern with Sam Seo's work to reuse FE framework",
+      "Finalize and share design spec (currently local)",
+    ],
+    questions: [
+      "Can a customer have multiple Avalara exemption certificates, or only one valid at a time?",
+      "Where exactly in the customer profile should certificates be displayed?",
+      "FE pattern: how do we share/reuse the customer-level taxability UI with Sam Seo's PPC work?",
+    ],
+  },
+  {
+    id: "job-taxability",
+    icon: "work",
+    title: "Job Taxability Settings (PPC)",
+    status: "Dev",
+    hasDoc: true,
+    docLabel: "Feature Understanding",
+    customer: "PPC Partners",
+    due: "Apr 15, 2026",
+    team: [
+      { name: "Tamara Mekhantseva", role: "PM" },
+      { name: "Sam Seo", role: "Eng Lead (web)" },
+    ],
+    currentFocus: "Review in-progress eng work, invoice defaulting",
+    summary: "Job-level taxability settings that allow jobs to inherit AP/AR work taxability from a Job Template, with overrides at the job level. Adds LineTaxabilityRule to WorkTaxabilityType. For PPC's exempt customer scenario.",
+    decisions: [
+      "Feature flag: enable-job-level-taxability",
+      "DB migration for LineTaxabilityRule complete",
+      "Job creation wizard / Job Details screen updated",
+      "Job Template Settings added",
+      "WorkTaxabilityType entity extended",
+    ],
+    constraints: [
+      "Mobile parity question outstanding — coordinate before Apr 15",
+      "Customer.defaultJobBlueprintId migration pending (IP-5567)",
+    ],
+    links: [
+      { label: "PRD IPP-337", url: "https://buildops.atlassian.net/wiki/spaces/BPD/pages/4263018514" },
+      { label: "Epic IP-5460", url: "https://buildops.atlassian.net/browse/IP-5460" },
+    ],
+    done: [
+      "Feature flag created (enable-job-level-taxability)",
+      "DB migration for LineTaxabilityRule complete",
+      "Job creation wizard / Job Details screen updated",
+      "Job Template Settings added",
+      "Work Taxability Type Settings updated",
+      "WorkTaxabilityType entity extended",
+    ],
+    todo: [
+      "Enhance Add/Edit PO Line with LineTaxabilityRule (in progress by eng)",
+      "Invoice item + grid labels",
+      "Invoice item taxable defaulting logic during invoice generation",
+      "Deprecate feature flag",
+    ],
+    questions: [
+      "Should Customer.defaultJobBlueprintId migration be done now to support auto-defaulting job template on customer selection? (Sam Seo created IP-5567)",
+      "Mobile parity: should mobile also enforce Require Job Template setting before Apr 15?",
+    ],
+  },
+  {
+    id: "vendors-unified",
+    icon: "handyman",
+    title: "Vendors / Subcontractors Unified Experience",
+    status: "Dev",
+    hasDoc: true,
+    docLabel: "Feature Understanding",
+    customer: "Internal / Multiple",
+    due: "TBD",
+    team: [
+      { name: "Tamara Mekhantseva", role: "PM" },
+    ],
+    currentFocus: "Scope definition",
+    summary: "Redesigning the end-to-end experience for managing subcontractors and vendors — unifying vendor/subcontractor creation and detail views.",
+    decisions: [
+      "Use Taxable checkbox: show for all vendor types when ap-taxes = true (confirmed)",
+    ],
+    constraints: [
+      "Interaction with Avalara exemption work needs to be mapped",
+    ],
+    links: [
+      { label: "Confluence: Vendors + Subcontractors", url: "https://buildops.atlassian.net/wiki/spaces/BPD/pages/4308467713" },
+    ],
+    done: [
+      "Initial page / requirements started (Tamara shared link Feb 25)",
+      "Use Taxable checkbox behavior confirmed: show for all vendor types when ap-taxes = true",
+    ],
+    todo: [
+      "Unified creation flow for vendor/subcontractor",
+      "Unified detail view",
+    ],
+    questions: [
+      "Scope of unification: which surfaces and vendor types are in scope?",
+      "How does this interact with the Avalara exemption work?",
+    ],
+  },
+  {
+    id: "pricebook-fee",
+    icon: "price_check",
+    title: "Pricebook Fee Configuration",
+    status: "Design",
+    hasDoc: true,
+    docLabel: "Design Spec",
+    hasDomainDoc: true,
+    customer: "ServiceLogic, Tolin, Piedmont, Air Texas, IES",
+    due: "TBD",
+    team: [
+      { name: "Priyanka Satish", role: "PM" },
+    ],
+    currentFocus: "Design for Fee Settings page + property-level fee selector",
+    summary: "Fees (truck charges, service charges, mileage) today live inside the item list as 'fee-type' items, forcing them through pricebook markup/cost fields that don't apply to flat-rate revenue items. Goal: decouple fees from the item list, create a standalone Fee Settings page, and let properties assign fees directly — one per category (Service Charge, Truck Charge, etc.). Related to the pricebook separation initiative (SERVICE-4215).",
+    decisions: [
+      "Approach D selected: Fee Settings page (standalone) + property-level fee selector",
+      "Rejected: Fee Pricebook approach (causes combinatorial explosion — 3 truck + 3 service charges = 15 pricebooks; with 1 more type → 47)",
+      "Fee items are revenue-only; no cost/markup fields — flat amount only",
+      "Per-visit vs. per-job setting lives on the fee record itself, not on the property",
+      "Migration: existing item_type=fee records move to the new fee table (feature-flagged, gradual rollout)",
+      "Fees do NOT apply to maintenance jobs in Phase 1 (T&M jobs only initially)",
+    ],
+    constraints: [
+      "No markup or margin on fees — flat-amount only",
+      "No negative unit prices",
+      "No visit-template or job-template-level fee association in Phase 1",
+      "No fee config on mobile — fees are read-only for technicians",
+      "Feature gated behind LaunchDarkly, rolled out tenant-by-tenant due to migration risk",
+    ],
+    links: [
+      { label: "PRD - Truck Fee / Default Fee Enhancements", url: "https://buildops.atlassian.net/wiki/spaces/BPD/pages/4296900616" },
+      { label: "SERVICE-4366 (design ticket)", url: "https://buildops.atlassian.net/browse/SERVICE-4366" },
+      { label: "🎙 Customer Call 11/11/2025 (Fathom)", url: "https://fathom.video/share/z4VQBQgCiWvqBE9m9ytpUT7FjhTimZcv" },
+      { label: "🎙 Customer Call 12/15/2025 (Fathom)", url: "https://fathom.video/share/ZNkjPcMeAMNUQZsajRQy9dueAMgAGvdz" },
+      { label: "Prototype Branch: fee-settings", url: "https://github.com/BuildHero/buildhero-webapp/tree/fee-settings" },
+    ],
+    done: [
+      "Discovery calls with ServiceLogic (Jason Saunders), Tolin, Piedmont, Air Texas, IES complete",
+      "Two approaches formally evaluated (Fee Pricebook vs. Property-Level Dropdown)",
+      "Approach D (Fee Settings page + property dropdown) selected",
+      "Fee Settings list page prototype built (fee-settings branch, SERVICE-4366)",
+      "FeeDrawer add/edit component built",
+      "PropertyFeeSelector component built",
+      "DefaultFeesBanner for job report fee section built",
+      "useResolveFeeProps hook built",
+      "Fee Settings page wired into app routing + navigation",
+      "LD gate removed from prototype (4b4fc0)",
+    ],
+    todo: [
+      "Design Fee Settings page (list + add/edit drawer)",
+      "Design property-level fee selector UX",
+      "Design job report fee section with auto-applied fees visible + editable",
+      "Design bulk update propagation flow (apply to future vs. apply to all existing)",
+      "Validate designs with ServiceLogic (Jason Saunders)",
+      "Define migration UX — how do existing fee items appear during transition?",
+    ],
+    questions: [
+      "Per-visit vs. per-job setting — should this be configurable at property level or only at fee record level?",
+      "Rate change effective date — do customers need scheduled future rate updates (e.g., Jan 1)?",
+      "When a billing team reviews fees before sending an invoice — should there be a 'confirm fees' step?",
+      "Do discounts appear alongside fees on the job report? (Avalara vs. non-Avalara behavior differs)",
+    ],
+  },
+  {
+    id: "pricebook-separation",
+    icon: "content_cut",
+    title: "Pricebook Separation (Split by Cost Type)",
+    status: "Dev",
+    hasDoc: true,
+    docLabel: "Feature Understanding",
+    customer: "Service Logic",
+    due: "TBD",
+    team: [
+      { name: "Priyanka Satish", role: "PM" },
+    ],
+    currentFocus: "Split pricebook by cost type",
+    summary: "A single pricebook today bundles Labor + Materials + Equipment pricing together, causing combinatorial explosion. Service Logic example: 118 labor rate structures × 42 material markups = 4,956 pricebooks required. Solution: each pricebook has exactly one cost type.",
+    decisions: [
+      "Each new pricebook selects exactly 1 cost type (Material / Labor / Equipment) — cannot change after creation",
+      "Job creation: user selects up to 3 pricebooks (one per cost type)",
+      "Existing full pricebooks remain backward compatible during migration",
+      "Pricing resolution: Inventory Part → Material PB, Labor line → Labor PB, Equipment → Equipment PB",
+      "Invoice from job inherits all 3 pricebook IDs from the job",
+    ],
+    constraints: [
+      "Not splitting existing pricebooks in Phase 1",
+      "Not archiving partial pricebooks in Phase 1",
+      "Multi-select vendor types in all reporting surfaces out of scope",
+    ],
+    links: [
+      { label: "PRD - Splitting Pricebook Components", url: "https://buildops.atlassian.net/wiki/spaces/BPD/pages/4153737329" },
+      { label: "SERVICE-4215 (Initiative)", url: "https://buildops.atlassian.net/browse/SERVICE-4215" },
+      { label: "SERVICE-4286 (FE Permissions)", url: "https://buildops.atlassian.net/browse/SERVICE-4286" },
+      { label: "Feature Branch: elaine/pricebook-seperation", url: "https://github.com/BuildHero/buildhero-webapp/tree/elaine/pricebook-seperation" },
+    ],
+    done: [],
+    todo: [
+      "UX for cost type selection on pricebook creation",
+      "Update job creation to support 3 separate pricebook selectors",
+      "Pricing resolution logic per cost type on job report",
+      "Backward compat treatment for existing full pricebooks in the UI",
+    ],
+    questions: [
+      "What markup rate applies for Supplier & Subcontractor vendors — subcontractor markup, supplier markup, or configurable?",
+      "How should Supplier & Subcontractor vendors be categorized in Project Report Services?",
+    ],
+  },
+  {
+    id: "pricebook-bulk-edits",
+    icon: "edit_note",
+    title: "Pricebook Bulk Edits",
+    status: "Discovery",
+    hasDoc: true,
+    docLabel: "Feature Understanding",
+    customer: "SmartCare",
+    due: "TBD",
+    team: [],
+    currentFocus: "PRD drafted — awaiting design kickoff",
+    summary: "SmartCare manages 400+ pricebooks across 15 operating companies. A single contract amendment may affect 20–50 pricebooks. Two complementary entry points: proactive bulk edit from Pricebook List, and in-context propagation when editing a single pricebook.",
+    decisions: [
+      "Two entry points: Pricebook List bulk select (Option A) + in-context propagation after single-PB save (Option C)",
+      "Four edit surfaces: material markup tiers, labor rates, fixed price items, equipment",
+      "Bulk edits apply ONLY to explicitly selected pricebooks — no unintended updates",
+      "Confirmation step shows count + names of affected pricebooks + skip warnings",
+      "Permission-gated — not available to job reviewers or lower-privilege roles",
+    ],
+    constraints: [
+      "Not in scope: index cost, bulk pricebook creation/cloning, automated/scheduled updates",
+    ],
+    links: [
+      { label: "PRD: Pricebook Bulk Edits", url: "https://buildops.atlassian.net/wiki/spaces/BPD/pages/4344709161" },
+      { label: "Draft PRD - Bulk Upsert for Pricebook", url: "https://buildops.atlassian.net/wiki/spaces/BPD/pages/4023386122" },
+    ],
+    done: [],
+    todo: [
+      "Design Pricebook List multi-select + bulk action trigger",
+      "Design bulk edit panel (4 surfaces: material markup, labor rates, fixed price, equipment)",
+      "Design confirmation step with affected pricebook count + names",
+      "Design post-save summary (success / failure / skipped)",
+      "Design in-context propagation prompt (after single pricebook save)",
+    ],
+    questions: [],
+  },
+  {
+    id: "multiple-vendor-locations",
+    icon: "location_on",
+    title: "Multiple Vendor Locations",
+    status: "Dev",
+    hasDoc: true,
+    docLabel: "Feature Understanding",
+    customer: "General",
+    due: "TBD",
+    team: [],
+    currentFocus: "Vendor location management and PO association",
+    summary: "BuildOps supports multiple locations per vendor (IP-1002 — in production). Each vendor location has its own billing address, shipping address, and contact. Critical for Bulk PO — large vendors like Trane, Carrier, Ferguson have locations across the US, and the correct location determines who to contact and where the order ships from.",
+    decisions: [
+      "Each vendor location has: billing address, shipping address, contact, and a default flag",
+      "Vendor has a defaultLocationId — used when no specific location is selected",
+      "Bulk PO groups by vendorId + vendorLocationId + shippingDestination → one PO per unique combination",
+      "Phase 1 Bulk PO: user overrides vendor location in the confirmation dialog",
+      "Phase 2 (deferred): auto-suggest location whose state matches the property's state",
+    ],
+    constraints: [
+      "Phase 2 auto-suggestion (match vendor location state to property state) is deferred",
+    ],
+    links: [
+      { label: "IP-1002 Multiple Vendor Locations PRD", url: "https://buildops.atlassian.net/wiki/spaces/BPD/pages/3461316618" },
+    ],
+    done: [
+      "Multiple locations per vendor in production (IP-1002)",
+      "Each location has billing address, shipping address, contact",
+      "Vendor.defaultLocationId field implemented",
+    ],
+    todo: [
+      "Expose vendor location selector in Bulk PO confirmation dialog",
+      "Design vendor location management in unified Vendor Detail page",
+      "Phase 2: auto-suggest vendor location by matching property state",
+    ],
+    questions: [
+      "In the unified Vendor Detail page, how do we surface location management — tab or section?",
+      "When a PO is created manually, should the vendor location field be required or optional?",
+      "How does vendor location interact with the Intacct vendor sync — are locations synced too?",
     ],
   },
 ];
@@ -3587,6 +3984,8 @@ function loadCustomFeatures() {
 function saveCustomFeatures(features) {
   localStorage.setItem('fh_custom_features', JSON.stringify(features));
   if (typeof scheduleSyncToGit === 'function') scheduleSyncToGit();
+  if (typeof scheduleFileSave === 'function') scheduleFileSave();
+  if (typeof scheduleGHSync === 'function') scheduleGHSync();
 }
 
 function loadHiddenBuiltins() {
@@ -3596,6 +3995,8 @@ function loadHiddenBuiltins() {
 function saveHiddenBuiltins(ids) {
   localStorage.setItem('fh_hidden_builtins', JSON.stringify(ids));
   if (typeof scheduleSyncToGit === 'function') scheduleSyncToGit();
+  if (typeof scheduleFileSave === 'function') scheduleFileSave();
+  if (typeof scheduleGHSync === 'function') scheduleGHSync();
 }
 
 function getAllFeatures() {
@@ -3620,15 +4021,6 @@ function getAllFeatures() {
   return [...ordered, ...unordered];
 }
 
-function loadFeatureOrder() {
-  try { return JSON.parse(localStorage.getItem('fh_feature_order') || 'null'); }
-  catch { return null; }
-}
-function saveFeatureOrder(ids) {
-  localStorage.setItem('fh_feature_order', JSON.stringify(ids));
-  if (typeof scheduleSyncToGit === 'function') scheduleSyncToGit();
-}
-
 // ═══════════════════════════════════════════════════════════════
 //  STATE (persisted in localStorage)
 // ═══════════════════════════════════════════════════════════════
@@ -3639,9 +4031,21 @@ function loadState() {
 
 function saveState(state) {
   localStorage.setItem('fh_state', JSON.stringify(state));
-  localStorage.setItem('fh_user_edited', '1');
   showToast();
   if (typeof scheduleSyncToGit === 'function') scheduleSyncToGit();
+  if (typeof scheduleFileSave === 'function') scheduleFileSave();
+  if (typeof scheduleGHSync === 'function') scheduleGHSync();
+}
+
+function loadFeatureOrder() {
+  try { return JSON.parse(localStorage.getItem('fh_feature_order') || 'null'); }
+  catch { return null; }
+}
+function saveFeatureOrder(ids) {
+  localStorage.setItem('fh_feature_order', JSON.stringify(ids));
+  if (typeof scheduleSyncToGit === 'function') scheduleSyncToGit();
+  if (typeof scheduleFileSave === 'function') scheduleFileSave();
+  if (typeof scheduleGHSync === 'function') scheduleGHSync();
 }
 
 let STATE = loadState();
@@ -5447,7 +5851,8 @@ function buildPrepTabContent(featureId, call) {
       <span class="prep-section-title">Research Questions</span>
     </div>
     <p class="prep-section-desc">High-level knowledge gaps this call should help answer — not the literal interview questions.</p>
-    <textarea class="add-feature-input prep-textarea" placeholder="e.g.&#10;• How do customers currently handle X?&#10;• What is the biggest pain point in Y workflow?&#10;• Do they even need feature Z?"
+    ${mdToolbar(`prep_rq_${cid}`)}
+    <textarea class="add-feature-input prep-textarea" id="prep_rq_${cid}" placeholder="e.g.&#10;• How do customers currently handle X?&#10;• What is the biggest pain point in Y workflow?&#10;• Do they even need feature Z?"
       onblur="updateCallField('${fid}','${cid}','prepResearchQs',this.value)">${e(call.prepResearchQs)}</textarea>
   </div>
   <div class="prep-section">
@@ -5490,7 +5895,8 @@ function buildPrepTabContent(featureId, call) {
       <span class="prep-section-title">Warm-up Questions</span>
     </div>
     <p class="prep-section-desc">Help them get comfortable and establish context. Add a → Dig follow-up if helpful.</p>
-    <textarea class="add-feature-input prep-textarea" placeholder="e.g.&#10;• Can you tell me a bit about yourself and your role?&#10;• What are your top goals and priorities right now?"
+    ${mdToolbar(`prep_wuq_${cid}`)}
+    <textarea class="add-feature-input prep-textarea" id="prep_wuq_${cid}" placeholder="e.g.&#10;• Can you tell me a bit about yourself and your role?&#10;• What are your top goals and priorities right now?"
       onblur="updateCallField('${fid}','${cid}','prepWarmUpQs',this.value)">${e(call.prepWarmUpQs)}</textarea>
   </div>
   <div class="prep-section">
@@ -5499,7 +5905,8 @@ function buildPrepTabContent(featureId, call) {
       <span class="prep-section-title">Topic Questions</span>
     </div>
     <p class="prep-section-desc">Open-ended, past-behavior focused. Ask "how do you handle X today?" not "would you use X?". Add → Dig follow-ups.</p>
-    <textarea class="add-feature-input prep-textarea" style="min-height:120px" placeholder="e.g.&#10;• Walk me through the last time you had to [X]. What happened?&#10;  → Dig: What made that difficult?"
+    ${mdToolbar(`prep_tq_${cid}`)}
+    <textarea class="add-feature-input prep-textarea" id="prep_tq_${cid}" style="min-height:120px" placeholder="e.g.&#10;• Walk me through the last time you had to [X]. What happened?&#10;  → Dig: What made that difficult?"
       onblur="updateCallField('${fid}','${cid}','prepTopicQs',this.value)">${e(call.prepTopicQs)}</textarea>
   </div>
   <div class="prep-section">
@@ -5508,7 +5915,8 @@ function buildPrepTabContent(featureId, call) {
       <span class="prep-section-title">Look For / Listen For</span>
     </div>
     <p class="prep-section-desc">Signals, patterns, and moments to pay attention to during the call.</p>
-    <textarea class="add-feature-input prep-textarea" placeholder="e.g.&#10;• Signs of workarounds or manual processes&#10;• Frustration when describing current workflow"
+    ${mdToolbar(`prep_lf_${cid}`)}
+    <textarea class="add-feature-input prep-textarea" id="prep_lf_${cid}" placeholder="e.g.&#10;• Signs of workarounds or manual processes&#10;• Frustration when describing current workflow"
       onblur="updateCallField('${fid}','${cid}','prepListenFor',this.value)">${e(call.prepListenFor)}</textarea>
   </div>
   <div style="padding:14px 22px 18px;border-top:1px solid var(--border)">
@@ -5803,8 +6211,7 @@ function buildPrepModalBody(call) {
       <span class="prep-section-title">Research Questions</span>
     </div>
     <p class="prep-section-desc">High-level knowledge gaps this call should help answer — not the literal interview questions.</p>
-    ${mdToolbar(`prep_rq_${cid}`)}
-    <textarea class="add-feature-input prep-textarea" id="prep_rq_${cid}" placeholder="e.g.&#10;• How do customers currently handle X?&#10;• What is the biggest pain point in Y workflow?&#10;• Do they even need feature Z?"
+    <textarea class="add-feature-input prep-textarea" placeholder="e.g.&#10;• How do customers currently handle X?&#10;• What is the biggest pain point in Y workflow?&#10;• Do they even need feature Z?"
       onblur="savePrepField('prepResearchQs',this.value)">${e(call.prepResearchQs)}</textarea>
   </div>
 
@@ -5849,8 +6256,7 @@ function buildPrepModalBody(call) {
       <span class="prep-section-title">Warm-up Questions</span>
     </div>
     <p class="prep-section-desc">Help them get comfortable and establish context. One question per line, add a → Dig follow-up if helpful.</p>
-    ${mdToolbar(`prep_wuq_${cid}`)}
-    <textarea class="add-feature-input prep-textarea" id="prep_wuq_${cid}" placeholder="e.g.&#10;• Can you tell me a bit about yourself and your role?&#10;• What are your top goals and priorities right now?&#10;• What decisions do you make most frequently?&#10;• What has been challenging lately in your role?"
+    <textarea class="add-feature-input prep-textarea" placeholder="e.g.&#10;• Can you tell me a bit about yourself and your role?&#10;• What are your top goals and priorities right now?&#10;• What decisions do you make most frequently?&#10;• What has been challenging lately in your role?"
       onblur="savePrepField('prepWarmUpQs',this.value)">${e(call.prepWarmUpQs)}</textarea>
   </div>
 
@@ -5860,8 +6266,7 @@ function buildPrepModalBody(call) {
       <span class="prep-section-title">Topic Questions</span>
     </div>
     <p class="prep-section-desc">Open-ended, past-behavior focused. Ask "how do you handle X today?" not "would you use X?". Add → Dig follow-ups.</p>
-    ${mdToolbar(`prep_tq_${cid}`)}
-    <textarea class="add-feature-input prep-textarea" id="prep_tq_${cid}" style="min-height:120px" placeholder="e.g.&#10;• Walk me through the last time you had to [X]. What happened?&#10;  → Dig: What made that difficult?&#10;• How do you currently handle [situation]?&#10;  → Dig: Can you give me a specific example?"
+    <textarea class="add-feature-input prep-textarea" style="min-height:120px" placeholder="e.g.&#10;• Walk me through the last time you had to [X]. What happened?&#10;  → Dig: What made that difficult?&#10;• How do you currently handle [situation]?&#10;  → Dig: Can you give me a specific example?"
       onblur="savePrepField('prepTopicQs',this.value)">${e(call.prepTopicQs)}</textarea>
   </div>
 
@@ -5871,8 +6276,7 @@ function buildPrepModalBody(call) {
       <span class="prep-section-title">Look For / Listen For</span>
     </div>
     <p class="prep-section-desc">Signals, patterns, and moments to pay attention to during the call.</p>
-    ${mdToolbar(`prep_lf_${cid}`)}
-    <textarea class="add-feature-input prep-textarea" id="prep_lf_${cid}" placeholder="e.g.&#10;• Signs of workarounds or manual processes&#10;• Frustration when describing current workflow&#10;• Mentions of other tools they use or wish they had"
+    <textarea class="add-feature-input prep-textarea" placeholder="e.g.&#10;• Signs of workarounds or manual processes&#10;• Frustration when describing current workflow&#10;• Mentions of other tools they use or wish they had"
       onblur="savePrepField('prepListenFor',this.value)">${e(call.prepListenFor)}</textarea>
   </div>`;
 }
@@ -6382,6 +6786,7 @@ function renderContextTab(featureId) {
   panel.innerHTML = buildContextTabHtml(f);
 }
 
+// ── Summary edit/save/cancel/delete ───────────────────────────────────────
 function editCtxSummary(id) {
   _ctxEdit[id + '_summary'] = true;
   renderContextTab(id);
@@ -6402,6 +6807,8 @@ function deleteCtxSummary(id) {
   _ctxEdit[id + '_summary'] = false;
   renderContextTab(id);
 }
+
+// ── Array item inline edit ────────────────────────────────────────────────
 function editCtxItem(id, key, idx) {
   _ctxEdit[id + '_' + key] = idx;
   renderContextTab(id);
@@ -6533,6 +6940,8 @@ function loadDeletedFeatures() {
 function saveDeletedFeatures(features) {
   localStorage.setItem('fh_deleted_features', JSON.stringify(features));
   if (typeof scheduleSyncToGit === 'function') scheduleSyncToGit();
+  if (typeof scheduleFileSave === 'function') scheduleFileSave();
+  if (typeof scheduleGHSync === 'function') scheduleGHSync();
 }
 
 function restoreDeletedFeature(featureId) {
@@ -7642,6 +8051,163 @@ function importData(event) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  IDENTITY
+// ═══════════════════════════════════════════════════════════════
+function loadIdentity() {
+  return { name: localStorage.getItem('fh_user_name') || '', role: localStorage.getItem('fh_user_role') || '' };
+}
+function renderIdentity() {
+  const { name, role } = loadIdentity();
+  const el = document.getElementById('user-identity');
+  if (!el) return;
+  if (name) {
+    el.textContent = role ? name + ' · ' + role : name;
+  } else {
+    el.innerHTML = '<span style="color:var(--accent);font-size:11px">+ Add your name & role</span>';
+  }
+}
+function editIdentity() {
+  document.getElementById('identity-name').value = loadIdentity().name;
+  document.getElementById('identity-role-first').value = loadIdentity().role;
+  document.getElementById('identity-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('identity-name').focus(), 50);
+}
+function saveIdentity() {
+  const name = document.getElementById('identity-name').value.trim();
+  const role = document.getElementById('identity-role-first').value.trim();
+  if (!name) { document.getElementById('identity-name').focus(); return; }
+  localStorage.setItem('fh_user_name', name);
+  localStorage.setItem('fh_user_role', role);
+  renderIdentity();
+  if (_firstLaunch) {
+    document.getElementById('welcome-step1').style.display = 'none';
+    document.getElementById('welcome-step2').style.display = 'block';
+  } else {
+    document.getElementById('identity-modal').style.display = 'none';
+  }
+}
+
+function _welcomeFinish() {
+  _firstLaunch = false;
+  document.getElementById('identity-modal').style.display = 'none';
+  const firstFeature = getAllFeatures()[0];
+  if (firstFeature) showFeature(firstFeature.id);
+}
+
+async function saveWelcomeGHConfig() {
+  const val = id => document.getElementById(id)?.value.trim();
+  const owner = val('wgh-owner'), repo = val('wgh-repo'), token = val('wgh-token');
+  const errEl = document.getElementById('wgh-error');
+  if (!owner && !repo && !token) { _welcomeFinish(); return; }
+  if (!owner || !repo || !token) {
+    if (errEl) { errEl.style.display = 'block'; errEl.textContent = 'Owner, repo, and token are required to connect.'; }
+    return;
+  }
+  const branch = val('wgh-branch') || 'main';
+  const filePath = val('wgh-path') || 'data.json';
+  const cfg = { owner, repo, branch, path: filePath, token };
+  // Mirror values into Settings fields so they're pre-filled if user opens Settings later
+  ['owner', 'repo', 'branch', 'path', 'token'].forEach(k => {
+    const el = document.getElementById('gh-' + k);
+    if (el) el.value = cfg[k];
+  });
+  _ghSaveConfig(cfg);
+  _ghSetSHA(null);
+  updateGHSyncUI();
+  _welcomeFinish();
+  await _ghSaveNow();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SETTINGS
+// ═══════════════════════════════════════════════════════════════
+function openSettings() {
+  const { name, role } = loadIdentity();
+  document.getElementById('settings-name').value = name;
+  document.getElementById('settings-role').value = role;
+  document.getElementById('settings-panel').style.display = 'block';
+  document.getElementById('settings-overlay').style.display = 'block';
+  if (typeof openGHSettings === 'function') openGHSettings();
+}
+function closeSettings() {
+  document.getElementById('settings-panel').style.display = 'none';
+  document.getElementById('settings-overlay').style.display = 'none';
+}
+function saveSettings() {
+  const name = document.getElementById('settings-name').value.trim();
+  const role = document.getElementById('settings-role').value.trim();
+  if (!name) { document.getElementById('settings-name').focus(); return; }
+  localStorage.setItem('fh_user_name', name);
+  localStorage.setItem('fh_user_role', role);
+  renderIdentity();
+  closeSettings();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  EXPORT / IMPORT
+// ═══════════════════════════════════════════════════════════════
+function exportFeature(featureId) {
+  const feature = getAllFeatures().find(f => f.id === featureId);
+  if (!feature) return;
+  const state = loadState()[featureId] || {};
+  const payload = {
+    _type: 'feature-hub-export',
+    _version: 1,
+    _exportedAt: new Date().toISOString(),
+    feature,
+    state
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const slug = (feature.title || featureId).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  a.href = url;
+  a.download = 'feature-' + slug + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+function importFeature(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const payload = JSON.parse(e.target.result);
+      if (payload._type !== 'feature-hub-export') throw new Error('Not a valid feature export file.');
+      const importedFeature = payload.feature;
+      const importedState = payload.state || {};
+      const newId = 'custom_' + Date.now();
+      const newFeature = { ...importedFeature, id: newId, isCustom: true };
+      const newState = JSON.parse(JSON.stringify(importedState));
+      saveCustomFeatures([...loadCustomFeatures(), newFeature]);
+      const fullState = loadState();
+      fullState[newId] = newState;
+      saveState(fullState);
+      STATE = fullState;
+      const featureViews = document.getElementById('feature-views');
+      featureViews.insertAdjacentHTML('beforeend', buildFeatureView(newFeature));
+      renderTaskList(newId);
+      renderQuestionsList(newId);
+      renderCallsList(newId);
+      renderDomainKnowledgeList(newId);
+      renderNotesTab(newId);
+      renderDesignTab(newId);
+      renderDesignSpecTab(newId);
+      renderDocs();
+      renderDomainDocs();
+      renderSidebar();
+      renderScheduleCards();
+      showView(newId, document.querySelector('[data-view="' + newId + '"]'));
+      showToast('Feature imported successfully');
+    } catch (err) {
+      alert('Import failed: ' + err.message);
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  THEME
 // ═══════════════════════════════════════════════════════════════
 function toggleTheme() {
@@ -7675,160 +8241,6 @@ function init() {
   renderAllDesignImgs();
   renderDocs();
   renderDomainDocs();
-
-
-}
-
-
-// ══════════════════════════════════════════════════════════════════════════
-// FEATURE EXPORT / IMPORT
-// ══════════════════════════════════════════════════════════════════════════
-function exportFeature(featureId) {
-  const feature = getAllFeatures().find(f => f.id === featureId);
-  if (!feature) return;
-  const state = loadState()[featureId] || {};
-  const payload = {
-    _type: 'feature-hub-export',
-    _version: 1,
-    _exportedAt: new Date().toISOString(),
-    feature,
-    state,
-  };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  const slug = (feature.title || featureId).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  a.href = url;
-  a.download = `feature-${slug}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function importFeature(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    try {
-      const payload = JSON.parse(e.target.result);
-      if (payload._type !== 'feature-hub-export') throw new Error('Not a valid feature export file.');
-
-      const importedFeature = payload.feature;
-      const importedState   = payload.state || {};
-
-      // Generate a new unique ID to avoid collisions
-      const newId = 'custom_' + Date.now();
-      const newFeature = {
-        ...importedFeature,
-        id: newId,
-        isCustom: true,
-      };
-
-      // Remap state keys — calls/dk/etc use the old feature id in some places; update ids
-      const newState = JSON.parse(JSON.stringify(importedState));
-
-      // Save feature definition
-      const custom = loadCustomFeatures();
-      saveCustomFeatures([...custom, newFeature]);
-
-      // Save state
-      const fullState = loadState();
-      fullState[newId] = newState;
-      saveState(fullState);
-      STATE = fullState;
-
-      // Render new feature
-      const featureViews = document.getElementById('feature-views');
-      featureViews.insertAdjacentHTML('beforeend', buildFeatureView(newFeature));
-      renderTaskList(newId);
-      renderQuestionsList(newId);
-      renderCallsList(newId);
-      renderDomainKnowledgeList(newId);
-      renderNotesTab(newId);
-      renderDesignTab(newId);
-      renderDesignSpecTab(newId);
-      renderDocs();
-      renderDomainDocs();
-      renderSidebar();
-      renderScheduleCards();
-
-      // Navigate to the new feature
-      showView(newId, document.querySelector(`[data-view="${newId}"]`));
-      showToast('Feature imported successfully');
-    } catch (err) {
-      alert('Import failed: ' + err.message);
-    }
-  };
-  reader.readAsText(file);
-  event.target.value = '';
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-// USER IDENTITY & SETTINGS
-// ══════════════════════════════════════════════════════════════════════════
-function loadIdentity() {
-  return {
-    name: localStorage.getItem('fh_user_name') || '',
-    role: localStorage.getItem('fh_user_role') || '',
-  };
-}
-
-function renderIdentity() {
-  const { name, role } = loadIdentity();
-  const el = document.getElementById('user-identity');
-  if (!el) return;
-  if (name) {
-    el.textContent = role ? name + ' · ' + role : name;
-  } else {
-    el.innerHTML = '<span style="color:var(--accent);font-size:11px">+ Add your name & role</span>';
-  }
-}
-
-// First-time welcome modal
-function editIdentity() {
-  document.getElementById('identity-name').value = loadIdentity().name;
-  document.getElementById('identity-role-first').value = loadIdentity().role;
-  document.getElementById('identity-modal').style.display = 'flex';
-  setTimeout(() => document.getElementById('identity-name').focus(), 50);
-}
-
-function saveIdentity() {
-  const name = document.getElementById('identity-name').value.trim();
-  const role = document.getElementById('identity-role-first').value.trim();
-  if (!name) { document.getElementById('identity-name').focus(); return; }
-  localStorage.setItem('fh_user_name', name);
-  localStorage.setItem('fh_user_role', role);
-  document.getElementById('identity-modal').style.display = 'none';
-  renderIdentity();
-  if (_firstLaunch) {
-    _firstLaunch = false;
-    const firstFeature = getAllFeatures()[0];
-    if (firstFeature) showFeature(firstFeature.id);
-  }
-}
-
-// Settings panel
-function openSettings() {
-  const { name, role } = loadIdentity();
-  document.getElementById('settings-name').value = name;
-  document.getElementById('settings-role').value = role;
-  document.getElementById('settings-panel').style.display = 'block';
-  document.getElementById('settings-overlay').style.display = 'block';
-}
-
-function closeSettings() {
-  document.getElementById('settings-panel').style.display = 'none';
-  document.getElementById('settings-overlay').style.display = 'none';
-}
-
-function saveSettings() {
-  const name = document.getElementById('settings-name').value.trim();
-  const role = document.getElementById('settings-role').value.trim();
-  if (!name) { document.getElementById('settings-name').focus(); return; }
-  localStorage.setItem('fh_user_name', name);
-  localStorage.setItem('fh_user_role', role);
-  renderIdentity();
-  closeSettings();
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -7948,34 +8360,6 @@ async function manualSync() {
   await syncToGit();
 }
 
-function initSampleDefaults() {
-  const DEFAULTS = {
-    currentStep: 'Finalizing the new dashboard layout and information architecture',
-    calls: [{ id:'call-001', callName:'Customer Discovery — Acme Field Services', callType:'customer', status:'Completed', customer:'Acme Field Services', relatedCustomer:'Acme Field Services', callCategory:'Discovery', date:'2026-03-05', attendees:'Jordan Lee (PM), You (Designer), Marcus Webb (Acme — Operations Director)', departments:'', notesLink:'', links:[], transcript:'Marcus: The biggest issue is that our techs can not find the job history quickly. They have to click through three screens just to get to it. On a good day that takes 30 seconds, in the field that is unacceptable.\n\nJordan: What do they use most often once they are in the portal?\n\nMarcus: Jobs list first, then invoices. The dashboard is basically ignored — nobody understands what the numbers mean.', summary:'**Key findings:**\n- The current top-nav + tabs layout requires too many clicks to reach frequently used pages\n- Techs primarily use: Jobs List, then Invoices\n- The dashboard is ignored because the metrics shown are not relevant to field workers\n- Marcus wants a persistent left-nav so common destinations are always one click away\n\n**Quotes:**\n> "They have to click through three screens just to get to it. On a good day that is 30 seconds, in the field that is unacceptable."\n\n**Next steps:**\n- Share low-fi wireframes for review before next call\n- Confirm which dashboard metrics matter to field ops vs. management', prepResearchQs:'- What tasks do customers complete most frequently in the portal?\n- Where do they currently get stuck or confused?\n- How do they feel about the current navigation structure?', prepWhoTalking:'Marcus Webb, Operations Director at Acme Field Services. Managing 45 field technicians across 3 regions. Heavy portal user — logs in daily to review job status and approve invoices.', prepWarmUpQs:'- How long have you been using the portal?\n- Walk me through a typical day — when do you open the portal and why?', prepTopicQs:'- What are the top 3 things you do in the portal every week?\n- Is there anything you wish you could find faster?\n- Have you ever given up trying to do something and called support instead?', prepListenFor:'- Specific page names or features they mention repeatedly\n- Frustration signals around navigation or discoverability\n- Workarounds they have invented (these reveal the biggest gaps)', label:'', link:'', stage:'' }],
-    domainKnowledge: [
-      { id:'dk-001', title:'What Domain Knowledge is for', content:'Use this tab to capture things you **learned** — not things you were told.\n\nGood examples:\n- Edge cases you discovered while designing\n- Mental models customers use that are different from the product team\'s assumptions\n- Constraints that are not in the PRD but are real\n- Institutional knowledge from engineers or CS that would take hours to re-discover\n\nBad examples:\n- Copying the PRD summary here (that belongs in Context)\n- Meeting notes (those belong in Calls)\n\n> If you had to figure it out, write it down here so you never have to figure it out again.' },
-      { id:'dk-002', title:'Portal user roles and access levels', content:'There are three distinct user types in the portal, each with different needs:\n\n| Role | Primary use | Key constraint |\n|---|---|---|\n| **Field Technician** | View assigned jobs, update job status, upload photos | Read-only on invoices and pricing |\n| **Office Manager** | Approve invoices, manage schedules, view reports | Cannot create new customer accounts |\n| **Owner / Admin** | Full access — settings, billing, user management | Usually less frequent, higher-stakes actions |\n\n**Design implication:** The navigation structure should optimize for Field Technician and Office Manager workflows. Admin tasks can be buried in a Settings area.' }
-    ],
-    ddocEntries: [{ id:'dde-001', title:'Portal navigation — research and prior art', content:'## Background\n\nThe current portal was built in 2021 using a top-nav + tab pattern inherited from a legacy enterprise app. Since then, the feature set has grown from 8 pages to 31 pages — the top nav has become a megamenu that users find overwhelming.\n\n## What the data shows\n\n| Page | % of sessions that include this page |\n|---|---|\n| Jobs List | 78% |\n| Job Detail | 71% |\n| Invoices | 52% |\n| Dashboard | 14% |\n| Settings | 8% |\n\n**Interpretation:** Jobs and Invoices are the core workflow. The dashboard is an afterthought. Settings is rarely needed.\n\n## Design direction\n\nA persistent left sidebar with the top 5 destinations always visible reduces click depth from an average of 3.2 to 1.4 for the most common tasks (Jobs List, Job Detail, Invoices).\n\n## Risks\n\n- Customers with very small screens (older Android devices) may struggle with a persistent sidebar — consider a collapsible version\n- The transition will require onboarding communication — power users have muscle memory for the current nav' }],
-    notesEntries: [
-      { id:'note-001', text:'Slack from Jordan (Mar 6): Engineering confirmed they can support a collapsible sidebar without backend changes. Just CSS + localStorage preference. Green light for Phase 1.', createdAt:1741305600000 },
-      { id:'note-002', text:'TODO: follow up with CS team on top 5 support ticket categories — they track these in Zendesk. Could validate our nav priorities.', createdAt:1741219200000 }
-    ],
-    designFiles: [{ id:'df-001', title:'Portal Redesign — Working File', figmaLabel:'Open in Figma', figmaUrl:'https://figma.com', protoLabel:'View Prototype', protoUrl:'https://figma.com', screenshots:[], notes:'Main working file. Includes: discovery synthesis, IA map, wireframes v1–v3, final prototype.', createdAt:1741219200000 }],
-    specLinks: [{ id:'sl-001', label:'Handoff Spec (Figma)', url:'https://figma.com' }]
-  };
-  const existing = STATE['sample-feature'] || {};
-  const merged = { ...existing };
-  Object.entries(DEFAULTS).forEach(([k, v]) => {
-    if (merged[k] === undefined || (Array.isArray(merged[k]) && merged[k].length === 0)) {
-      merged[k] = v;
-    }
-  });
-  STATE['sample-feature'] = merged;
-  // Persist defaults to localStorage so STATE resets don't wipe them
-  localStorage.setItem('fh_state', JSON.stringify(STATE));
-}
-
 
 async function checkForUpdate() {
   try {
@@ -7988,10 +8372,612 @@ async function checkForUpdate() {
   } catch { /* offline or no remote — ignore */ }
 }
 
+// ═══════════════════════════════════════════════════════════════
+//  GITHUB SYNC
+// ═══════════════════════════════════════════════════════════════
+
+const _gh = {
+  saveTimer: null,
+  status:    'idle',   // 'idle'|'loading'|'saving'|'saved'|'error'|'unconfigured'
+  lastSaved: null,
+  error:     null,
+};
+
+function _ghConfig() {
+  try { return JSON.parse(localStorage.getItem('fh_gh_config') || 'null'); }
+  catch { return null; }
+}
+function _ghSaveConfig(cfg) {
+  localStorage.setItem('fh_gh_config', JSON.stringify(cfg));
+}
+function _ghGetSHA() {
+  return localStorage.getItem('fh_gh_sha') || null;
+}
+function _ghSetSHA(sha) {
+  if (sha) localStorage.setItem('fh_gh_sha', sha);
+  else localStorage.removeItem('fh_gh_sha');
+}
+
+function _ghApiUrl(cfg) {
+  return `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/${cfg.path || 'data.json'}`;
+}
+function _ghHeaders(cfg) {
+  return {
+    'Authorization': `Bearer ${cfg.token}`,
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+    'Content-Type': 'application/json',
+  };
+}
+
+// ── UI ────────────────────────────────────────────────────────────────
+function updateGHSyncUI() {
+  const row   = document.getElementById('gh-sync-row');
+  const empty = document.getElementById('gh-sync-empty');
+  const dot   = document.getElementById('gh-sync-dot');
+  const lbl   = document.getElementById('gh-sync-label');
+  if (!row) return;
+  const cfg = _ghConfig();
+  if (!cfg || !cfg.token || !cfg.owner || !cfg.repo) {
+    row.style.display = 'none';
+    if (empty) empty.style.display = '';
+    return;
+  }
+  row.style.display = 'flex';
+  if (empty) empty.style.display = 'none';
+  dot.className = 'sync-dot';
+  if (_gh.status === 'loading') {
+    dot.classList.add('syncing');
+    lbl.textContent = 'Loading from GitHub…';
+  } else if (_gh.status === 'saving') {
+    dot.classList.add('syncing');
+    lbl.textContent = 'Saving to GitHub…';
+  } else if (_gh.status === 'saved') {
+    dot.classList.add('synced');
+    const hhmm = _gh.lastSaved
+      ? _gh.lastSaved.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+      : '';
+    lbl.textContent = 'GitHub saved' + (hhmm ? ' ' + hhmm : '');
+  } else if (_gh.status === 'error') {
+    dot.classList.add('error');
+    lbl.textContent = 'GitHub sync failed' + (_gh.error ? ': ' + _gh.error : '');
+  } else {
+    lbl.textContent = 'GitHub sync idle';
+  }
+  // Also refresh the status shown inside settings if open
+  _ghRefreshSettingsStatus();
+}
+
+// ── Core GitHub I/O ───────────────────────────────────────────────────
+function _ghB64Encode(str) {
+  // TextEncoder handles all Unicode correctly (emoji, CJK, etc.)
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  const chunk = 8192;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}
+function _ghB64Decode(b64) {
+  const binary = atob(b64.replace(/\n/g, ''));
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
+}
+
+async function _ghFetchFile(cfg) {
+  const url = _ghApiUrl(cfg) + `?ref=${encodeURIComponent(cfg.branch || 'main')}&t=${Date.now()}`;
+  const res = await fetch(url, { headers: _ghHeaders(cfg) });
+  if (res.status === 404) return null;
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `GitHub API ${res.status}`);
+  }
+  const json = await res.json();
+  _ghSetSHA(json.sha);
+  const text = _ghB64Decode(json.content || '');
+  if (!text) return null;
+  return JSON.parse(text);
+}
+
+async function _ghPutFile(cfg, data) {
+  const content = _ghB64Encode(JSON.stringify(data, null, 2));
+  const body = {
+    message: 'feat-hub: auto-sync',
+    content,
+    branch: cfg.branch || 'main',
+  };
+  const sha = _ghGetSHA();
+  if (sha) body.sha = sha;
+  const res = await fetch(_ghApiUrl(cfg), {
+    method: 'PUT',
+    headers: _ghHeaders(cfg),
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `HTTP ${res.status}`);
+  }
+  // Update SHA for next write — response body may be large, parse safely
+  try {
+    const json = await res.json();
+    _ghSetSHA(json.content?.sha || null);
+  } catch {
+    // SHA will be re-fetched on next load — not critical
+    _ghSetSHA(null);
+  }
+}
+
+
+// ── Public actions ────────────────────────────────────────────────────
+async function initGHSync() {
+  const cfg = _ghConfig();
+  if (!cfg || !cfg.token || !cfg.owner || !cfg.repo) {
+    updateGHSyncUI();
+    return;
+  }
+  _gh.status = 'loading';
+  updateGHSyncUI();
+  try {
+    const data = await _ghFetchFile(cfg);
+    if (data) {
+      _ghMergeData(data);
+      STATE = loadState();
+      init();
+    }
+    _gh.status = 'saved';
+    _gh.lastSaved = new Date();
+  } catch(e) {
+    _gh.status = 'error';
+    _gh.error  = e.message;
+    console.warn('[gh-sync] Load failed:', e.message);
+  }
+  updateGHSyncUI();
+}
+
+async function _ghSaveNow() {
+  const cfg = _ghConfig();
+  if (!cfg || !cfg.token || !cfg.owner || !cfg.repo) return;
+  _gh.status = 'saving';
+  updateGHSyncUI();
+  try {
+    await _ghPutFile(cfg, getFullState());
+    _gh.status    = 'saved';
+    _gh.lastSaved = new Date();
+    _gh.error     = null;
+  } catch(e) {
+    _gh.status = 'error';
+    _gh.error  = e.message;
+    console.warn('[gh-sync] Save failed:', e.message);
+  }
+  updateGHSyncUI();
+}
+
+function scheduleGHSync() {
+  const cfg = _ghConfig();
+  if (!cfg || !cfg.token) return;
+  _gh.status = 'saving';
+  clearTimeout(_gh.saveTimer);
+  _gh.saveTimer = setTimeout(_ghSaveNow, 1000);
+  updateGHSyncUI();
+}
+
+// ── Settings helpers ─────────────────────────────────────────────────
+function openGHSettings() {
+  const cfg = _ghConfig() || {};
+  const el = id => document.getElementById(id);
+  if (el('gh-owner'))  el('gh-owner').value  = cfg.owner  || '';
+  if (el('gh-repo'))   el('gh-repo').value   = cfg.repo   || '';
+  if (el('gh-branch')) el('gh-branch').value = cfg.branch || 'main';
+  if (el('gh-token'))  el('gh-token').value  = cfg.token  || '';
+  if (el('gh-path'))   el('gh-path').value   = cfg.path   || 'data.json';
+  _ghCheckConnectBtn();
+  _ghRefreshSettingsStatus();
+}
+
+function _ghCheckConnectBtn() {
+  const btn = document.getElementById('gh-connect-btn');
+  if (!btn) return;
+  const v = id => (document.getElementById(id)?.value || '').trim();
+  const filled = v('gh-owner') && v('gh-repo') && v('gh-token');
+  btn.disabled = !filled;
+  btn.style.opacity = filled ? '1' : '0.45';
+  btn.style.cursor  = filled ? 'pointer' : 'default';
+}
+
+function _ghRefreshSettingsStatus() {
+  const el  = document.getElementById('gh-settings-status');
+  const dot = document.getElementById('gh-section-dot');
+  const dis = document.getElementById('gh-disconnect-btn');
+  if (!el) return;
+  const cfg = _ghConfig();
+  if (dot) dot.className = 'sync-dot';
+  // connected = has saved config AND not in error state
+  const hasConfig  = !!(cfg && cfg.token);
+  const isError    = _gh.status === 'error';
+  const isConnected = hasConfig && !isError;
+  // Fields shown only when NOT successfully connected
+  const fieldsCard = document.getElementById('gh-fields-card');
+  const connectRow = document.getElementById('gh-connect-btn-row');
+  if (fieldsCard) fieldsCard.style.display = isConnected ? 'none' : 'block';
+  if (connectRow) connectRow.style.display = isConnected ? 'none' : 'block';
+  if (dis) dis.style.display = isConnected ? 'inline-block' : 'none';
+  if (!hasConfig) {
+    el.style.color = 'var(--text-muted)';
+    el.textContent = 'Not connected';
+    return;
+  }
+  if (_gh.status === 'saved') {
+    const hhmm = _gh.lastSaved
+      ? _gh.lastSaved.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+      : '';
+    if (dot) dot.classList.add('synced');
+    el.style.color = 'var(--text-muted)';
+    el.textContent = `${cfg.owner}/${cfg.repo}` + (hhmm ? ' · saved ' + hhmm : '');
+  } else if (_gh.status === 'error') {
+    if (dot) dot.classList.add('error');
+    el.style.color = 'var(--red, #ef4444)';
+    el.textContent = 'Error: ' + (_gh.error || 'unknown');
+  } else if (_gh.status === 'loading' || _gh.status === 'saving') {
+    if (dot) dot.classList.add('syncing');
+    el.style.color = 'var(--text-muted)';
+    el.textContent = _gh.status === 'loading' ? 'Loading…' : 'Saving…';
+  } else {
+    el.style.color = 'var(--text-muted)';
+    el.textContent = cfg.owner ? `${cfg.owner}/${cfg.repo}` : 'Not connected';
+  }
+}
+
+async function saveGHConfig() {
+  const val = id => document.getElementById(id)?.value.trim();
+  const owner  = val('gh-owner');
+  const repo   = val('gh-repo');
+  const branch = val('gh-branch') || 'main';
+  const token  = val('gh-token');
+  const path   = val('gh-path')   || 'data.json';
+
+  const connectBtn = document.getElementById('gh-connect-btn');
+  const statusEl   = document.getElementById('gh-settings-status');
+
+  // Disable button and show connecting state
+  if (connectBtn) { connectBtn.disabled = true; connectBtn.textContent = 'Connecting…'; connectBtn.style.opacity = '0.7'; connectBtn.style.cursor = 'default'; }
+  if (statusEl)   { statusEl.style.color = 'var(--text-muted)'; statusEl.textContent = 'Testing connection…'; }
+
+  const cfg = { owner, repo, branch, token, path };
+  try {
+    // 1. Verify repo is accessible
+    const verifyRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers: _ghHeaders(cfg) });
+    if (!verifyRes.ok) throw new Error(`Cannot access repo (${verifyRes.status})`);
+
+    if (statusEl) statusEl.textContent = 'Writing data…';
+
+    // 2. Fetch existing file SHA (prevents 422 if file already exists on GitHub)
+    try { await _ghFetchFile(cfg); } catch { _ghSetSHA(null); }
+
+    // 3. Write current state to GitHub
+    await _ghPutFile(cfg, getFullState());
+
+    // 4. Only save config locally after a confirmed successful write
+    _ghSaveConfig(cfg);
+    _gh.status    = 'saved';
+    _gh.lastSaved = new Date();
+    _gh.error     = null;
+  } catch(e) {
+    _gh.status = 'error';
+    _gh.error  = e.message;
+    // Restore connect button so user can retry
+    if (connectBtn) { connectBtn.textContent = 'Connect'; _ghCheckConnectBtn(); }
+  }
+  updateGHSyncUI();
+}
+
+function disconnectGHSync() {
+  const modal = document.getElementById('gh-disconnect-modal');
+  if (modal) modal.style.display = 'flex';
+}
+function _ghCancelDisconnect() {
+  const modal = document.getElementById('gh-disconnect-modal');
+  if (modal) modal.style.display = 'none';
+}
+function _ghDoDisconnect() {
+  const modal = document.getElementById('gh-disconnect-modal');
+  if (modal) modal.style.display = 'none';
+  const prevCfg = _ghConfig();  // capture before removing
+  localStorage.removeItem('fh_gh_config');
+  localStorage.removeItem('fh_gh_sha');
+  _gh.status = 'idle';
+  _gh.error  = null;
+  updateGHSyncUI();
+  // Repopulate fields with previous values so user doesn't have to retype
+  if (prevCfg) {
+    const el = id => document.getElementById(id);
+    if (el('gh-owner'))  el('gh-owner').value  = prevCfg.owner  || '';
+    if (el('gh-repo'))   el('gh-repo').value   = prevCfg.repo   || '';
+    if (el('gh-branch')) el('gh-branch').value = prevCfg.branch || 'main';
+    if (el('gh-token'))  el('gh-token').value  = prevCfg.token  || '';
+    if (el('gh-path'))   el('gh-path').value   = prevCfg.path   || 'data.json';
+  }
+  _ghCheckConnectBtn();
+  _ghRefreshSettingsStatus();
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+//  FILE STORAGE  (File System Access API)
+// ═══════════════════════════════════════════════════════════════
+
+const _fs = {
+  handle:    null,
+  supported: typeof window !== 'undefined' && typeof window.showSaveFilePicker === 'function',
+  saveTimer: null,
+  status:    'idle',   // 'idle'|'no-file'|'needs-permission'|'saving'|'saved'|'error'
+  lastSaved: null,
+  filename:  null,
+  fileSize:  null,     // bytes, updated after each save
+};
+
+// ── IndexedDB helpers (persist file handle across sessions) ───────────
+function _fsidb() {
+  return new Promise((res, rej) => {
+    const req = indexedDB.open('fh-fsapi', 1);
+    req.onupgradeneeded = () => req.result.createObjectStore('handles');
+    req.onsuccess = () => res(req.result);
+    req.onerror   = () => rej(req.error);
+  });
+}
+async function _fsGetStoredHandle() {
+  try {
+    const db = await _fsidb();
+    return await new Promise(res => {
+      const req = db.transaction('handles', 'readonly').objectStore('handles').get('data');
+      req.onsuccess = () => res(req.result || null);
+      req.onerror   = () => res(null);
+    });
+  } catch { return null; }
+}
+async function _fsStoreHandle(handle) {
+  try {
+    const db = await _fsidb();
+    await new Promise(res => {
+      const tx = db.transaction('handles', 'readwrite');
+      tx.objectStore('handles').put(handle, 'data');
+      tx.oncomplete = res;
+    });
+  } catch {}
+}
+async function _fsClearStoredHandle() {
+  try {
+    const db = await _fsidb();
+    await new Promise(res => {
+      const tx = db.transaction('handles', 'readwrite');
+      tx.objectStore('handles').delete('data');
+      tx.oncomplete = res;
+    });
+  } catch {}
+}
+
+// ── UI ────────────────────────────────────────────────────────────────
+function updateFileSyncUI() {
+  if (!_fs.supported) return;
+  const dot = document.getElementById('file-sync-dot');
+  const lbl = document.getElementById('file-sync-label');
+  const btn = document.getElementById('file-connect-btn');
+  const nameDisplay = document.getElementById('file-name-display');
+  if (!dot) return;
+  dot.className = 'sync-dot';
+  const connected = _fs.status !== 'no-file';
+  // Filename display — right side of status row
+  if (nameDisplay) {
+    if (_fs.filename && connected) {
+      const nameText = document.getElementById('file-name-text');
+      if (nameText) {
+        const sizeStr = _fs.fileSize != null
+          ? ' · ' + (_fs.fileSize >= 1024 ? Math.round(_fs.fileSize / 1024) + ' KB' : _fs.fileSize + ' B')
+          : '';
+        nameText.textContent = _fs.filename + sizeStr;
+      }
+      nameDisplay.style.display = 'flex';
+    } else {
+      nameDisplay.style.display = 'none';
+    }
+  }
+  // Button label and disabled state
+  if (btn) {
+    if (connected) {
+      btn.innerHTML = '<span class="material-symbols-rounded" style="font-size:14px;margin-right:4px">download</span>Download';
+      btn.style.display = 'inline-flex';
+      btn.style.alignItems = 'center';
+      btn.onclick = fsDownloadBackup;
+    } else {
+      btn.innerHTML = 'Connect file';
+      btn.style.display = '';
+      btn.style.alignItems = '';
+      btn.onclick = fsConnectFile;
+    }
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+  }
+  if (_fs.status === 'no-file') {
+    lbl.textContent = 'No data file connected';
+  } else if (_fs.status === 'needs-permission') {
+    dot.classList.add('error');
+    lbl.textContent = 'Permission needed — disconnect and reconnect the file';
+  } else if (_fs.status === 'saving') {
+    dot.classList.add('syncing');
+    lbl.textContent = 'Saving…';
+  } else if (_fs.status === 'saved') {
+    dot.classList.add('synced');
+    const hhmm = _fs.lastSaved
+      ? _fs.lastSaved.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+      : '';
+    lbl.textContent = 'Saved' + (hhmm ? ' at ' + hhmm : '');
+  } else if (_fs.status === 'error') {
+    dot.classList.add('error');
+    lbl.textContent = 'File save failed';
+  }
+}
+
+// ── Core file I/O ─────────────────────────────────────────────────────
+async function _fsSaveNow() {
+  if (!_fs.handle) return;
+  try {
+    const content = JSON.stringify(getFullState(), null, 2);
+    const writable = await _fs.handle.createWritable();
+    await writable.write(content);
+    await writable.close();
+    _fs.status    = 'saved';
+    _fs.lastSaved = new Date();
+    _fs.fileSize  = new Blob([content]).size;
+  } catch(e) {
+    _fs.status = 'error';
+    console.warn('[file-storage] Save failed:', e.message);
+  }
+  updateFileSyncUI();
+}
+
+function scheduleFileSave() {
+  if (!_fs.handle) return;
+  _fs.status = 'saving';
+  clearTimeout(_fs.saveTimer);
+  _fs.saveTimer = setTimeout(_fsSaveNow, 1000);
+  updateFileSyncUI();
+}
+
+async function _fsLoadIntoStorage() {
+  if (!_fs.handle) return false;
+  try {
+    const text = await (await _fs.handle.getFile()).text();
+    const data = JSON.parse(text);
+    const isEmpty = v => v === undefined || v === null || v === '' ||
+                         (Array.isArray(v) && v.length === 0) ||
+                         (typeof v === 'object' && !Array.isArray(v) && Object.keys(v).length === 0);
+    if (data.fh_state) {
+      const cur = loadState();
+      let changed = false;
+      Object.keys(data.fh_state).forEach(fid => {
+        const sf = data.fh_state[fid];
+        if (!cur[fid]) { cur[fid] = sf; changed = true; return; }
+        Object.keys(sf).forEach(k => {
+          if (!isEmpty(sf[k]) && isEmpty(cur[fid][k])) { cur[fid][k] = sf[k]; changed = true; }
+        });
+      });
+      if (changed) localStorage.setItem('fh_state', JSON.stringify(cur));
+    }
+    if (data.fh_custom_features) localStorage.setItem('fh_custom_features', JSON.stringify(data.fh_custom_features));
+    if (data.fh_hidden_builtins)  localStorage.setItem('fh_hidden_builtins',  JSON.stringify(data.fh_hidden_builtins));
+    if (data.fh_deleted_features) localStorage.setItem('fh_deleted_features', JSON.stringify(data.fh_deleted_features));
+    if (data.fh_feature_order)    localStorage.setItem('fh_feature_order',    JSON.stringify(data.fh_feature_order));
+    return true;
+  } catch(e) {
+    console.warn('[file-storage] Load failed:', e.message);
+    return false;
+  }
+}
+
+// ── Public actions ────────────────────────────────────────────────────
+async function initFileStorage() {
+  if (!_fs.supported) return;
+  const handle = await _fsGetStoredHandle();
+  if (!handle) { _fs.status = 'no-file'; updateFileSyncUI(); return; }
+  try {
+    const perm = await handle.queryPermission({ mode: 'readwrite' });
+    if (perm === 'granted') {
+      _fs.handle   = handle;
+      _fs.filename = handle.name;
+      const loaded = await _fsLoadIntoStorage();
+      if (loaded) { STATE = loadState(); init(); }
+      _fs.status    = 'saved';
+      _fs.lastSaved = new Date();
+    } else {
+      _fs.handle   = handle;
+      _fs.filename = handle.name;
+      _fs.status   = 'needs-permission';
+    }
+  } catch { _fs.status = 'no-file'; }
+  updateFileSyncUI();
+}
+
+async function fsConnectFile() {
+  if (!_fs.supported) return;
+  // Re-grant permission for an already-stored handle
+  if (_fs.handle && _fs.status === 'needs-permission') {
+    try {
+      const perm = await _fs.handle.requestPermission({ mode: 'readwrite' });
+      if (perm === 'granted') {
+        const loaded = await _fsLoadIntoStorage();
+        if (loaded) { STATE = loadState(); init(); }
+        _fs.status    = 'saved';
+        _fs.lastSaved = new Date();
+        updateFileSyncUI();
+        return;
+      }
+    } catch {}
+  }
+  // Pick / create a new data file
+  try {
+    const handle = await window.showSaveFilePicker({
+      suggestedName: 'feature-hub-data.json',
+      types: [{ description: 'Feature Hub data', accept: { 'application/json': ['.json'] } }],
+    });
+    _fs.handle   = handle;
+    _fs.filename = handle.name;
+    await _fsStoreHandle(handle);
+    await _fsSaveNow();
+  } catch(e) {
+    if (e.name !== 'AbortError') { _fs.status = 'error'; updateFileSyncUI(); }
+  }
+}
+
+function fsDownloadBackup() {
+  const data = JSON.stringify(getFullState(), null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = 'feature-hub-data.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function fsLoadFromBackup() {
+  if (!window.showOpenFilePicker) {
+    alert('Your browser does not support this feature. Use Chrome or Edge.');
+    return;
+  }
+  try {
+    const [handle] = await window.showOpenFilePicker({
+      types: [{ description: 'Feature Hub backup', accept: { 'application/json': ['.json'] } }],
+      multiple: false,
+    });
+    const text = await (await handle.getFile()).text();
+    const data = JSON.parse(text);
+    if (data.fh_state)            localStorage.setItem('fh_state',            JSON.stringify(data.fh_state));
+    if (data.fh_custom_features)  localStorage.setItem('fh_custom_features',  JSON.stringify(data.fh_custom_features));
+    if (data.fh_hidden_builtins)  localStorage.setItem('fh_hidden_builtins',  JSON.stringify(data.fh_hidden_builtins));
+    if (data.fh_deleted_features) localStorage.setItem('fh_deleted_features', JSON.stringify(data.fh_deleted_features));
+    if (data.fh_feature_order)    localStorage.setItem('fh_feature_order',    JSON.stringify(data.fh_feature_order));
+    STATE = loadState();
+    init();
+    closeSettings();
+  } catch(e) {
+    if (e.name !== 'AbortError') console.error('[file-storage] Load from backup failed:', e.message);
+  }
+}
+
+async function fsDisconnectFile() {
+  await _fsClearStoredHandle();
+  _fs.handle   = null;
+  _fs.filename = null;
+  _fs.status   = 'no-file';
+  updateFileSyncUI();
+}
+
 async function initGitSync() {
   // Probe server
   try {
-    const res = await fetch(GIT_SYNC_URL.replace('/sync', ''), { method: 'GET', signal: AbortSignal.timeout(2000) });
+    const res = await fetch(GIT_SYNC_URL.replace('/sync', '/'), { method: 'GET', signal: AbortSignal.timeout(2000) });
     if (res.ok) {
       _gitSyncAvailable = true;
       _syncStatus = 'idle';
@@ -8018,67 +9004,214 @@ document.addEventListener('click', () => {
   }
 });
 </script>
-
-<!-- ── SETTINGS PANEL ── -->
+<!-- ═══════════════════════════════════════════════════════ SETTINGS PANEL -->
 <div id="settings-overlay" onclick="closeSettings()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998"></div>
-<div id="settings-panel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:480px;max-width:92vw;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 16px 48px rgba(0,0,0,.5);z-index:9999;overflow:hidden">
+<div id="settings-panel" style="display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;max-width:94vw;max-height:88vh;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 20px 60px rgba(0,0,0,.5);z-index:9999;overflow-y:auto">
+
   <!-- Header -->
-  <div style="padding:16px 16px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
-    <span style="font-size:13px;font-weight:700;color:var(--text)">Settings</span>
-    <button onclick="closeSettings()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);display:flex;padding:2px">
-      <span class="material-symbols-rounded" style="font-size:17px">close</span>
+  <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1">
+    <span style="font-size:14px;font-weight:700;color:var(--text)">Settings</span>
+    <button onclick="closeSettings()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);display:flex;align-items:center;padding:4px;border-radius:6px" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">
+      <span class="material-symbols-rounded" style="font-size:18px">close</span>
     </button>
   </div>
-  <!-- Account section -->
-  <div style="padding:14px 16px;border-bottom:1px solid var(--border)">
-    <div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px">Account</div>
-    <div style="margin-bottom:10px">
-      <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);display:block;margin-bottom:5px">Name</label>
-      <input id="settings-name" type="text" placeholder="e.g. Alex Kim" style="width:100%;padding:7px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')document.getElementById('settings-role').focus()" />
+
+  <!-- Account -->
+  <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+    <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);margin-bottom:12px">Account</div>
+    <div style="display:flex;align-items:flex-end;gap:10px">
+      <div style="flex:1">
+        <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:5px">Name</label>
+        <input id="settings-name" type="text" placeholder="e.g. Alex Kim" style="width:100%;box-sizing:border-box;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none;transition:border-color .15s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')document.getElementById('settings-role').focus()" />
+      </div>
+      <div style="flex:1">
+        <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:5px">Role</label>
+        <input id="settings-role" type="text" placeholder="e.g. Product Designer" style="width:100%;box-sizing:border-box;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none;transition:border-color .15s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')saveSettings()" />
+      </div>
+      <button onclick="saveSettings()" style="flex-shrink:0;padding:0 14px;height:33.5px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;font-size:12px;font-weight:600;cursor:pointer">Save</button>
     </div>
-    <div style="margin-bottom:12px">
-      <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);display:block;margin-bottom:5px">Role</label>
-      <input id="settings-role" type="text" placeholder="e.g. Senior Product Designer" style="width:100%;padding:7px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')saveSettings()" />
-    </div>
-    <button onclick="saveSettings()" style="padding:7px 14px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;font-size:12px;font-weight:600;cursor:pointer">Save</button>
   </div>
-  <!-- User Guide -->
-  <div style="padding:14px 16px;border-bottom:1px solid var(--border)">
-    <div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px">Help</div>
-    <a href="USER_GUIDE.html" target="_blank" onclick="closeSettings()" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface2);text-decoration:none;color:var(--text-muted);font-size:13px;transition:background .15s" onmouseover="this.style.background='var(--accent-dim)';this.style.color='var(--text)'" onmouseout="this.style.background='var(--surface2)';this.style.color='var(--text-muted)'">
-      <span class="material-symbols-rounded" style="font-size:16px">menu_book</span>
-      User Guide
-      <span class="material-symbols-rounded" style="font-size:14px;margin-left:auto">arrow_forward</span>
+
+  <!-- Help -->
+  <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+    <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px">Help</div>
+    <a href="USER_GUIDE.html" target="_blank" onclick="closeSettings()" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border);text-decoration:none;color:var(--text-muted);font-size:13px;transition:background .15s,border-color .15s" onmouseover="this.style.background='var(--accent-dim)';this.style.borderColor='var(--accent)';this.style.color='var(--text)'" onmouseout="this.style.background='var(--surface2)';this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">
+      <span class="material-symbols-rounded" style="font-size:17px">menu_book</span>
+      <span>User Guide</span>
+      <span class="material-symbols-rounded" style="font-size:15px;margin-left:auto">arrow_forward</span>
     </a>
   </div>
-  <!-- Theme -->
-  <div style="padding:14px 16px">
-    <div style="font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px">Appearance</div>
-    <button onclick="toggleTheme()" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius-sm);background:var(--surface2);border:none;width:100%;text-align:left;color:var(--text-muted);font-size:13px;cursor:pointer;transition:background .15s" onmouseover="this.style.background='var(--accent-dim)';this.style.color='var(--text)'" onmouseout="this.style.background='var(--surface2)';this.style.color='var(--text-muted)'">
-      <span class="material-symbols-rounded" style="font-size:16px">contrast</span>
+
+  <!-- GitHub Sync -->
+  <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim)">GitHub Sync</div>
+      <button onclick="disconnectGHSync()" id="gh-disconnect-btn" style="display:none;padding:3px 10px;background:none;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted);font-size:11px;cursor:pointer" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">Disconnect</button>
+    </div>
+    <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px">Backs up your data to a private GitHub repo on every change.</div>
+    <!-- Status -->
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:14px">
+      <div class="sync-dot" id="gh-section-dot"></div>
+      <span id="gh-settings-status" style="font-size:12px;color:var(--text-muted);flex:1">Not connected</span>
+    </div>
+    <!-- Fields card — hidden when connected -->
+    <div id="gh-fields-card" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:12px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div>
+          <label style="font-size:11px;font-weight:600;color:var(--text-dim);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em">Owner</label>
+          <input id="gh-owner" type="text" placeholder="your-username" oninput="_ghCheckConnectBtn()" style="width:100%;box-sizing:border-box;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none;transition:border-color .15s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:600;color:var(--text-dim);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em">Repository</label>
+          <input id="gh-repo" type="text" placeholder="my-repo" oninput="_ghCheckConnectBtn()" style="width:100%;box-sizing:border-box;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none;transition:border-color .15s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div>
+          <label style="font-size:11px;font-weight:600;color:var(--text-dim);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em">Branch</label>
+          <input id="gh-branch" type="text" placeholder="main" style="width:100%;box-sizing:border-box;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none;transition:border-color .15s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:600;color:var(--text-dim);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em">File path</label>
+          <input id="gh-path" type="text" placeholder="data.json" style="width:100%;box-sizing:border-box;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none;transition:border-color .15s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+        </div>
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;color:var(--text-dim);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em">Personal Access Token</label>
+        <input id="gh-token" type="password" placeholder="ghp_xxxxxxxxxxxx" oninput="_ghCheckConnectBtn()" style="width:100%;box-sizing:border-box;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none;font-family:monospace;transition:border-color .15s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+        <div style="font-size:11px;color:var(--text-dim);margin-top:5px">Needs <code style="background:var(--surface);padding:1px 4px;border-radius:3px">repo</code> scope · stored locally · only sent to the GitHub API</div>
+      </div>
+    </div>
+    <div id="gh-connect-btn-row">
+      <button id="gh-connect-btn" onclick="saveGHConfig()" disabled style="padding:0 16px;height:33.5px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;font-size:12px;font-weight:600;cursor:default;opacity:0.45;transition:opacity .15s">Connect</button>
+    </div>
+  </div>
+
+  <!-- Data File -->
+  <div id="file-sync-row" style="padding:16px 20px;border-bottom:1px solid var(--border)">
+    <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px">Data File</div>
+    <div style="font-size:12px;color:var(--text-dim);margin-bottom:10px">Auto-save to a local JSON file, or restore your workspace from a backup.</div>
+    <!-- Status row: dot + label on left, filename on right -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <div class="sync-dot" id="file-sync-dot"></div>
+      <span id="file-sync-label" style="font-size:12px;color:var(--text-muted)">No file connected</span>
+      <span id="file-name-display" style="display:none;align-items:center;gap:4px;font-size:12px;color:var(--text-dim);margin-left:auto;overflow:hidden;max-width:220px">
+        <span class="material-symbols-rounded" style="font-size:14px;flex-shrink:0">description</span>
+        <span id="file-name-text" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+      </span>
+    </div>
+    <!-- Auto-save backup -->
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 12px;margin-bottom:8px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px">
+        <div style="font-size:12px;font-weight:600;color:var(--text)">Auto-save backup</div>
+        <button onclick="fsConnectFile()" id="file-connect-btn" style="flex-shrink:0;padding:0 14px;height:33.5px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;font-size:12px;font-weight:600;cursor:pointer">Connect file</button>
+      </div>
+      <div style="font-size:11px;color:var(--text-dim);line-height:1.5">Saves every change to a local JSON file. Put it in iCloud or Dropbox for a passive copy.</div>
+    </div>
+    <!-- Restore from backup -->
+    <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px">
+        <div style="font-size:12px;font-weight:600;color:var(--text)">Restore from backup</div>
+        <button onclick="fsLoadFromBackup()" style="flex-shrink:0;padding:0 14px;height:33.5px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:4px"><span class="material-symbols-rounded" style="font-size:14px">upload</span>Load from backup</button>
+      </div>
+      <div style="font-size:11px;color:var(--text-dim);line-height:1.5">Load any <code style="background:var(--surface);padding:1px 4px;border-radius:3px">.json</code> backup file to restore your full workspace.</div>
+    </div>
+    <div style="font-size:11px;color:var(--text-dim);margin-top:8px">Chrome and Edge only — not supported in Safari or Firefox.</div>
+  </div>
+
+  <!-- Appearance -->
+  <div style="padding:16px 20px">
+    <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px">Appearance</div>
+    <button onclick="toggleTheme()" style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border);width:100%;text-align:left;color:var(--text-muted);font-size:13px;cursor:pointer;transition:background .15s,border-color .15s" onmouseover="this.style.background='var(--accent-dim)';this.style.borderColor='var(--accent)';this.style.color='var(--text)'" onmouseout="this.style.background='var(--surface2)';this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">
+      <span class="material-symbols-rounded" style="font-size:17px">contrast</span>
       Toggle light / dark theme
     </button>
   </div>
+
 </div>
 
-<!-- ── FIRST TIME MODAL (name + role only) ── -->
-<div id="identity-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;align-items:center;justify-content:center">
-  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 28px 24px;width:360px;box-shadow:0 8px 32px rgba(0,0,0,.5)">
-    <h2 style="font-size:16px;font-weight:700;margin-bottom:6px;color:var(--text)">Welcome to Feature Hub</h2>
-    <p style="font-size:13px;color:var(--text-muted);margin-bottom:20px;line-height:1.5">Enter your name and role — shown in the sidebar. You can change these anytime in Settings.</p>
-    <div style="margin-bottom:14px">
-      <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);display:block;margin-bottom:6px">Your Name</label>
-      <input id="identity-name" type="text" placeholder="e.g. Alex Kim" style="width:100%;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')document.getElementById('identity-role-first').focus()" />
-    </div>
-    <div style="margin-bottom:22px">
-      <label style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-muted);display:block;margin-bottom:6px">Your Role</label>
-      <input id="identity-role-first" type="text" placeholder="e.g. Senior Product Designer" style="width:100%;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')saveIdentity()" />
-    </div>
-    <div style="display:flex;justify-content:flex-end">
-      <button onclick="saveIdentity()" style="padding:7px 16px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;font-size:13px;font-weight:600;cursor:pointer">Get Started</button>
+<!-- ═══════════════════════════════════════════ GH DISCONNECT CONFIRM MODAL -->
+<div id="gh-disconnect-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10001;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);width:360px;max-width:90vw;box-shadow:0 16px 48px rgba(0,0,0,.4);padding:24px">
+    <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px">Disconnect GitHub Sync?</div>
+    <div style="font-size:13px;color:var(--text-muted);line-height:1.5;margin-bottom:20px">Your saved data on GitHub is not deleted. Your local data is not affected.</div>
+    <div style="display:flex;justify-content:flex-end;gap:10px">
+      <button onclick="_ghCancelDisconnect()" style="padding:7px 16px;background:none;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted);font-size:13px;cursor:pointer" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">Cancel</button>
+      <button onclick="_ghDoDisconnect()" style="padding:7px 16px;background:var(--red,#ef4444);border:none;border-radius:var(--radius-sm);color:#fff;font-size:13px;font-weight:600;cursor:pointer">Disconnect</button>
     </div>
   </div>
 </div>
+
+<!-- ═══════════════════════════════════════════════════════ IDENTITY MODAL -->
+<div id="identity-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);width:460px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,.5);overflow:hidden">
+
+    <!-- Step 1: Identity -->
+    <div id="welcome-step1" style="padding:28px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);margin-bottom:14px">Step 1 of 2</div>
+      <h2 style="font-size:17px;font-weight:700;color:var(--text);margin:0 0 6px">Welcome to Feature Hub</h2>
+      <p style="font-size:13px;color:var(--text-muted);margin:0 0 20px;line-height:1.5">Enter your name and role — they'll appear in the sidebar so you always know whose workspace this is.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+        <div>
+          <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">Your name *</label>
+          <input id="identity-name" type="text" placeholder="e.g. Ying Zhang" style="width:100%;box-sizing:border-box;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;outline:none;transition:border-color .15s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')saveIdentity()" />
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:4px">Role</label>
+          <input id="identity-role-first" type="text" placeholder="e.g. Staff Product Designer" style="width:100%;box-sizing:border-box;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;outline:none;transition:border-color .15s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')saveIdentity()" />
+        </div>
+      </div>
+      <button onclick="saveIdentity()" style="width:100%;padding:9px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer">Next →</button>
+    </div>
+
+    <!-- Step 2: GitHub Sync (optional) -->
+    <div id="welcome-step2" style="display:none;padding:28px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);margin-bottom:14px">Step 2 of 2</div>
+      <h2 style="font-size:17px;font-weight:700;color:var(--text);margin:0 0 6px">Back up your data</h2>
+      <p style="font-size:13px;color:var(--text-muted);margin:0 0 10px;line-height:1.5">Your data lives in this browser only. If you clear your browser or switch machines, it's gone. Connect GitHub Sync to back it up automatically on every change.</p>
+      <div style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;margin-bottom:16px">
+        <span class="material-symbols-rounded" style="font-size:13px;color:var(--text-dim)">info</span>
+        <span style="font-size:11px;color:var(--text-dim)">Optional — find this later in <strong style="color:var(--text-muted)">Settings → GitHub Sync</strong></span>
+      </div>
+      <!-- Fields card -->
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:4px">Owner</label>
+            <input id="wgh-owner" type="text" placeholder="your-username" style="width:100%;box-sizing:border-box;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none;transition:border-color .15s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:4px">Repository</label>
+            <input id="wgh-repo" type="text" placeholder="my-repo" style="width:100%;box-sizing:border-box;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none;transition:border-color .15s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:4px">Branch</label>
+            <input id="wgh-branch" type="text" placeholder="main" style="width:100%;box-sizing:border-box;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none;transition:border-color .15s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:4px">File path</label>
+            <input id="wgh-path" type="text" placeholder="data.json" style="width:100%;box-sizing:border-box;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none;transition:border-color .15s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+          </div>
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:4px">Personal Access Token</label>
+          <input id="wgh-token" type="password" placeholder="ghp_xxxxxxxxxxxx" style="width:100%;box-sizing:border-box;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none;font-family:monospace;transition:border-color .15s" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" />
+          <div style="font-size:11px;color:var(--text-dim);margin-top:4px">Needs <code style="background:var(--surface);padding:1px 4px;border-radius:3px">repo</code> scope · stored locally · only sent to the GitHub API</div>
+        </div>
+      </div>
+      <div id="wgh-error" style="display:none;font-size:12px;color:var(--red);margin-bottom:10px"></div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onclick="saveWelcomeGHConfig()" style="flex:1;padding:9px;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer">Connect &amp; get started</button>
+        <button onclick="_welcomeFinish()" style="padding:9px 16px;background:none;border:none;color:var(--text-muted);font-size:13px;cursor:pointer;border-radius:6px" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">Skip for now</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
 
 <script id="fh-seed" type="application/json">
 {
@@ -8099,13 +9232,35 @@ document.addEventListener('click', () => {
           "departments": "",
           "notesLink": "",
           "links": [],
-          "transcript": "Marcus: The biggest issue is that our techs can not find the job history quickly. They have to click through three screens just to get to it. On a good day that takes 30 seconds, in the field that is unacceptable.\n\nJordan: What do they use most often once they are in the portal?\n\nMarcus: Jobs list first, then invoices. The dashboard is basically ignored — nobody understands what the numbers mean.",
-          "summary": "**Key findings:**\n- The current top-nav + tabs layout requires too many clicks to reach frequently used pages\n- Techs primarily use: Jobs List, then Invoices\n- The dashboard is ignored because the metrics shown are not relevant to field workers\n- Marcus wants a persistent left-nav so common destinations are always one click away\n\n**Quotes:**\n> \"They have to click through three screens just to get to it. On a good day that is 30 seconds, in the field that is unacceptable.\"\n\n**Next steps:**\n- Share low-fi wireframes for review before next call\n- Confirm which dashboard metrics matter to field ops vs. management",
-          "prepResearchQs": "- What tasks do customers complete most frequently in the portal?\n- Where do they currently get stuck or confused?\n- How do they feel about the current navigation structure?",
+          "transcript": "Marcus: The biggest issue is that our techs can not find the job history quickly. They have to click through three screens just to get to it. On a good day that takes 30 seconds, in the field that is unacceptable.
+
+Jordan: What do they use most often once they are in the portal?
+
+Marcus: Jobs list first, then invoices. The dashboard is basically ignored — nobody understands what the numbers mean.",
+          "summary": "**Key findings:**
+- The current top-nav + tabs layout requires too many clicks to reach frequently used pages
+- Techs primarily use: Jobs List, then Invoices
+- The dashboard is ignored because the metrics shown are not relevant to field workers
+- Marcus wants a persistent left-nav so common destinations are always one click away
+
+**Quotes:**
+> \"They have to click through three screens just to get to it. On a good day that is 30 seconds, in the field that is unacceptable.\"
+
+**Next steps:**
+- Share low-fi wireframes for review before next call
+- Confirm which dashboard metrics matter to field ops vs. management",
+          "prepResearchQs": "- What tasks do customers complete most frequently in the portal?
+- Where do they currently get stuck or confused?
+- How do they feel about the current navigation structure?",
           "prepWhoTalking": "Marcus Webb, Operations Director at Acme Field Services. Managing 45 field technicians across 3 regions. Heavy portal user — logs in daily to review job status and approve invoices.",
-          "prepWarmUpQs": "- How long have you been using the portal?\n- Walk me through a typical day — when do you open the portal and why?",
-          "prepTopicQs": "- What are the top 3 things you do in the portal every week?\n- Is there anything you wish you could find faster?\n- Have you ever given up trying to do something and called support instead?",
-          "prepListenFor": "- Specific page names or features they mention repeatedly\n- Frustration signals around navigation or discoverability\n- Workarounds they have invented (these reveal the biggest gaps)",
+          "prepWarmUpQs": "- How long have you been using the portal?
+- Walk me through a typical day — when do you open the portal and why?",
+          "prepTopicQs": "- What are the top 3 things you do in the portal every week?
+- Is there anything you wish you could find faster?
+- Have you ever given up trying to do something and called support instead?",
+          "prepListenFor": "- Specific page names or features they mention repeatedly
+- Frustration signals around navigation or discoverability
+- Workarounds they have invented (these reveal the biggest gaps)",
           "label": "",
           "link": "",
           "stage": ""
@@ -8115,19 +9270,62 @@ document.addEventListener('click', () => {
         {
           "id": "dk-001",
           "title": "What Domain Knowledge is for",
-          "content": "Use this tab to capture things you **learned** — not things you were told.\n\nGood examples:\n- Edge cases you discovered while designing\n- Mental models customers use that are different from the product team's assumptions\n- Constraints that are not in the PRD but are real\n- Institutional knowledge from engineers or CS that would take hours to re-discover\n\nBad examples:\n- Copying the PRD summary here (that belongs in Context)\n- Meeting notes (those belong in Calls)\n\n> If you had to figure it out, write it down here so you never have to figure it out again."
+          "content": "Use this tab to capture things you **learned** — not things you were told.
+
+Good examples:
+- Edge cases you discovered while designing
+- Mental models customers use that are different from the product team's assumptions
+- Constraints that are not in the PRD but are real
+- Institutional knowledge from engineers or CS that would take hours to re-discover
+
+Bad examples:
+- Copying the PRD summary here (that belongs in Context)
+- Meeting notes (those belong in Calls)
+
+> If you had to figure it out, write it down here so you never have to figure it out again."
         },
         {
           "id": "dk-002",
           "title": "Portal user roles and access levels",
-          "content": "There are three distinct user types in the portal, each with different needs:\n\n| Role | Primary use | Key constraint |\n|---|---|---|\n| **Field Technician** | View assigned jobs, update job status, upload photos | Read-only on invoices and pricing |\n| **Office Manager** | Approve invoices, manage schedules, view reports | Cannot create new customer accounts |\n| **Owner / Admin** | Full access — settings, billing, user management | Usually less frequent, higher-stakes actions |\n\n**Design implication:** The navigation structure should optimize for Field Technician and Office Manager workflows. Admin tasks can be buried in a Settings area."
+          "content": "There are three distinct user types in the portal, each with different needs:
+
+| Role | Primary use | Key constraint |
+|---|---|---|
+| **Field Technician** | View assigned jobs, update job status, upload photos | Read-only on invoices and pricing |
+| **Office Manager** | Approve invoices, manage schedules, view reports | Cannot create new customer accounts |
+| **Owner / Admin** | Full access — settings, billing, user management | Usually less frequent, higher-stakes actions |
+
+**Design implication:** The navigation structure should optimize for Field Technician and Office Manager workflows. Admin tasks can be buried in a Settings area."
         }
       ],
       "ddocEntries": [
         {
           "id": "dde-001",
           "title": "Portal navigation — research and prior art",
-          "content": "## Background\n\nThe current portal was built in 2021 using a top-nav + tab pattern inherited from a legacy enterprise app. Since then, the feature set has grown from 8 pages to 31 pages — the top nav has become a megamenu that users find overwhelming.\n\n## What the data shows\n\n| Page | % of sessions that include this page |\n|---|---|\n| Jobs List | 78% |\n| Job Detail | 71% |\n| Invoices | 52% |\n| Dashboard | 14% |\n| Settings | 8% |\n\n**Interpretation:** Jobs and Invoices are the core workflow. The dashboard is an afterthought. Settings is rarely needed.\n\n## Design direction\n\nA persistent left sidebar with the top 5 destinations always visible reduces click depth from an average of 3.2 to 1.4 for the most common tasks (Jobs List, Job Detail, Invoices).\n\n## Risks\n\n- Customers with very small screens (older Android devices) may struggle with a persistent sidebar — consider a collapsible version\n- The transition will require onboarding communication — power users have muscle memory for the current nav"
+          "content": "## Background
+
+The current portal was built in 2021 using a top-nav + tab pattern inherited from a legacy enterprise app. Since then, the feature set has grown from 8 pages to 31 pages — the top nav has become a megamenu that users find overwhelming.
+
+## What the data shows
+
+| Page | % of sessions that include this page |
+|---|---|
+| Jobs List | 78% |
+| Job Detail | 71% |
+| Invoices | 52% |
+| Dashboard | 14% |
+| Settings | 8% |
+
+**Interpretation:** Jobs and Invoices are the core workflow. The dashboard is an afterthought. Settings is rarely needed.
+
+## Design direction
+
+A persistent left sidebar with the top 5 destinations always visible reduces click depth from an average of 3.2 to 1.4 for the most common tasks (Jobs List, Job Detail, Invoices).
+
+## Risks
+
+- Customers with very small screens (older Android devices) may struggle with a persistent sidebar — consider a collapsible version
+- The transition will require onboarding communication — power users have muscle memory for the current nav"
         }
       ],
       "notesEntries": [
@@ -8242,6 +9440,7 @@ document.addEventListener('click', () => {
   "fh_deleted_features": []
 }
 </script>
-<script>loadFromSeed();STATE=loadState();initSampleDefaults();init();initGitSync();</script>
+
+<script>loadFromSeed();STATE=loadState();init();initGitSync();initFileStorage();initGHSync();</script>
 </body>
 </html>
