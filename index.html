@@ -802,6 +802,10 @@
   .task-body { flex:1; min-width:0; }
   .task-text {
     font-size:13px; line-height:1.5; color:var(--text);
+    flex:1; min-width:0; padding:2px 8px 2px 0; border-radius:3px;
+  }
+  .task-text[contenteditable]:focus {
+    outline:1px solid var(--accent); background:var(--surface2); padding:2px 8px;
   }
   .task-text.done { text-decoration:line-through; color:var(--text-dim); }
   .task-reason {
