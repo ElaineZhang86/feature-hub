@@ -4307,6 +4307,14 @@ function buildSectionTitle(featureId, s) {
   </li>`;
 }
 
+function saveTaskText(featureId, taskId, text) {
+  const trimmed = text.trim();
+  if (!trimmed) return; // discard empty
+  saveTasks(featureId, getTasks(featureId).map(t =>
+    t.id === taskId ? { ...t, text: trimmed } : t
+  ));
+}
+
 function addTask(featureId) {
   const inp = document.getElementById(`${featureId}_add_task`);
   if (!inp) return;
@@ -4363,7 +4371,12 @@ function buildTaskItem(featureId, t) {
     <li class="task-item" draggable="true" data-task-id="${t.id}">
       <span class="material-symbols-rounded task-status-icon ${t.status}">${icons[t.status]}</span>
       <div class="task-body">
-        <span class="task-text ${t.status === 'done' ? 'done' : ''}">${escHtml(t.text)}</span>
+        <span class="task-text ${t.status === 'done' ? 'done' : ''}" contenteditable="true"
+          onfocus="this.closest('[data-task-id]').setAttribute('draggable','false')"
+          onblur="this.closest('[data-task-id]').setAttribute('draggable','true');saveTaskText('${featureId}','${t.id}',this.textContent)"
+          onkeydown="if(event.key==='Enter'||event.key==='Escape'){event.preventDefault();this.blur()}"
+          onpaste="event.preventDefault();document.execCommand('insertText',false,(event.clipboardData||window.clipboardData).getData('text'))"
+          title="Click to edit">${escHtml(t.text)}</span>
         ${t.status === 'postponed' && t.reason ? `<div class="task-reason"><span class="material-symbols-rounded" style="font-size:11px">info</span>${escHtml(t.reason)}</div>` : ''}
       </div>
       <div class="task-actions">${actions}</div>
