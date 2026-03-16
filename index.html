@@ -8813,159 +8813,17 @@ document.addEventListener('click', () => {
 
 
 
+
 <script id="fh-seed" type="application/json">
 {
   "fh_state": {
     "sample-feature": {
-      "currentStep": "Finalizing the new dashboard layout and information architecture",
-      "calls": [
-        {
-          "id": "call-001",
-          "callName": "Customer Discovery — Acme Field Services",
-          "callType": "customer",
-          "status": "Completed",
-          "customer": "Acme Field Services",
-          "relatedCustomer": "Acme Field Services",
-          "callCategory": "Discovery",
-          "date": "2026-03-05",
-          "attendees": "Jordan Lee (PM), You (Designer), Marcus Webb (Acme — Operations Director)",
-          "departments": "",
-          "notesLink": "",
-          "links": [],
-          "transcript": "Marcus: The biggest issue is that our techs can not find the job history quickly. They have to click through three screens just to get to it. On a good day that takes 30 seconds, in the field that is unacceptable.
-
-Jordan: What do they use most often once they are in the portal?
-
-Marcus: Jobs list first, then invoices. The dashboard is basically ignored — nobody understands what the numbers mean.",
-          "summary": "**Key findings:**
-- The current top-nav + tabs layout requires too many clicks to reach frequently used pages
-- Techs primarily use: Jobs List, then Invoices
-- The dashboard is ignored because the metrics shown are not relevant to field workers
-- Marcus wants a persistent left-nav so common destinations are always one click away
-
-**Quotes:**
-> \"They have to click through three screens just to get to it. On a good day that is 30 seconds, in the field that is unacceptable.\"
-
-**Next steps:**
-- Share low-fi wireframes for review before next call
-- Confirm which dashboard metrics matter to field ops vs. management",
-          "prepResearchQs": "- What tasks do customers complete most frequently in the portal?
-- Where do they currently get stuck or confused?
-- How do they feel about the current navigation structure?",
-          "prepWhoTalking": "Marcus Webb, Operations Director at Acme Field Services. Managing 45 field technicians across 3 regions. Heavy portal user — logs in daily to review job status and approve invoices.",
-          "prepWarmUpQs": "- How long have you been using the portal?
-- Walk me through a typical day — when do you open the portal and why?",
-          "prepTopicQs": "- What are the top 3 things you do in the portal every week?
-- Is there anything you wish you could find faster?
-- Have you ever given up trying to do something and called support instead?",
-          "prepListenFor": "- Specific page names or features they mention repeatedly
-- Frustration signals around navigation or discoverability
-- Workarounds they have invented (these reveal the biggest gaps)",
-          "label": "",
-          "link": "",
-          "stage": ""
-        }
-      ],
-      "domainKnowledge": [
-        {
-          "id": "dk-001",
-          "title": "What Domain Knowledge is for",
-          "content": "Use this tab to capture things you **learned** — not things you were told.
-
-Good examples:
-- Edge cases you discovered while designing
-- Mental models customers use that are different from the product team's assumptions
-- Constraints that are not in the PRD but are real
-- Institutional knowledge from engineers or CS that would take hours to re-discover
-
-Bad examples:
-- Copying the PRD summary here (that belongs in Context)
-- Meeting notes (those belong in Calls)
-
-> If you had to figure it out, write it down here so you never have to figure it out again."
-        },
-        {
-          "id": "dk-002",
-          "title": "Portal user roles and access levels",
-          "content": "There are three distinct user types in the portal, each with different needs:
-
-| Role | Primary use | Key constraint |
-|---|---|---|
-| **Field Technician** | View assigned jobs, update job status, upload photos | Read-only on invoices and pricing |
-| **Office Manager** | Approve invoices, manage schedules, view reports | Cannot create new customer accounts |
-| **Owner / Admin** | Full access — settings, billing, user management | Usually less frequent, higher-stakes actions |
-
-**Design implication:** The navigation structure should optimize for Field Technician and Office Manager workflows. Admin tasks can be buried in a Settings area."
-        }
-      ],
-      "ddocEntries": [
-        {
-          "id": "dde-001",
-          "title": "Portal navigation — research and prior art",
-          "content": "## Background
-
-The current portal was built in 2021 using a top-nav + tab pattern inherited from a legacy enterprise app. Since then, the feature set has grown from 8 pages to 31 pages — the top nav has become a megamenu that users find overwhelming.
-
-## What the data shows
-
-| Page | % of sessions that include this page |
-|---|---|
-| Jobs List | 78% |
-| Job Detail | 71% |
-| Invoices | 52% |
-| Dashboard | 14% |
-| Settings | 8% |
-
-**Interpretation:** Jobs and Invoices are the core workflow. The dashboard is an afterthought. Settings is rarely needed.
-
-## Design direction
-
-A persistent left sidebar with the top 5 destinations always visible reduces click depth from an average of 3.2 to 1.4 for the most common tasks (Jobs List, Job Detail, Invoices).
-
-## Risks
-
-- Customers with very small screens (older Android devices) may struggle with a persistent sidebar — consider a collapsible version
-- The transition will require onboarding communication — power users have muscle memory for the current nav"
-        }
-      ],
-      "notesEntries": [
-        {
-          "id": "note-001",
-          "text": "Slack from Jordan (Mar 6): Engineering confirmed they can support a collapsible sidebar without backend changes. Just CSS + localStorage preference. Green light for Phase 1.",
-          "createdAt": 1741305600000
-        },
-        {
-          "id": "note-002",
-          "text": "TODO: follow up with CS team on top 5 support ticket categories — they track these in Zendesk. Could validate our nav priorities.",
-          "createdAt": 1741219200000
-        }
-      ],
-      "designFiles": [
-        {
-          "id": "df-001",
-          "title": "Portal Redesign — Working File",
-          "figmaLabel": "Open in Figma",
-          "figmaUrl": "https://figma.com",
-          "protoLabel": "View Prototype",
-          "protoUrl": "https://figma.com",
-          "screenshots": [],
-          "notes": "Main working file. Includes: discovery synthesis, IA map, wireframes v1–v3, final prototype.",
-          "createdAt": 1741219200000
-        }
-      ],
-      "specLinks": [
-        {
-          "id": "sl-001",
-          "label": "Handoff Spec (Figma)",
-          "url": "https://figma.com"
-        }
-      ],
       "tasks": [
         {
           "id": "bt_0",
           "text": "Finalize information architecture (sitemap + nav labels)",
-          "status": "postponed",
-          "reason": "test",
+          "status": "todo",
+          "reason": "",
           "builtin": true
         },
         {
@@ -9032,7 +8890,8 @@ A persistent left sidebar with the top 5 destinations always visible reduces cli
           "builtin": true
         }
       ],
-      "status": "Design"
+      "notesEntries": [],
+      "specLinks": []
     }
   },
   "fh_custom_features": [],
@@ -9040,7 +8899,6 @@ A persistent left sidebar with the top 5 destinations always visible reduces cli
   "fh_deleted_features": []
 }
 </script>
-
 <script>loadFromSeed();STATE=loadState();init();initGitSync();initFileStorage();initGHSync();</script>
 </body>
 </html>
