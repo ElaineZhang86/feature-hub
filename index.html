@@ -821,8 +821,14 @@
     display:flex; align-items:center; justify-content:space-between; gap:8px;
   }
   .task-section-title:first-child { margin-top:0; padding-top:4px; }
-  .task-section-title span[contenteditable] { outline:none; cursor:text; flex:1; }
+  .task-section-title span[contenteditable] { outline:none; cursor:text; flex:1; min-width:20px; }
   .task-section-title span[contenteditable]:focus { color:var(--text); }
+  .task-item[draggable="true"] { cursor: grab; }
+  .task-item[draggable="true"]:active { cursor: grabbing; }
+  .task-item.dragging { opacity: .35; }
+  .task-item.drag-over-top { box-shadow: 0 -2px 0 var(--accent); }
+  .task-item.drag-over-bottom { box-shadow: 0 2px 0 var(--accent); }
+  .task-section-title.drag-over-section { background: color-mix(in srgb, var(--accent) 8%, transparent); border-radius:4px; padding-left:6px; padding-right:6px; }
   .task-postpone-row {
     display:flex; gap:6px; align-items:center; padding:6px 0 8px 26px;
   }
@@ -4289,10 +4295,12 @@ function saveSectionTitle(featureId, secId, title) {
 }
 
 function buildSectionTitle(featureId, s) {
-  return `<li class="task-section-title">
-    <span contenteditable="plaintext-only"
+  return `<li class="task-section-title" data-task-id="${s.id}">
+    <span contenteditable="true"
       onblur="saveSectionTitle('${featureId}','${s.id}',this.textContent.trim())"
-      onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}">${escHtml(s.title || 'Section')}</span>
+      onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
+      onpaste="event.preventDefault();document.execCommand('insertText',false,(event.clipboardData||window.clipboardData).getData('text'))"
+      title="Click to rename">${escHtml(s.title || 'Section')}</span>
     <button class="remove-btn" title="Delete section" onclick="removeSection('${featureId}','${s.id}')">
       <span class="material-symbols-rounded" style="font-size:14px">delete</span>
     </button>
@@ -4352,7 +4360,7 @@ function buildTaskItem(featureId, t) {
       <button class="remove-btn" title="Delete" onclick="removeTask('${featureId}','${t.id}')"><span class="material-symbols-rounded">delete</span></button>
     `;
   return `
-    <li class="task-item">
+    <li class="task-item" draggable="true" data-task-id="${t.id}">
       <span class="material-symbols-rounded task-status-icon ${t.status}">${icons[t.status]}</span>
       <div class="task-body">
         <span class="task-text ${t.status === 'done' ? 'done' : ''}">${escHtml(t.text)}</span>
@@ -4361,6 +4369,71 @@ function buildTaskItem(featureId, t) {
       <div class="task-actions">${actions}</div>
     </li>
     ${postponeForm}`;
+}
+
+function attachTaskDragHandlers(featureId) {
+  const panel = document.getElementById(`${featureId}_tasks_panel`);
+  if (!panel) return;
+  const list = panel.querySelector('.task-list');
+  if (!list) return;
+  let dragId = null;
+
+  list.addEventListener('dragstart', e => {
+    const li = e.target.closest('[data-task-id]');
+    if (!li || li.classList.contains('task-section-title')) return;
+    dragId = li.dataset.taskId;
+    e.dataTransfer.effectAllowed = 'move';
+    setTimeout(() => li.classList.add('dragging'), 0);
+  });
+  list.addEventListener('dragend', () => {
+    list.querySelectorAll('.dragging,.drag-over-top,.drag-over-bottom,.drag-over-section')
+      .forEach(el => el.classList.remove('dragging','drag-over-top','drag-over-bottom','drag-over-section'));
+    dragId = null;
+  });
+  list.addEventListener('dragover', e => {
+    if (!dragId) return;
+    const li = e.target.closest('[data-task-id]');
+    if (!li || li.dataset.taskId === dragId) return;
+    e.preventDefault();
+    list.querySelectorAll('.drag-over-top,.drag-over-bottom,.drag-over-section')
+      .forEach(el => el.classList.remove('drag-over-top','drag-over-bottom','drag-over-section'));
+    if (li.classList.contains('task-section-title')) {
+      li.classList.add('drag-over-section');
+    } else {
+      const mid = li.getBoundingClientRect().top + li.getBoundingClientRect().height / 2;
+      li.classList.add(e.clientY < mid ? 'drag-over-top' : 'drag-over-bottom');
+    }
+  });
+  list.addEventListener('dragleave', e => {
+    const li = e.target.closest('[data-task-id]');
+    if (li && !li.contains(e.relatedTarget))
+      li.classList.remove('drag-over-top','drag-over-bottom','drag-over-section');
+  });
+  list.addEventListener('drop', e => {
+    e.preventDefault();
+    const li = e.target.closest('[data-task-id]');
+    if (!li || !dragId) return;
+    list.querySelectorAll('.drag-over-top,.drag-over-bottom,.drag-over-section')
+      .forEach(el => el.classList.remove('drag-over-top','drag-over-bottom','drag-over-section'));
+    const targetId = li.dataset.taskId;
+    if (targetId === dragId) return;
+    const tasks = getTasks(featureId);
+    const dragIdx = tasks.findIndex(t => t.id === dragId);
+    if (dragIdx === -1) return;
+    const item = tasks[dragIdx];
+    const remaining = tasks.filter((_, i) => i !== dragIdx);
+    let insertIdx = remaining.findIndex(t => t.id === targetId);
+    if (li.classList.contains('task-section-title')) {
+      insertIdx += 1;
+    } else {
+      const mid = li.getBoundingClientRect().top + li.getBoundingClientRect().height / 2;
+      if (e.clientY >= mid) insertIdx += 1;
+    }
+    remaining.splice(insertIdx, 0, item);
+    saveTasks(featureId, remaining);
+    renderTaskList(featureId);
+    renderScheduleCards();
+  });
 }
 
 function renderTaskList(featureId) {
@@ -4411,6 +4484,7 @@ function renderTaskList(featureId) {
         <button class="btn btn-primary" onclick="addTask('${featureId}')">Add</button>
       </div>
     </div>`;
+  attachTaskDragHandlers(featureId);
 }
 
 // Legacy stubs (kept for any remaining references during render init)
