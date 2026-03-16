@@ -8818,80 +8818,172 @@ document.addEventListener('click', () => {
 {
   "fh_state": {
     "sample-feature": {
+      "status": "Design",
       "tasks": [
         {
-          "id": "bt_0",
+          "id": "t1",
           "text": "Finalize information architecture (sitemap + nav labels)",
-          "status": "todo",
-          "reason": "",
-          "builtin": true
+          "status": "todo"
         },
         {
-          "id": "bt_1",
+          "id": "t2",
           "text": "Design dashboard wireframes (v1)",
-          "status": "todo",
-          "reason": "",
-          "builtin": true
+          "status": "todo"
         },
         {
-          "id": "bt_2",
-          "text": "Run usability test on prototype — 5 participants",
-          "status": "todo",
-          "reason": "",
-          "builtin": true
+          "id": "t3",
+          "text": "Run usability test on prototype \u2014 5 participants",
+          "status": "todo"
         },
         {
-          "id": "bt_3",
+          "id": "t4",
           "text": "Incorporate usability test findings",
-          "status": "todo",
-          "reason": "",
-          "builtin": true
+          "status": "todo"
         },
         {
-          "id": "bt_4",
+          "id": "t5",
           "text": "Prepare handoff spec for engineering",
-          "status": "todo",
-          "reason": "",
-          "builtin": true
+          "status": "todo"
         },
         {
-          "id": "bt_5",
+          "id": "t6",
           "text": "QA support during implementation",
-          "status": "todo",
-          "reason": "",
-          "builtin": true
+          "status": "todo"
         },
         {
-          "id": "bd_0",
+          "id": "t7",
           "text": "Completed 6 customer discovery interviews",
-          "status": "done",
-          "reason": "",
-          "builtin": true
+          "status": "done"
         },
         {
-          "id": "bd_1",
-          "text": "Synthesized research — identified top 3 navigation pain points",
-          "status": "done",
-          "reason": "",
-          "builtin": true
+          "id": "t8",
+          "text": "Synthesized research \u2014 identified top 3 navigation pain points",
+          "status": "done"
         },
         {
-          "id": "bd_2",
+          "id": "t9",
           "text": "Explored 3 layout directions; aligned with PM on left-nav direction",
-          "status": "done",
-          "reason": "",
-          "builtin": true
+          "status": "done"
         },
         {
-          "id": "bd_3",
-          "text": "Kicked off with engineering — confirmed Phase 1 scope",
-          "status": "done",
-          "reason": "",
-          "builtin": true
+          "id": "t10",
+          "text": "Kicked off with engineering \u2014 confirmed Phase 1 scope",
+          "status": "done"
         }
       ],
-      "notesEntries": [],
-      "specLinks": []
+      "domainKnowledge": [
+        {
+          "id": "dk1",
+          "title": "Why customers can't find things",
+          "content": "The top nav uses terminology from our internal taxonomy, not how customers think about their work. 'Reports' covers 5 different things. 'Settings' is where both account settings AND feature config live. Customers expect Jobs to be front and center \u2014 it's the primary workflow \u2014 but it's currently 3 clicks deep."
+        },
+        {
+          "id": "dk2",
+          "title": "Multi-property edge case",
+          "content": "~15% of Acme's customer base manages more than one property. The current portal has no concept of this \u2014 they just log in and see data for one property with no switcher. We need a top-level context switcher before we can redesign the nav, or we'll have to revisit this in Phase 2."
+        },
+        {
+          "id": "dk3",
+          "title": "Accessibility audit findings",
+          "content": "The last WCAG audit (Q1) flagged: insufficient color contrast on secondary nav items, no keyboard focus indicator on dropdown menus, and missing ARIA labels on icon-only buttons. All three are blockers for the Phase 1 launch requirement."
+        }
+      ],
+      "ddocEntries": [
+        {
+          "id": "dd1",
+          "title": "Navigation architecture decision",
+          "content": "After testing top-nav, side-nav, and hybrid approaches with 6 users, left-nav sidebar scored highest on task completion and wayfinding confidence. Key insight: customers scan vertically when looking for primary sections, not horizontally. Side-nav also gives us a persistent visual hierarchy that top-nav can't provide at mobile breakpoints."
+        },
+        {
+          "id": "dd2",
+          "title": "Phase scoping rationale",
+          "content": "Engineering estimated the full portal at 14 weeks. PM and Eng aligned on shipping Dashboard + Jobs list in Phase 1 (6 weeks) to hit the Q3 summit. Invoicing portal, reporting, and settings are deferred to Phase 2. This was a deliberate scope cut \u2014 not a technical constraint \u2014 so we need to be careful not to design Phase 1 in a way that makes Phase 2 harder to add."
+        }
+      ],
+      "calls": [
+        {
+          "id": "call1",
+          "callName": "Customer Discovery \u2014 Acme Field Services",
+          "callType": "customer",
+          "callCategory": "Discovery",
+          "status": "Completed",
+          "customer": "Acme Field Services",
+          "relatedCustomer": "Acme Field Services",
+          "date": "2026-02-18",
+          "attendees": "Jordan Lee (PM), You (Designer), Marcus Webb (Acme \u2014 Operations Director)",
+          "notesLink": "",
+          "links": [],
+          "prepResearchQs": "What causes navigation failures in the portal? Which sections do customers visit most? What mental model do customers have for how the portal is organized?",
+          "prepBackground": "Marcus manages field ops for 3 properties. Has been a customer for 2 years. Filed 2 support tickets about navigation in the last 6 months.",
+          "prepWarmUpQs": "How long have you been using the portal? Walk me through a typical week \u2014 when do you open it and what do you do?",
+          "prepTopicQs": "Tell me about the last time you couldn't find something in the portal. What were you looking for? What did you try? When you think about the portal sections, how would you describe what each one does?",
+          "prepListenFor": "Workarounds they've built. Sections they avoid. Language they use vs. our labels.",
+          "postTranscript": "",
+          "postSummary": "Marcus primarily uses Jobs and Reports but finds the current nav confusing \u2014 he bookmarks deep links instead of navigating. Key insight: he thinks of the portal in terms of workflow stages (schedule \u2192 dispatch \u2192 invoice) not feature categories. Recommends grouping nav by workflow, not by data type."
+        },
+        {
+          "id": "call2",
+          "callName": "Design Review \u2014 IA v1",
+          "callType": "internal",
+          "callCategory": "Design Review",
+          "status": "Completed",
+          "customer": "",
+          "relatedCustomer": "",
+          "date": "2026-03-05",
+          "attendees": "Jordan Lee (PM), Sam Rivera (Eng Lead), Priya Nair (CS)",
+          "notesLink": "",
+          "links": [],
+          "prepResearchQs": "",
+          "prepBackground": "",
+          "prepWarmUpQs": "",
+          "prepTopicQs": "",
+          "prepListenFor": "",
+          "postTranscript": "",
+          "postSummary": "Team aligned on the left-nav direction. Priya flagged that CS gets a lot of questions about invoicing \u2014 confirm invoicing is still accessible in Phase 1 even if not redesigned. Sam noted the mobile breakpoint needs to collapse to a hamburger menu \u2014 confirmed in scope."
+        }
+      ],
+      "questionAnswers": {
+        "q0": "Use both \u2014 icon + label. Testing showed icon-only caused hesitation for new users. Label-only felt text-heavy at mobile sizes. We'll go with icon + label at desktop, icon-only with tooltip at mobile.",
+        "q1": "Phase 2. Engineering scoped the property switcher at 3 weeks \u2014 too large for Phase 1. We'll add a prominent 'switching properties' help article and flag it in the onboarding checklist as a known gap."
+      },
+      "notesEntries": [
+        {
+          "id": "n1",
+          "title": "Post-research synthesis",
+          "text": "All 6 participants navigated by memory or bookmarks \u2014 none used the nav as intended. Common theme: the portal feels like it was designed for internal ops staff, not field service customers. The redesign needs to lead with Jobs and make the dashboard genuinely useful (not just a status summary nobody reads)."
+        },
+        {
+          "id": "n2",
+          "title": "Scope watch",
+          "text": "PM keeps mentioning 'quick wins' in side conversations. Need to get explicit confirmation in writing that Phase 1 = Dashboard + Jobs only. If scope creeps to include Reports before handoff, the timeline breaks."
+        }
+      ],
+      "specLinks": [
+        {
+          "id": "sl1",
+          "label": "Portal Redesign \u2014 Figma Spec",
+          "url": "#",
+          "type": "figma"
+        },
+        {
+          "id": "sl2",
+          "label": "Component Inventory (Confluence)",
+          "url": "#",
+          "type": "doc"
+        }
+      ],
+      "designFiles": [
+        {
+          "id": "df1",
+          "label": "Figma \u2014 Portal Redesign",
+          "url": "#"
+        },
+        {
+          "id": "df2",
+          "label": "Prototype \u2014 Left Nav v2",
+          "url": "#"
+        }
+      ]
     }
   },
   "fh_custom_features": [],
