@@ -401,7 +401,7 @@ A unified task list for all work states.
 
 If you cloned the repo, you can pull in the latest version of the app at any time:
 
-1. Open your terminal and navigate to the `feature-tracker` folder
+1. Open your terminal and navigate to the `feature-hub` folder
 2. Run `git pull`
 3. Refresh the page in your browser
 
