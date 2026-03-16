@@ -467,6 +467,10 @@
   .tl-card-meta { font-size: 11px; color: var(--text-muted); margin-bottom: 6px; }
   .tl-card-due { font-size: 11px; color: var(--text-dim); }
   .tl-empty { font-size: 12px; color: var(--text-dim); text-align: center; padding: 16px 0; }
+  .tl-card[draggable="true"] { cursor: grab; }
+  .tl-card[draggable="true"]:active { cursor: grabbing; }
+  .tl-card.dragging { opacity: .35; }
+  .tl-lane-body.drag-over { background: color-mix(in srgb, var(--accent) 8%, transparent); outline: 2px dashed var(--accent); outline-offset: -4px; border-radius: 4px; }
 
   .sc-top {
     display: flex;
@@ -3861,12 +3865,12 @@ function renderScheduleTimeline() {
         ${s}
         <span class="tl-lane-count">${items.length}</span>
       </div>
-      <div class="tl-lane-body">
+      <div class="tl-lane-body" data-status="${s}">
         ${items.length ? items.map(f => {
           const due = getDue(f);
           const pct = progressOf(f);
           return `
-        <div class="tl-card" onclick="showFeature('${f.id}')">
+        <div class="tl-card" draggable="true" data-id="${f.id}" onclick="showFeature('${f.id}')">
           <div class="tl-card-title"><span class="material-symbols-rounded" style="font-size:13px;vertical-align:middle;margin-right:4px;opacity:.7">${f.icon}</span>${f.title}</div>
           ${f.customer !== 'TBD' ? `<div class="tl-card-meta">${f.customer}</div>` : ''}
           <div class="tl-card-due">Due: ${due}</div>
@@ -3876,6 +3880,43 @@ function renderScheduleTimeline() {
       </div>
     </div>`;
   }).join('') + '</div>';
+  attachTimelineDragHandlers(grid);
+}
+
+function attachTimelineDragHandlers(grid) {
+  let tlDragId = null;
+  grid.addEventListener('dragstart', e => {
+    const card = e.target.closest('.tl-card');
+    if (!card) return;
+    tlDragId = card.dataset.id;
+    e.dataTransfer.effectAllowed = 'move';
+    setTimeout(() => card.classList.add('dragging'), 0);
+  });
+  grid.addEventListener('dragend', () => {
+    grid.querySelectorAll('.tl-card.dragging, .tl-lane-body.drag-over').forEach(x => x.classList.remove('dragging', 'drag-over'));
+    tlDragId = null;
+  });
+  grid.addEventListener('dragover', e => {
+    const lane = e.target.closest('.tl-lane-body');
+    if (!lane || !tlDragId) return;
+    e.preventDefault();
+    grid.querySelectorAll('.tl-lane-body.drag-over').forEach(x => x.classList.remove('drag-over'));
+    lane.classList.add('drag-over');
+  });
+  grid.addEventListener('dragleave', e => {
+    const lane = e.target.closest('.tl-lane-body');
+    if (!lane) return;
+    if (!lane.contains(e.relatedTarget)) lane.classList.remove('drag-over');
+  });
+  grid.addEventListener('drop', e => {
+    e.preventDefault();
+    const lane = e.target.closest('.tl-lane-body');
+    if (!lane || !tlDragId) return;
+    grid.querySelectorAll('.tl-lane-body.drag-over').forEach(x => x.classList.remove('drag-over'));
+    const newStatus = lane.dataset.status;
+    updateFeatureState(tlDragId, { status: newStatus });
+    renderScheduleCards();
+  });
 }
 
 let _dragId = null;
