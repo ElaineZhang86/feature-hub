@@ -300,7 +300,7 @@
   #main {
     flex: 1;
     overflow-y: auto;
-    padding: 32px 40px;
+    padding: 0 40px 32px;   /* top padding moved into .sticky-zone */
     min-width: 0;
   }
 
@@ -310,6 +310,7 @@
 
   /* ── SCHEDULE VIEW ────────────────────────────── */
   .schedule-header {
+    padding-top: 40px;
     margin-bottom: 28px;
   }
 
@@ -370,15 +371,6 @@
     font-size: 12px;
     color: var(--text-muted);
     margin-bottom: 10px;
-  }
-
-  .sc-focus {
-    font-size: 12px;
-    color: var(--text-dim);
-    padding: 6px 10px;
-    background: var(--bg);
-    border-radius: var(--radius-sm);
-    border-left: 2px solid var(--accent-dim);
   }
 
   .progress-bar {
@@ -511,13 +503,40 @@
   .tl-lane-body.drag-over { background: color-mix(in srgb, var(--accent) 8%, transparent); outline: 2px dashed var(--accent); outline-offset: -4px; border-radius: 4px; }
 
   /* ── FEATURE DETAIL ───────────────────────────── */
+  /* sticky-zone: full-bleed flat header, Confluence-style */
+  .sticky-zone {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--surface);
+    margin: 0 -40px;          /* bleed past #main's 40px side padding */
+    padding: 0 0 8px;
+    margin-bottom: 24px;      /* space between header and page content */
+  }
+
+  .sticky-zone--stuck {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  .sticky-zone-card {
+    background: transparent;
+    margin: 0 40px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
   .feature-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 0;
     flex-wrap: wrap;
+    padding: 40px 0 10px;
+    background: #fff;
+    border-radius: var(--radius);
   }
 
   .feature-title-block h2 {
@@ -585,10 +604,23 @@
     border-bottom: 2px solid transparent;
     margin-bottom: -1px;
     transition: all .15s;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
   }
 
   .tab:hover { color: var(--text); }
   .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .tab-close {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 16px; height: 16px; border-radius: 50%; border: none; background: none;
+    cursor: pointer; color: var(--text-dim); padding: 0; flex-shrink: 0;
+    opacity: 0; transition: opacity .15s, background .15s;
+  }
+  .tab:hover .tab-close { opacity: 1; }
+  .tab-close:hover { background: var(--border); color: var(--text); }
 
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
@@ -1157,50 +1189,6 @@
   ::-webkit-scrollbar-thumb:hover { background: var(--text-dim); }
 
   /* Focus ribbon */
-  .focus-ribbon {
-    background: linear-gradient(135deg, var(--accent-dim), var(--ribbon-bg));
-    border: 1px solid var(--accent-dim);
-    border-radius: var(--radius);
-    padding: 14px 18px;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .focus-ribbon-icon { font-size: 20px; }
-
-  .focus-ribbon-text {
-    flex: 1;
-  }
-
-  .focus-ribbon-text strong {
-    display: block;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: .05em;
-    text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 3px;
-  }
-
-  .focus-ribbon-text span {
-    font-size: 13px;
-    color: var(--text-muted);
-  }
-
-  /* Current step editor */
-  .current-step-wrapper {
-    display: flex;
-    gap: 8px;
-    align-items: flex-end;
-  }
-
-  .current-step-wrapper textarea {
-    flex: 1;
-    min-height: 56px;
-  }
-
   /* Empty state */
   .empty-state {
     text-align: center;
@@ -2083,8 +2071,8 @@
     padding: 13px 18px 12px;
     cursor: pointer;
     user-select: none;
-    padding: 2px 18px 2px 14px;
-    min-height: 48px;
+    padding: 0;
+    min-height: 40px;
   }
   .dk-entry-header:hover .dk-entry-title-input { color: var(--accent); }
 
@@ -2106,6 +2094,15 @@
   }
   .dk-entry-title-input:focus { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 6%, var(--surface2)); }
   .dk-entry-title-input::placeholder { color: var(--text-dim); font-weight: 400; }
+  .dk-header-title {
+    flex: 1; min-width: 0;
+    font-size: 13px; font-weight: 600;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 4px;
+    color: var(--text); font-family: inherit; padding: 6px 10px; cursor: text; outline: none;
+    transition: border-color .15s, background .15s;
+  }
+  .dk-header-title:focus { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 6%, var(--surface2)); }
+  .dk-header-title::placeholder { color: var(--text-dim); font-weight: 400; }
 
   .dk-entry-header-acts {
     display: flex;
@@ -2115,7 +2112,7 @@
   }
 
   .dk-entry-body {
-    padding: 18px 20px 16px;
+    padding: 8px 0 0;
     display: none;
   }
   .dk-entry.expanded .dk-entry-body { display: block; }
@@ -2148,7 +2145,7 @@
     display: flex;
     gap: 8px;
     align-items: center;
-    margin-top: 10px;
+    margin-top: 8px;
   }
 
   /* ── QUESTION ANSWER ─────────────────────────────── */
@@ -2375,6 +2372,110 @@
     flex-shrink: 0;
   }
 
+
+  /* Confluence integration */
+  .cf-pill {
+    display:inline-flex; align-items:center; gap:5px; font-size:11px;
+    color:var(--accent); background:var(--accent-dim); border:1px solid var(--accent);
+    border-radius:20px; padding:2px 9px; cursor:default; max-width:200px; overflow:hidden;
+  }
+  .cf-pill span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .cf-modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:flex;align-items:center;justify-content:center; }
+  .cf-modal-box { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px;width:520px;max-width:92vw;max-height:86vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5); }
+  .cf-modal-title { font-size:15px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px; }
+  .cf-field-label { font-size:11px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px; }
+  .cf-input { width:100%;box-sizing:border-box;padding:8px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:13px;outline:none; }
+  .cf-input:focus { border-color:var(--accent); }
+  .cf-preview { background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;margin-top:12px; }
+  .cf-status { font-size:12px;color:var(--text-muted);margin-top:8px;min-height:18px; }
+  .cf-status.error { color:var(--red); }
+
+  /* PRD tab */
+  .prd-tab-header { display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);margin:0;gap:12px; }
+  .prd-tab-title { display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);min-width:0;flex:1; }
+  .prd-sync-dot { width:8px;height:8px;border-radius:50%;flex-shrink:0; }
+  .prd-sync-label { font-size:12px;color:var(--text-dim);white-space:nowrap; }
+  .prd-content { font-size:14px;line-height:1.8;color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; }
+  .prd-content h1 { font-size:24px;font-weight:700;margin:0 0 16px;padding-bottom:10px;border-bottom:2px solid var(--border);color:var(--text); }
+  .prd-content h2 { font-size:20px;font-weight:600;margin:28px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--border);color:var(--text); }
+  .prd-content h3 { font-size:16px;font-weight:600;margin:20px 0 8px;color:var(--text); }
+  .prd-content h4 { font-size:14px;font-weight:600;margin:14px 0 6px;color:var(--text-muted); }
+  .prd-content p { margin:0 0 14px; }
+  .prd-content ul,.prd-content ol { margin:0 0 14px;padding-left:28px; }
+  .prd-content li { margin-bottom:6px;line-height:1.7; }
+  .prd-content li > ul,.prd-content li > ol { margin-top:6px;margin-bottom:4px; }
+  .prd-content a { color:var(--accent);text-decoration:none; }
+  .prd-content a:hover { text-decoration:underline; }
+  .prd-content table { width:100%;border-collapse:collapse;margin-bottom:18px;font-size:13px;border:1px solid var(--border); }
+  .prd-content th,.prd-content td { border:1px solid var(--border);padding:10px 14px;vertical-align:top;text-align:left; }
+  .prd-content th { background:var(--surface2);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--text-muted); }
+  .prd-content tr:nth-child(even) td { background:color-mix(in srgb,var(--surface2) 35%,transparent); }
+  .prd-content tr:hover td { background:color-mix(in srgb,var(--accent) 4%,transparent); }
+  .prd-content strong,.prd-content b { font-weight:600; }
+  .prd-content em,.prd-content i { font-style:italic; }
+  .prd-content code { font-family:'SF Mono',Consolas,monospace;font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:3px;color:var(--text);border:1px solid var(--border); }
+  .prd-content pre { background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:16px 18px;overflow-x:auto;margin-bottom:16px; }
+  .prd-content pre code { background:none;padding:0;font-size:12px;border:none; }
+  .prd-content blockquote { border-left:4px solid var(--accent);padding:10px 16px;margin:0 0 14px;color:var(--text-muted);background:color-mix(in srgb,var(--accent) 6%,transparent);border-radius:0 var(--radius-sm) var(--radius-sm) 0; }
+  .prd-content hr { border:none;border-top:2px solid var(--border);margin:24px 0; }
+  .prd-content-edit { outline:none;border:2px solid var(--accent) !important;border-radius:var(--radius);cursor:text;min-height:200px; }
+  .prd-content-edit:focus { border-color:var(--accent); }
+  /* PRD rich-text toolbar */
+  .prd-editor-wrap { margin-bottom:16px; }
+  .prd-rt-toolbar { display:flex;align-items:center;gap:2px;padding:6px 10px;background:#fff;border:1px solid var(--border);border-radius:var(--radius);flex-wrap:wrap;}
+  .prd-editor-wrap .prd-content-edit { margin-bottom:0; }
+  .prd-rt-btn { display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;border:none;border-radius:4px;background:none;color:var(--text);cursor:pointer;font-size:13px;font-family:inherit;padding:0 4px;transition:background .1s;flex-shrink:0; }
+  .prd-rt-btn:hover { background:var(--surface2); }
+  .prd-rt-btn.active { background:color-mix(in srgb,var(--accent) 15%,transparent);color:var(--accent); }
+  .prd-rt-sep { width:1px;height:18px;background:var(--border);margin:0 3px;flex-shrink:0; }
+  .prd-rt-select { height:28px;border:1px solid var(--border);border-radius:4px;background:var(--surface);color:var(--text);font-size:12px;font-family:inherit;padding:0 6px;cursor:pointer;outline:none;max-width:120px; }
+  .prd-rt-select:focus { border-color:var(--accent); }
+  /* Confluence panel macros */
+  .cf-panel { padding:12px 16px;border-radius:var(--radius-sm);margin-bottom:14px;font-size:13px; }
+  .cf-panel-info,.cf-panel-note { background:color-mix(in srgb,var(--accent) 10%,transparent);border-left:4px solid var(--accent); }
+  .cf-panel-warning { background:color-mix(in srgb,var(--yellow) 12%,transparent);border-left:4px solid var(--yellow); }
+  .cf-panel-tip { background:color-mix(in srgb,var(--green) 10%,transparent);border-left:4px solid var(--green); }
+  /* PRD source badge */
+  .prd-badge { display:inline-flex;align-items:center;gap:3px;font-size:10px;color:var(--text-dim);background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:middle;cursor:default;font-weight:400; }
+  .prd-badge .material-symbols-rounded { font-size:11px; }
+  /* Import banner */
+  .prd-import-banner { display:flex;align-items:center;gap:10px;padding:10px 14px;background:color-mix(in srgb,var(--accent) 8%,transparent);border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--radius);margin-bottom:16px;font-size:12px;color:var(--text-muted); }
+
+  /* Tab manager */
+  .tab-manager-btn {
+    display:inline-flex; align-items:center; gap:4px; position:relative;
+    font-size:13px; font-weight:500; padding:9px 14px;
+    color:var(--text-dim); border:none; background:none; cursor:pointer;
+    border-bottom:2px solid transparent; margin-bottom:-1px;
+    white-space:nowrap; flex-shrink:0; transition:all .15s;
+  }
+  .tab-manager-btn:hover { color:var(--accent); background:var(--accent-dim); border-radius:6px 6px 0 0; }
+  .tab-badge-dot {
+    width:6px; height:6px; border-radius:50%; background:var(--accent);
+    position:absolute; top:8px; right:6px; flex-shrink:0;
+  }
+  .tab-modal-overlay { position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center; }
+  .tab-modal-box { background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:0;width:320px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,.4); }
+  .tab-modal-head { padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between; }
+  .tab-modal-head strong { font-size:14px;font-weight:700;color:var(--text); }
+  .tab-modal-footer { padding:10px 16px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:flex-end; }
+  .tab-reset-btn { background:none;border:none;cursor:pointer;font-size:11px;color:var(--accent);padding:0;white-space:nowrap; }
+  .tab-reset-btn:hover { text-decoration:underline; }
+  .tab-picker-item {
+    display:flex; align-items:center; gap:10px; padding:10px 16px;
+    font-size:13px; color:var(--text-muted); cursor:pointer; user-select:none;
+    border-bottom:1px solid var(--border);
+  }
+  .tab-picker-item:last-child { border-bottom:none; }
+  .tab-picker-item:hover:not(.required) { background:var(--surface2); color:var(--text); }
+  .tab-picker-item.active { color:var(--text); }
+  .tab-picker-item .check { font-size:20px; color:var(--accent); width:22px; flex-shrink:0; }
+  .tab-picker-item.required { opacity:.45; cursor:default; }
+  .tab-picker-label { flex:1; display:flex; flex-direction:column; gap:1px; }
+  .tab-picker-sub { font-size:10px; color:var(--text-dim); font-weight:400; }
+  .tab-picker-count { font-size:11px; font-weight:600; color:var(--text-dim); background:var(--surface2); border-radius:10px; padding:1px 7px; flex-shrink:0; }
+  .tabs-wrap { background:#fff; display:flex; align-items:stretch; border-bottom:1px solid var(--border); margin-bottom:0; }
+  .tabs-wrap .tabs { border-bottom:none; margin-bottom:0; flex:1; overflow:hidden; }
 </style>
 </head>
 <body>
@@ -3507,7 +3608,6 @@ const FEATURES = [
     hasDomainDoc: true,
     customer: "Acme Field Services",
     due: "Jul 1, 2026",
-    currentFocus: "Finalizing the new dashboard layout and information architecture",
     summary: "Customers are struggling to find key information in the portal — support tickets about navigation have increased 40% this quarter. This feature redesigns the portal to improve discoverability, reduce time-to-task, and create a consistent visual hierarchy aligned with the new design system.",
     decisions: [
       "Adopt a left-nav sidebar layout — replaces the current top-nav + tabs pattern",
@@ -3595,10 +3695,11 @@ function getAllFeatures() {
     const ov = state[f.id] || {};
     return {
       ...f,
-      title:    ov._title    ?? f.title,
-      icon:     ov._icon     ?? f.icon,
-      customer: ov._customer ?? f.customer,
-      summary:  ov._summary  ?? f.summary,
+      title:        ov._title        ?? f.title,
+      icon:         ov._icon         ?? f.icon,
+      customer:     ov._customer     ?? f.customer,
+      summary:      ov._summary      ?? f.summary,
+      hasDomainDoc: ov._hasDomainDoc ?? f.hasDomainDoc,
     };
   });
   const all = [...builtins, ...loadCustomFeatures()];
@@ -3655,14 +3756,6 @@ function getChecked(featureId) {
 function setChecked(featureId, index, value) {
   const checked = { ...getChecked(featureId), [index]: value };
   updateFeatureState(featureId, { checked });
-}
-
-function getCurrentStep(featureId, fallback) {
-  return getFeatureState(featureId).currentStep ?? fallback;
-}
-
-function setCurrentStep(featureId, value) {
-  updateFeatureState(featureId, { currentStep: value });
 }
 
 function getNotes(featureId) {
@@ -3771,13 +3864,31 @@ function showView(id, navEl) {
   const view = document.getElementById('view-' + id);
   if (view) view.classList.add('active');
   if (navEl) navEl.classList.add('active');
+
+  // Persist current view so refresh restores it
+  history.replaceState(null, '', '#' + id);
+}
+
+function initFeatureTab(f) {
+  renderTaskList(f.id);
+  renderQuestionsList(f.id);
+  renderNotesTab(f.id);
+  renderDesignTab(f.id);
+  renderDesignSpecTab(f.id);
+  renderDomainKnowledgeList(f.id);
+  renderCallsList(f.id);
+  renderContextTab(f.id);
+  renderPrdTab(f.id);
+  _reRenderDD(f.id);
+  renderDesignImgs(f.id);
 }
 
 function showFeature(id) {
   if (_dragJustEnded) return;
   const navEl = document.querySelector(`[data-feature="${id}"]`);
   showView(id, navEl);
-  renderScheduleCards(); // refresh progress
+  renderPrdTab(id);      // always refresh so post-import state is reflected
+  renderScheduleCards();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -3982,7 +4093,6 @@ function renderScheduleCards() {
       <div class="sc-meta">
         ${f.customer !== 'TBD' ? `<strong>${f.customer}</strong> · ` : ''}Due: ${due}
       </div>
-      <div class="sc-focus">${getCurrentStep(f.id, f.currentFocus)}</div>
       <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
       <div class="sc-tasks">
         <span>${doneCount} / ${total} tasks done</span>
@@ -3996,82 +4106,316 @@ function renderScheduleCards() {
 // ═══════════════════════════════════════════════════════════════
 //  RENDER FEATURE DETAIL
 // ═══════════════════════════════════════════════════════════════
+
+// ── Tab configuration ─────────────────────────────────────────────────────────
+const TAB_CONFIG = [
+  { id: 'context',    label: 'Context',         required: true  },
+  { id: 'dknowledge', label: 'Domain Knowledge', required: false },
+  { id: 'ddocs',      label: 'Feature Brief',    required: false },
+  { id: 'prd',        label: 'PRD',              required: false },
+  { id: 'calls',      label: 'Calls',            required: false },
+  { id: 'questions',  label: 'Q&A',              required: false },
+  { id: 'spec',       label: 'Design Spec',      required: false },
+  { id: 'design',     label: 'Design Files',     required: false },
+  { id: 'notes',      label: 'Notes',            required: false },
+  { id: 'tasks',      label: 'To Do',            required: false },
+];
+
+// All tabs visible by default — users can hide via +Tabs
+// PRD is always excluded from this list; it auto-appears when prdContent exists
+const DEFAULT_HIDDEN = [];
+
+function getHiddenTabs(featureId) {
+  const st = getFeatureState(featureId);
+  if (st._hiddenTabs !== undefined) return [...st._hiddenTabs];
+  // Migration: old _tabs was the visible set — convert to hidden set
+  if (st._tabs) {
+    const allIds = TAB_CONFIG.map(t => t.id).filter(id => id !== 'prd');
+    const hidden = allIds.filter(id => !st._tabs.includes(id));
+    updateFeatureState(featureId, { _hiddenTabs: hidden });
+    return hidden;
+  }
+  return [...DEFAULT_HIDDEN];
+}
+
+function setHiddenTabs(featureId, hidden) {
+  updateFeatureState(featureId, { _hiddenTabs: hidden });
+}
+
+function getVisibleTabs(featureId, f) {
+  const st = getFeatureState(featureId);
+  const hidden = getHiddenTabs(featureId);
+  return TAB_CONFIG.map(t => t.id).filter(id => {
+    if (id === 'prd') return !!st.prdContent; // PRD only when content exists
+    return !hidden.includes(id);
+  });
+}
+
+function getTabContentCount(featureId, tabId) {
+  const st = getFeatureState(featureId);
+  const f = getAllFeatures().find(x => x.id === featureId);
+  switch (tabId) {
+    case 'context':    return null;
+    case 'prd':        return st.prdContent ? 1 : 0;
+    case 'dknowledge': return (st.domainKnowledge || []).length;
+    case 'ddocs':      return getDDEntries(featureId).length;
+    case 'calls':      return getCalls(featureId).length;
+    case 'questions':  return (f?.questions?.length || 0) + (st.customQuestions?.length || 0);
+    case 'spec':       return getSpecLinks(featureId).length;
+    case 'design':     return getDesignFiles(featureId).length;
+    case 'notes':      return (st.notes || '').trim() ? 1 : 0;
+    case 'tasks':      return getTasks(featureId).filter(t => t.type !== 'section').length;
+    default:           return 0;
+  }
+}
+
+function hasNonDefaultHidden(featureId) {
+  return getHiddenTabs(featureId).some(id => !DEFAULT_HIDDEN.includes(id));
+}
+
+function buildTabsRowHtml(featureId, visible, activeId) {
+  return visible.map(tid => {
+    const cfg = TAB_CONFIG.find(t => t.id === tid);
+    const label = cfg?.label || tid;
+    const isActive = tid === activeId;
+    return '<div class="tab' + (isActive ? ' active' : '') + '"' +
+      ' data-tab-id="' + tid + '"' +
+      (cfg?.required ? ' data-required="true"' : '') +
+      ' onclick="switchTab(\'' + featureId + '\', \'' + tid + '\', this)">' +
+      '<span class="tab-label">' + label + '</span></div>';
+  }).join('');
+}
+
+function _rerenderTabsRow(featureId) {
+  const view = document.getElementById('view-' + featureId);
+  if (!view) return;
+  const f = getAllFeatures().find(x => x.id === featureId);
+  if (!f) return;
+  const tabsRow = view.querySelector('#tabs-row-' + featureId);
+  if (!tabsRow) return;
+  const visible = getVisibleTabs(featureId, f);
+  const activePanel = view.querySelector('.tab-panel.active');
+  const activeId = activePanel?.id?.replace(featureId + '_tab_', '') || visible[0];
+  tabsRow.innerHTML = buildTabsRowHtml(featureId, visible, activeId);
+  // If active tab is now hidden, switch to first visible
+  if (!visible.includes(activeId) && visible.length > 0) {
+    const firstTab = tabsRow.querySelector('.tab');
+    if (firstTab) switchTab(featureId, visible[0], firstTab);
+  }
+  // Update badge dot on +Tabs button
+  const btn = document.getElementById('tab-mgr-btn-' + featureId);
+  if (btn) {
+    const existing = btn.querySelector('.tab-badge-dot');
+    if (existing) existing.remove();
+    if (hasNonDefaultHidden(featureId)) {
+      const dot = document.createElement('span');
+      dot.className = 'tab-badge-dot';
+      btn.appendChild(dot);
+    }
+  }
+  initFeatureTab(f);
+}
+
+function toggleTab(featureId, tabId) {
+  const tab = TAB_CONFIG.find(t => t.id === tabId);
+  if (tab && tab.required) return;
+  const hidden = getHiddenTabs(featureId);
+  const next = hidden.includes(tabId)
+    ? hidden.filter(t => t !== tabId)   // un-hide
+    : [...hidden, tabId];               // hide
+  setHiddenTabs(featureId, next);
+  _rerenderTabsRow(featureId);
+  // Update the modal checkbox in-place — no re-render, no flicker
+  const modal = document.getElementById('tab-modal');
+  if (modal && modal.style.display !== 'none') {
+    const isNowOn = !next.includes(tabId);
+    const item = modal.querySelector('[data-tab-id="' + tabId + '"]');
+    if (item) {
+      item.classList.toggle('active', isNowOn);
+      const check = item.querySelector('.check');
+      if (check) check.textContent = isNowOn ? 'check_box' : 'check_box_outline_blank';
+    }
+    // Show/hide Reset button based on whether we're at defaults
+    const isDefault = JSON.stringify([...next].sort()) === JSON.stringify([...DEFAULT_HIDDEN].sort());
+    let footer = modal.querySelector('.tab-modal-footer');
+    if (isDefault && footer) {
+      footer.remove();
+    } else if (!isDefault && !footer) {
+      const box = modal.querySelector('.tab-modal-box');
+      if (box) box.insertAdjacentHTML('beforeend',
+        '<div class="tab-modal-footer"><button class="tab-reset-btn" onclick="resetTabsToDefault(\'' + featureId + '\')">Reset to defaults</button></div>');
+    }
+  }
+}
+
+function hideTab(event, featureId, tabId) {
+  event.stopPropagation();
+  const count = getTabContentCount(featureId, tabId);
+  const cfg = TAB_CONFIG.find(t => t.id === tabId);
+  const doHide = () => {
+    const hidden = [...getHiddenTabs(featureId), tabId];
+    setHiddenTabs(featureId, hidden);
+    _rerenderTabsRow(featureId);
+  };
+  if (count && count > 0) {
+    showConfirm('Hide the "' + (cfg?.label || tabId) + '" tab? Your content is still there. Un-hide it from +Tabs.').then(ok => { if (ok) doHide(); });
+  } else {
+    doHide();
+  }
+}
+
+function resetTabsToDefault(featureId) {
+  setHiddenTabs(featureId, [...DEFAULT_HIDDEN]);
+  _rerenderTabsRow(featureId);
+  openTabPicker(featureId);
+}
+
+let _tabPickerFeature = null;
+function openTabPicker(featureId) {
+  _tabPickerFeature = featureId;
+  const f = getAllFeatures().find(x => x.id === featureId);
+  const st = getFeatureState(featureId);
+  const visible = getVisibleTabs(featureId, f);
+  const hidden = getHiddenTabs(featureId);
+  let modal = document.getElementById('tab-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'tab-modal';
+    document.body.appendChild(modal);
+  }
+
+  const itemsHtml = TAB_CONFIG.map(t => {
+    const isOn = visible.includes(t.id);
+    const count = getTabContentCount(featureId, t.id);
+    const isPrd = t.id === 'prd';
+    const isConnected = isPrd && !!st.prdContent;
+    const isDisabled = t.required || isPrd; // PRD is always non-interactive (auto-managed)
+    let sublabel = '';
+    if (t.required) sublabel = '<span class="tab-picker-sub">always on</span>';
+    else if (isPrd && isConnected) sublabel = '<span class="tab-picker-sub">connected</span>';
+    else if (isPrd) sublabel = '<span class="tab-picker-sub">import a PRD to enable</span>';
+    let countBadge = '';
+    if (count !== null && count > 0) {
+      countBadge = '<span class="tab-picker-count">' + count + '</span>';
+    }
+    return '<div class="tab-picker-item' + (isOn ? ' active' : '') + (isDisabled ? ' required' : '') + '"' +
+      ' data-tab-id="' + t.id + '"' +
+      (isDisabled ? '' : ' onclick="toggleTab(\'' + featureId + '\',\'' + t.id + '\')"') + '>' +
+      '<span class="material-symbols-rounded check">' + (isOn ? 'check_box' : 'check_box_outline_blank') + '</span>' +
+      '<span class="tab-picker-label">' + t.label + sublabel + '</span>' +
+      countBadge +
+      '</div>';
+  }).join('');
+
+  const isDefault = JSON.stringify([...hidden].sort()) === JSON.stringify([...DEFAULT_HIDDEN].sort());
+  const footerHtml = isDefault ? '' :
+    '<div class="tab-modal-footer">' +
+      '<button class="tab-reset-btn" onclick="resetTabsToDefault(\'' + featureId + '\')">Reset to defaults</button>' +
+    '</div>';
+
+  modal.innerHTML = '<div class="tab-modal-overlay" onclick="closeTabPicker()">' +
+    '<div class="tab-modal-box" onclick="event.stopPropagation()">' +
+      '<div class="tab-modal-head">' +
+        '<strong>Manage Tabs</strong>' +
+        '<button onclick="closeTabPicker()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);display:flex;padding:4px;border-radius:4px">' +
+          '<span class="material-symbols-rounded" style="font-size:18px">close</span>' +
+        '</button>' +
+      '</div>' +
+      itemsHtml +
+      footerHtml +
+    '</div>' +
+  '</div>';
+  modal.style.display = 'block';
+}
+function closeTabPicker() {
+  const modal = document.getElementById('tab-modal');
+  if (modal) modal.style.display = 'none';
+  _tabPickerFeature = null;
+}
+
 function renderFeatureViews() {
   const container = document.getElementById('feature-views');
   container.innerHTML = getAllFeatures().map(f => buildFeatureView(f)).join('');
+  initStickyObservers();
+}
+
+function initStickyObservers() {
+  const main = document.getElementById('main');
+  if (!main) return;
+  getAllFeatures().forEach(f => {
+    const sentinel = document.getElementById('sz-sentinel-' + f.id);
+    const zone     = document.getElementById('sz-' + f.id);
+    if (!sentinel || !zone) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => zone.classList.toggle('sticky-zone--stuck', !entry.isIntersecting),
+      { root: main, threshold: 0 }
+    );
+    obs.observe(sentinel);
+  });
 }
 
 function buildFeatureView(f) {
-  const currentStep = getCurrentStep(f.id, f.currentFocus);
   const status = getStatus(f);
   const due = getDue(f);
 
 
   return `
   <div id="view-${f.id}" class="view">
-    <!-- HEADER -->
-    <div class="feature-header">
-      <div class="feature-title-block">
-        <h2><span class="material-symbols-rounded" style="font-size:20px;vertical-align:middle;margin-right:8px;opacity:.8">${f.icon}</span>${f.title}</h2>
-        <div class="feature-meta-row">
-          <select id="${f.id}_status_sel"
-            class="status-select ${STATUS_BADGE[status] || 'badge-done'}"
-            onchange="handleStatusChange('${f.id}', this.value)">
-            ${['Discovery','Design','Dev','QA','Done'].map(s =>
-              `<option value="${s}" ${status===s?'selected':''}>${s}</option>`).join('')}
-          </select>
-          <span class="meta-sep">|</span>
-          <span class="meta-customer">${f.customer}</span>
-          <span class="meta-sep">|</span>
-          <span>Due: <input class="due-input" type="date" value="${toIsoDate(due)}"
-            onchange="handleDueChange('${f.id}', this.value)" /></span>
+    <!-- Sentinel: IntersectionObserver watches this to detect sticky state -->
+    <div id="sz-sentinel-${f.id}" style="height:1px;margin-top:-1px;pointer-events:none"></div>
+    <!-- STICKY ZONE: header + tabs in one solid layer — no gap, no bleed-through -->
+    <div class="sticky-zone" id="sz-${f.id}">
+      <div class="sticky-zone-card">
+      <!-- HEADER -->
+      <div class="feature-header">
+        <div class="feature-title-block">
+          <h2><span class="material-symbols-rounded" style="font-size:20px;vertical-align:middle;margin-right:8px;opacity:.8">${f.icon}</span>${f.title}</h2>
+          <div class="feature-meta-row">
+            <select id="${f.id}_status_sel"
+              class="status-select ${STATUS_BADGE[status] || 'badge-done'}"
+              onchange="handleStatusChange('${f.id}', this.value)">
+              ${['Discovery','Design','Dev','QA','Done'].map(s =>
+                `<option value="${s}" ${status===s?'selected':''}>${s}</option>`).join('')}
+            </select>
+            <span class="meta-sep">|</span>
+            <span class="meta-customer">${f.customer}</span>
+            <span class="meta-sep">|</span>
+            <span>Due: <input class="due-input" type="date" value="${toIsoDate(due)}"
+              onchange="handleDueChange('${f.id}', this.value)" /></span>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px;flex-shrink:0;align-items:center">
+          <span id="cf-hdr-${f.id}">${buildCFHeaderBtn(f.id)}</span>
+          <button class="q-icon-btn" title="Export feature" onclick="exportFeature('${f.id}')">
+            <span class="material-symbols-rounded">download</span>
+          </button>
+          <button class="q-icon-btn" title="Edit feature info" onclick="openEditFeatureModal('${f.id}')">
+            <span class="material-symbols-rounded">edit</span>
+          </button>
+          <button class="q-icon-btn del" title="Delete feature" onclick="deleteFeature('${f.id}')">
+            <span class="material-symbols-rounded">delete</span>
+          </button>
         </div>
       </div>
-      <div style="display:flex;gap:6px;flex-shrink:0">
-        <button class="q-icon-btn" title="Export feature" onclick="exportFeature('${f.id}')">
-          <span class="material-symbols-rounded">download</span>
-        </button>
-        <button class="q-icon-btn" title="Edit feature info" onclick="openEditFeatureModal('${f.id}')">
-          <span class="material-symbols-rounded">edit</span>
-        </button>
-        <button class="q-icon-btn del" title="Delete feature" onclick="deleteFeature('${f.id}')">
-          <span class="material-symbols-rounded">delete</span>
-        </button>
-      </div>
-    </div>
 
-    <!-- CURRENT FOCUS RIBBON -->
-    <div class="focus-ribbon">
-      <div class="focus-ribbon-icon"><span class="material-symbols-rounded" style="font-size:22px">my_location</span></div>
-      <div class="focus-ribbon-text">
-        <strong>Current Focus</strong>
-        <span id="${f.id}_step_display">${currentStep}</span>
+      <!-- TABS (inside sticky zone — no gap between header and tabs) -->
+      <div class="tabs-wrap">
+        <div class="tabs" id="tabs-row-${f.id}" style="flex:1;overflow-x:auto;display:flex">
+          ${(function(){
+            const visible = getVisibleTabs(f.id, f);
+            return buildTabsRowHtml(f.id, visible, visible[0]);
+          })()}
+        </div>
+        <button class="tab-manager-btn" id="tab-mgr-btn-${f.id}" onclick="openTabPicker('${f.id}')" title="Manage tabs">
+          <span class="material-symbols-rounded" style="font-size:16px">add</span> Tabs${hasNonDefaultHidden(f.id) ? '<span class="tab-badge-dot"></span>' : ''}
+        </button>
       </div>
-      <button class="q-icon-btn" title="Edit current focus" onclick="toggleStepEdit('${f.id}')">
-        <span class="material-symbols-rounded">edit</span>
-      </button>
-    </div>
-    <div id="${f.id}_step_editor" style="display:none;margin-bottom:20px;">
-      <div class="current-step-wrapper">
-        <textarea class="editable-note" id="${f.id}_step_input"
-          placeholder="What are you working on right now?">${currentStep}</textarea>
-        <button class="btn btn-primary" onclick="saveStep('${f.id}')">Save</button>
-      </div>
-    </div>
-
-    <!-- TABS -->
-    <div class="tabs">
-      <div class="tab active" onclick="switchTab('${f.id}', 'context', this)">Context</div>
-      <div class="tab" onclick="switchTab('${f.id}', 'dknowledge', this)">Domain Knowledge</div>
-      <div class="tab" onclick="switchTab('${f.id}', 'calls', this)">Calls</div>
-      ${f.hasDomainDoc ? `<div class="tab" onclick="switchTab('${f.id}', 'ddocs', this)">Feature Brief</div>` : ''}
-      ${f.hasDoc && f.docLabel !== 'Design Spec' ? `<div class="tab" onclick="switchTab('${f.id}', 'docs', this)">${f.docLabel === 'Feature Understanding' ? 'Feature Brief' : (f.docLabel || 'Docs')}</div>` : ''}
-      <div class="tab" onclick="switchTab('${f.id}', 'questions', this)">Q&amp;A</div>
-      <div class="tab" onclick="switchTab('${f.id}', 'spec', this)">Design Spec</div>
-      <div class="tab" onclick="switchTab('${f.id}', 'design', this)">Design Files</div>
-      <div class="tab" onclick="switchTab('${f.id}', 'notes', this)">Notes</div>
-      <div class="tab" onclick="switchTab('${f.id}', 'tasks', this)">To Do</div>
-    </div>
+      <!-- PRD sub-header slot: populated by renderPrdTab, shown only on PRD tab -->
+      <div id="${f.id}_prd_sticky" style="display:none"></div>
+      <!-- PRD toolbar slot: shown when editing PRD -->
+      <div id="${f.id}_prd_toolbar_sticky" style="display:none"></div>
+      </div><!-- /.sticky-zone-card -->
+    </div><!-- /.sticky-zone -->
 
     <!-- CONTEXT TAB -->
     <div id="${f.id}_tab_context" class="tab-panel active">
@@ -4110,10 +4454,14 @@ function buildFeatureView(f) {
     </div>` : ''}
 
     <!-- DOMAIN DOCS TAB -->
-    ${f.hasDomainDoc ? `
     <div id="${f.id}_tab_ddocs" class="tab-panel">
       <div id="${f.id}_ddocs_view"></div>
-    </div>` : ''}
+    </div>
+
+    <!-- PRD TAB -->
+    <div id="${f.id}_tab_prd" class="tab-panel">
+      <div id="${f.id}_prd_panel"></div>
+    </div>
 
     <!-- DOMAIN KNOWLEDGE TAB -->
     <div id="${f.id}_tab_dknowledge" class="tab-panel">
@@ -4135,31 +4483,26 @@ function switchTab(featureId, tabName, el) {
   allTabs.forEach(t => t.classList.remove('active'));
   el.classList.add('active');
 
-  const panels = ['context','tasks','questions','notes','design','spec','docs','ddocs','dknowledge','calls'];
+  const panels = ['context','prd','tasks','questions','notes','design','spec','docs','ddocs','dknowledge','calls'];
   panels.forEach(p => {
     const panel = document.getElementById(`${featureId}_tab_${p}`);
     if (panel) panel.classList.toggle('active', p === tabName);
   });
+
+  // Show/hide the PRD sticky slots (sub-header + toolbar)
+  const prdSlot = document.getElementById(featureId + '_prd_sticky');
+  if (prdSlot) prdSlot.style.display = tabName === 'prd' ? 'block' : 'none';
+  if (tabName !== 'prd') {
+    const tbSlot = document.getElementById(featureId + '_prd_toolbar_sticky');
+    if (tbSlot) { tbSlot.style.display = 'none'; tbSlot.innerHTML = ''; }
+  }
+
+  // Persist so refresh restores the same tab
+  try { localStorage.setItem('fh_active_tab_' + featureId, tabName); } catch {}
 }
 
 function handleNotes(featureId, value) {
   setNotes(featureId, value);
-}
-
-function toggleStepEdit(featureId) {
-  const editor = document.getElementById(`${featureId}_step_editor`);
-  const isHidden = editor.style.display === 'none';
-  editor.style.display = isHidden ? 'block' : 'none';
-  if (isHidden) document.getElementById(`${featureId}_step_input`).focus();
-}
-
-function saveStep(featureId) {
-  const val = document.getElementById(`${featureId}_step_input`).value.trim();
-  if (!val) return;
-  setCurrentStep(featureId, val);
-  document.getElementById(`${featureId}_step_display`).textContent = val;
-  document.getElementById(`${featureId}_step_editor`).style.display = 'none';
-  renderScheduleCards();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -4981,6 +5324,24 @@ function renderAllSections() {
     renderNotesTab(f.id);
     renderDesignTab(f.id);
     renderDesignSpecTab(f.id);
+    renderPrdTab(f.id);
+    _reRenderDD(f.id);
+
+    // Restore PRD edit mode before tab restoration so the tab panel is correct
+    if (localStorage.getItem('fh_prd_editing_' + f.id)) startPrdEdit(f.id);
+
+    // Restore last active tab
+    const storedTab = localStorage.getItem('fh_active_tab_' + f.id);
+    if (storedTab) {
+      const view = document.getElementById('view-' + f.id);
+      if (view) {
+        const visible = getVisibleTabs(f.id, f);
+        if (visible.includes(storedTab)) {
+          const tabBtn = view.querySelector(`[data-tab-id="${storedTab}"]`);
+          if (tabBtn) switchTab(f.id, storedTab, tabBtn);
+        }
+      }
+    }
   });
 }
 
@@ -5072,8 +5433,7 @@ function saveDDEntries(featureId, entries) {
 function _reRenderDD(featureId) {
   const f = getAllFeatures().find(x => x.id === featureId);
   if (!f) return;
-  const containerId = f.hasDomainDoc ? `${featureId}_ddocs_view` : `${featureId}_docs_view`;
-  _renderDDPanel(f, document.getElementById(containerId));
+  _renderDDPanel(f, document.getElementById(`${featureId}_ddocs_view`));
 }
 
 function addDDEntry(featureId) {
@@ -5124,10 +5484,13 @@ function saveDDEdit(featureId, id) {
   updateDDField(featureId, id, 'title', titleVal);
   updateDDField(featureId, id, 'content', contentVal);
   editor.style.display = 'none';
-  rendered.innerHTML = contentVal.trim()
-    ? marked.parse(contentVal)
-    : '';
-  rendered.style.display = 'block';
+  if (contentVal.trim()) {
+    rendered.innerHTML = marked.parse(contentVal);
+    rendered.style.display = 'block';
+  } else {
+    rendered.innerHTML = '';
+    rendered.style.display = 'none';
+  }
 }
 
 function cancelDDEdit(featureId, id) {
@@ -5147,7 +5510,13 @@ function cancelDDEdit(featureId, id) {
     if (ta)         ta.value = entry.content || '';
   }
   if (editor) editor.style.display = 'none';
-  if (rendered) rendered.style.display = 'block';
+  if (rendered) {
+    if (entry && entry.content && entry.content.trim()) {
+      rendered.style.display = 'block';
+    } else {
+      rendered.style.display = 'none';
+    }
+  }
 }
 
 const _ddOpen = {};
@@ -5166,27 +5535,25 @@ function buildDDEntryCard(featureId, e) {
   const renderedHtml = hasContent ? marked.parse(e.content) : '';
   return `
   <div class="context-card dk-entry${isExpanded ? ' expanded' : ''}" id="dd_card_${featureId}_${e.id}">
-    <div class="dk-entry-header" onclick="toggleDDCollapse('${featureId}','${e.id}')">
-      <div class="dk-entry-info" style="flex:1;min-width:0">
-        <input class="dk-entry-title-input" id="dd_title_input_${featureId}_${e.id}"
-          value="${escHtml(e.title)}" placeholder="Title..."
-          onclick="event.stopPropagation()"
-          onblur="updateDDField('${featureId}','${e.id}','title',this.value.trim())"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();openDDEdit('${featureId}','${e.id}');}" />
-      </div>
+    <div class="dk-entry-header" style="display:flex;align-items:center;gap:8px" onclick="toggleDDCollapse('${featureId}','${e.id}')">
+      <input class="dk-header-title" id="dd_title_input_${featureId}_${e.id}"
+        value="${escHtml(e.title || '')}" placeholder="Title..."
+        onclick="event.stopPropagation()"
+        onblur="updateDDField('${featureId}','${e.id}','title',this.value.trim())" />
       <button class="q-icon-btn" title="Delete entry" onclick="event.stopPropagation();removeDDEntry('${featureId}','${e.id}')">
         <span class="material-symbols-rounded" style="font-size:16px;color:var(--text-muted)">delete</span>
       </button>
       <span class="material-symbols-rounded dk-expand-icon">expand_more</span>
     </div>
     <div class="dk-entry-body">
-      <div id="dd_rendered_${featureId}_${e.id}" class="md-body dk-clickable" onclick="openDDEdit('${featureId}','${e.id}')">
-        ${renderedHtml || '<p class=\'dk-empty-hint\'>Click to add content…</p>'}
+      <div id="dd_rendered_${featureId}_${e.id}" class="md-body dk-clickable" onclick="openDDEdit('${featureId}','${e.id}')" style="display:${hasContent ? 'block' : 'none'}">
+        ${renderedHtml}
       </div>
       <div id="dd_editor_${featureId}_${e.id}" style="display:${hasContent ? 'none' : 'block'}">
         ${mdToolbar(`dd_ta_${featureId}_${e.id}`)}
         <textarea class="dk-entry-content" id="dd_ta_${featureId}_${e.id}"
-          placeholder="Paste or type markdown content…">${escHtml(e.content)}</textarea>
+          placeholder="Paste or type markdown content…"
+          oninput="updateDDField('${featureId}','${e.id}','content',this.value)">${escHtml(e.content)}</textarea>
         <div class="dk-entry-actions">
           <button class="btn btn-primary" onclick="saveDDEdit('${featureId}','${e.id}')">Save</button>
           <button class="btn" onclick="cancelDDEdit('${featureId}','${e.id}')">Cancel</button>
@@ -5670,7 +6037,7 @@ function buildCallCard(featureId, call) {
         <span class="material-symbols-rounded" style="font-size:13px">add</span> Add link
       </button>
     </div>
-    ${links.length === 0 ? `<div style="font-size:12px;color:var(--text-dim);margin-bottom:10px">No resources yet — add slides, docs, or other links.</div>` : ''}
+    ${links.length === 0 ? `<div style="font-size:12px;color:var(--text-dim);margin-bottom:10px">No resources yet. Add slides, docs, or other links.</div>` : ''}
     ${links.map((lnk, idx) => `
     <div class="call-resource-row">
       <input class="call-detail-input call-resource-label-input" placeholder="Label (optional)…" value="${escHtml(lnk.label || '')}"
@@ -6213,8 +6580,13 @@ function saveDKEdit(featureId, id) {
   updateDKField(featureId, id, 'title', titleVal);
   updateDKField(featureId, id, 'content', contentVal);
   editor.style.display = 'none';
-  rendered.innerHTML = contentVal.trim() ? marked.parse(contentVal) : '';
-  rendered.style.display = 'block';
+  if (contentVal.trim()) {
+    rendered.innerHTML = marked.parse(contentVal);
+    rendered.style.display = 'block';
+  } else {
+    rendered.innerHTML = '';
+    rendered.style.display = 'none';
+  }
   showToast();
 }
 
@@ -6235,7 +6607,13 @@ function cancelDKEdit(featureId, id) {
     if (ta)         ta.value = entry.content || '';
   }
   if (editor) editor.style.display = 'none';
-  if (rendered) rendered.style.display = 'block';
+  if (rendered) {
+    if (entry && entry.content && entry.content.trim()) {
+      rendered.style.display = 'block';
+    } else {
+      rendered.style.display = 'none';
+    }
+  }
 }
 
 function updateDKField(featureId, id, field, value) {
@@ -6266,27 +6644,25 @@ function buildDKEntryCard(featureId, e) {
   const renderedHtml = hasContent ? marked.parse(e.content) : '';
   return `
   <div class="context-card dk-entry${isExpanded ? ' expanded' : ''}" id="dk_card_${featureId}_${e.id}">
-    <div class="dk-entry-header" onclick="toggleDKCollapse('${featureId}','${e.id}')">
-      <div class="dk-entry-info" style="flex:1;min-width:0">
-        <input class="dk-entry-title-input" id="dk_title_input_${featureId}_${e.id}"
-          value="${escHtml(e.title || '')}" placeholder="Title..."
-          onclick="event.stopPropagation()"
-          onblur="updateDKField('${featureId}','${e.id}','title',this.value.trim())"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();openDKEdit('${featureId}','${e.id}');}" />
-      </div>
+    <div class="dk-entry-header" style="display:flex;align-items:center;gap:8px" onclick="toggleDKCollapse('${featureId}','${e.id}')">
+      <input class="dk-header-title" id="dk_title_input_${featureId}_${e.id}"
+        value="${escHtml(e.title || '')}" placeholder="Title..."
+        onclick="event.stopPropagation()"
+        onblur="updateDKField('${featureId}','${e.id}','title',this.value.trim())" />
       <button class="q-icon-btn" title="Delete entry" onclick="event.stopPropagation();removeDomainKnowledge('${featureId}','${e.id}')">
         <span class="material-symbols-rounded" style="font-size:16px;color:var(--text-muted)">delete</span>
       </button>
       <span class="material-symbols-rounded dk-expand-icon">expand_more</span>
     </div>
     <div class="dk-entry-body">
-      <div id="dk_rendered_${featureId}_${e.id}" class="md-body dk-clickable" onclick="openDKEdit('${featureId}','${e.id}')">
-        ${renderedHtml || '<p class=\'dk-empty-hint\'>Click to add content…</p>'}
+      <div id="dk_rendered_${featureId}_${e.id}" class="md-body dk-clickable" onclick="openDKEdit('${featureId}','${e.id}')" style="display:${hasContent ? 'block' : 'none'}">
+        ${renderedHtml}
       </div>
       <div id="dk_editor_${featureId}_${e.id}" style="display:${hasContent ? 'none' : 'block'}">
         ${mdToolbar(`dk_ta_${featureId}_${e.id}`)}
         <textarea class="dk-entry-content" id="dk_ta_${featureId}_${e.id}"
-          placeholder="Paste or type markdown content…">${escHtml(e.content || '')}</textarea>
+          placeholder="Paste or type markdown content\u2026"
+          oninput="updateDKField('${featureId}','${e.id}','content',this.value)">${escHtml(e.content || '')}</textarea>
         <div class="dk-entry-actions">
           <button class="btn btn-primary" onclick="saveDKEdit('${featureId}','${e.id}')">Save</button>
           <button class="btn" onclick="cancelDKEdit('${featureId}','${e.id}')">Cancel</button>
@@ -6295,7 +6671,6 @@ function buildDKEntryCard(featureId, e) {
     </div>
   </div>`;
 }
-
 function renderDomainKnowledgeList(featureId) {
   const panel = document.getElementById(`${featureId}_dk_panel`);
   if (!panel) return;
@@ -6342,6 +6717,11 @@ function getCtxArr(id, key, fallback) {
 }
 function setCtxField(id, key, value) {
   updateFeatureState(id, { ['ctx_' + key]: value });
+  // Clear PRD source badge — field is now user-owned
+  const st = getFeatureState(id);
+  if (st.prdFilledFields?.includes(key)) {
+    updateFeatureState(id, { prdFilledFields: st.prdFilledFields.filter(k => k !== key) });
+  }
   showToast();
 }
 
@@ -6349,10 +6729,24 @@ const _ctxEdit = {};
 
 function buildContextTabHtml(f) {
   const id = f.id;
+  const st = getFeatureState(id);
   const summary   = getCtxSummary(id, f.summary);
   const decisions = getCtxArr(id, 'decisions', f.decisions || []);
   const team      = getCtxArr(id, 'team',      f.team      || []);
   const links     = getCtxArr(id, 'links',     f.links     || []);
+  const prdFields = st.prdFilledFields || [];
+  const constraints = getCtxArr(id, 'constraints', []);
+  const badge = key => prdFields.includes(key)
+    ? '<span class="prd-badge"><span class="material-symbols-rounded">cloud_download</span>from PRD</span>'
+    : '';
+  const bannerHtml = st.prdImportBanner
+    ? `<div class="prd-import-banner">
+        <span class="material-symbols-rounded" style="font-size:18px;color:var(--accent);flex-shrink:0">auto_awesome</span>
+        <span>Some fields were auto-filled from your PRD.</span>
+        <button onclick="dismissPrdBanner('${id}')" style="background:none;border:none;cursor:pointer;color:var(--text-dim);padding:2px 0 2px 8px;margin-left:auto;flex-shrink:0">
+          <span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">close</span>
+        </button>
+      </div>` : '';
 
   // ── Summary ───────────────────────────────────────────────────────────
   let summaryHtml;
@@ -6467,22 +6861,53 @@ function buildContextTabHtml(f) {
       <button class="btn btn-primary" onclick="addCtxLink('${id}')">Add</button>
     </div>`;
 
+  // ── Constraints ──────────────────────────────────────────────────────────
+  const conEditIdx = _ctxEdit[id + '_con'];
+  const conItemsHtml = constraints.map((c, i) => {
+    if (conEditIdx === i) {
+      return `<li style="display:flex;align-items:center;gap:6px;margin-bottom:6px;list-style:none">
+        <input class="add-item-input" id="${id}_edit_con_${i}" value="${escHtml(c)}" style="flex:1"
+          onkeydown="if(event.key==='Enter')saveCtxCon('${id}',${i})" />
+        <button class="btn btn-primary" style="font-size:12px;padding:4px 10px;flex-shrink:0" onclick="saveCtxCon('${id}',${i})">Save</button>
+        <button class="btn" style="font-size:12px;padding:4px 10px;flex-shrink:0" onclick="cancelCtxEdit('${id}','con')">Cancel</button>
+      </li>`;
+    }
+    return `<li style="display:flex;align-items:flex-start;gap:4px;margin-bottom:4px;list-style:none">
+      <span style="flex:1;font-size:13px;padding-top:2px">${escHtml(c)}</span>
+      <button class="q-icon-btn" title="Edit" onclick="editCtxItem('${id}','con',${i})"><span class="material-symbols-rounded">edit</span></button>
+      <button class="q-icon-btn del" title="Delete" onclick="removeCtxArrItem('${id}','constraints',${i})"><span class="material-symbols-rounded">delete</span></button>
+    </li>`;
+  }).join('');
+  const constraintsHtml = (constraints.length
+    ? `<ul style="margin:0 0 12px;padding:0">${conItemsHtml}</ul>`
+    : `<p style="color:var(--text-dim);font-size:13px;margin-bottom:12px">No constraints noted yet</p>`) + `
+    <div class="add-item-row" style="padding-top:0;border-top:none">
+      <input class="add-item-input" id="${id}_add_con" placeholder="Add a constraint or out-of-scope item…"
+        onkeydown="if(event.key==='Enter')addCtxArrItem('${id}','constraints','${id}_add_con')" />
+      <button class="btn btn-primary" onclick="addCtxArrItem('${id}','constraints','${id}_add_con')">Add</button>
+    </div>`;
+
   return `
+    ${bannerHtml}
     <div class="context-card">
-      <h3><span class="material-symbols-rounded ctx-icon">menu_book</span> Summary</h3>
+      <h3><span class="material-symbols-rounded ctx-icon">menu_book</span> Summary${badge('summary')}</h3>
       ${summaryHtml}
     </div>
     <div class="context-card">
-      <h3><span class="material-symbols-rounded ctx-icon">task_alt</span> Key Decisions</h3>
+      <h3><span class="material-symbols-rounded ctx-icon">task_alt</span> Key Decisions${badge('decisions')}</h3>
       ${decisionsHtml}
     </div>
     <div class="context-card">
-      <h3><span class="material-symbols-rounded ctx-icon">group</span> Team</h3>
+      <h3><span class="material-symbols-rounded ctx-icon">group</span> Team${badge('team')}</h3>
       ${teamHtml}
     </div>
     <div class="context-card">
-      <h3><span class="material-symbols-rounded ctx-icon">link</span> Links</h3>
+      <h3><span class="material-symbols-rounded ctx-icon">link</span> Links${badge('links')}</h3>
       ${linksHtml}
+    </div>
+    <div class="context-card">
+      <h3><span class="material-symbols-rounded ctx-icon">block</span> Constraints${badge('constraints')}</h3>
+      ${constraintsHtml}
     </div>`;
 }
 
@@ -6537,6 +6962,15 @@ function saveCtxDec(id, i) {
   arr[i] = inp.value.trim();
   setCtxField(id, 'decisions', arr);
   _ctxEdit[id + '_dec'] = null;
+  renderContextTab(id);
+}
+function saveCtxCon(id, i) {
+  const inp = document.getElementById(id + '_edit_con_' + i);
+  if (!inp || !inp.value.trim()) return;
+  const arr = getCtxArr(id, 'constraints', []);
+  arr[i] = inp.value.trim();
+  setCtxField(id, 'constraints', arr);
+  _ctxEdit[id + '_con'] = null;
   renderContextTab(id);
 }
 function saveCtxTeam(id, i) {
@@ -6894,7 +7328,6 @@ function submitNewFeature() {
     customer: newCustomer,
     due: newDue,
     team: [],
-    currentFocus: '',
     summary: newSummary,
     decisions: [],
     constraints: [],
@@ -7037,15 +7470,13 @@ function renderNotesTab(id) {
   const itemsHtml = entries.map(n => {
     const ek = id + '::' + n.id;
     if (_noteEditMode[ek]) {
-      return `<div class="note-entry note-editing">
-        <input class="note-title-input" id="ne_title_${id}_${n.id}" placeholder="Title..." value="${escHtml(n.title || '')}" />
+      return `<input class="note-title-input" id="ne_title_${id}_${n.id}" placeholder="Title..." value="${escHtml(n.title || '')}" />
         ${mdToolbar(`ne_${id}_${n.id}`)}
         <textarea class="editable-note" id="ne_${id}_${n.id}" style="min-height:80px;margin-top:0">${escHtml(n.text)}</textarea>
         <div style="display:flex;gap:6px;margin-top:8px">
           <button class="btn btn-primary" style="font-size:12px;padding:4px 14px" onclick="saveNoteEntry('${id}','${n.id}')">Save</button>
           <button class="btn" style="font-size:12px;padding:4px 14px" onclick="cancelNoteEdit('${id}','${n.id}')">Cancel</button>
-        </div>
-      </div>`;
+        </div>`;
     }
     return `<div class="note-entry">
       ${n.title ? `<div class="note-entry-title">${escHtml(n.title)}</div>` : ''}
@@ -7350,7 +7781,7 @@ function _designFileCardHtml(id, df) {
   }</div>` : '';
 
   const notesHtml = hasNotes ? `<div class="note-entry-body" style="font-size:13px;margin-top:${hasScs ? '0' : '0'}">${marked.parse(df.notes)}</div>` : '';
-  const emptyHint = !hasContent ? `<div style="font-size:12px;color:var(--text-dim);font-style:italic;padding:4px 0">No content yet — click edit to add details.</div>` : '';
+  const emptyHint = !hasContent ? `<div style="font-size:12px;color:var(--text-dim);font-style:italic;padding:4px 0">No content yet. Click Edit to add details.</div>` : '';
 
   return `<div class="context-card">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:${hasContent ? '12px' : '4px'}">
@@ -7829,6 +8260,7 @@ async function saveWelcomeGHConfig() {
 //  SETTINGS
 // ═══════════════════════════════════════════════════════════════
 function openSettings() {
+  openSettings_cf();
   const { name, role } = loadIdentity();
   document.getElementById('settings-name').value = name;
   document.getElementById('settings-role').value = role;
@@ -7948,6 +8380,20 @@ function init() {
   renderAllDesignImgs();
   renderDocs();
   renderDomainDocs();
+
+  // Restore last-viewed page from URL hash
+  const hash = window.location.hash.slice(1);
+  if (hash === 'schedule' || !hash) {
+    showView('schedule', document.querySelector('[data-view="schedule"]'));
+    return;
+  }
+  const hashFeature = getAllFeatures().find(x => x.id === hash);
+  if (hashFeature) {
+    showFeature(hash);
+    return;
+  }
+  // Hash didn't match anything — fall back to schedule
+  showView('schedule', document.querySelector('[data-view="schedule"]'));
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -7970,21 +8416,9 @@ function loadFromSeed() {
     if (!existing || Object.keys(JSON.parse(existing)).length === 0) {
       // Fresh start — load everything from seed
       if (data.fh_state)           localStorage.setItem('fh_state', JSON.stringify(data.fh_state));
-      if (data.fh_custom_features) {
-      const localCF2 = JSON.parse(localStorage.getItem('fh_custom_features') || '[]');
-      const incomingIds2 = new Set(data.fh_custom_features.map(f => f.id));
-      const merged2 = [...data.fh_custom_features, ...localCF2.filter(f => !incomingIds2.has(f.id))];
-      localStorage.setItem('fh_custom_features', JSON.stringify(merged2));
-    }
-      if (data.fh_hidden_builtins) {
-        const localHB = JSON.parse(localStorage.getItem('fh_hidden_builtins') || '[]');
-        localStorage.setItem('fh_hidden_builtins', JSON.stringify([...new Set([...localHB, ...data.fh_hidden_builtins])]));
-      }
-      if (data.fh_deleted_features) {
-        const localDF = JSON.parse(localStorage.getItem('fh_deleted_features') || '[]');
-        const dfIds = new Set(localDF.map(f => f.id));
-        localStorage.setItem('fh_deleted_features', JSON.stringify([...localDF, ...data.fh_deleted_features.filter(f => !dfIds.has(f.id))]));
-      }
+      if (data.fh_custom_features) localStorage.setItem('fh_custom_features', JSON.stringify(data.fh_custom_features));
+      if (data.fh_hidden_builtins) localStorage.setItem('fh_hidden_builtins', JSON.stringify(data.fh_hidden_builtins));
+      if (data.fh_deleted_features)localStorage.setItem('fh_deleted_features', JSON.stringify(data.fh_deleted_features));
       console.log('[git-sync] Seeded localStorage from embedded snapshot.');
     } else if (data.fh_state) {
       // Merge: restore any field that has data in seed but is empty in localStorage
@@ -8004,6 +8438,28 @@ function loadFromSeed() {
         });
       });
       if (changed) localStorage.setItem('fh_state', JSON.stringify(state));
+      // Also restore custom features, hidden builtins, feature order, and deleted features from seed
+      // if localStorage is missing them (e.g. after copying to a new instance)
+      if (data.fh_custom_features) {
+        const localCF = JSON.parse(localStorage.getItem('fh_custom_features') || '[]');
+        const localIds = new Set(localCF.map(f => f.id));
+        const merged = [...localCF, ...data.fh_custom_features.filter(f => !localIds.has(f.id))];
+        localStorage.setItem('fh_custom_features', JSON.stringify(merged));
+      }
+      if (data.fh_hidden_builtins) {
+        const localHB3 = JSON.parse(localStorage.getItem('fh_hidden_builtins') || '[]');
+        const mergedHB3 = [...new Set([...localHB3, ...data.fh_hidden_builtins])];
+        localStorage.setItem('fh_hidden_builtins', JSON.stringify(mergedHB3));
+      }
+      if (data.fh_deleted_features) {
+        const localDF3 = JSON.parse(localStorage.getItem('fh_deleted_features') || '[]');
+        const dfIds3 = new Set(localDF3.map(f => f.id));
+        const mergedDF3 = [...localDF3, ...data.fh_deleted_features.filter(f => !dfIds3.has(f.id))];
+        localStorage.setItem('fh_deleted_features', JSON.stringify(mergedDF3));
+      }
+      if (data.fh_feature_order && !localStorage.getItem('fh_feature_order')) {
+        localStorage.setItem('fh_feature_order', JSON.stringify(data.fh_feature_order));
+      }
       console.log('[git-sync] Merged snapshot into localStorage.');
     }
   } catch(e) {
@@ -8017,7 +8473,30 @@ function getFullState() {
     fh_custom_features:  loadCustomFeatures(),
     fh_hidden_builtins:  loadHiddenBuiltins(),
     fh_deleted_features: loadDeletedFeatures(),
+    fh_feature_order:    loadFeatureOrder(),
   };
+}
+
+function _ghMergeData(data) {
+  if (data.fh_state)            localStorage.setItem('fh_state',            JSON.stringify(data.fh_state));
+  if (data.fh_custom_features) {
+    const localCF = JSON.parse(localStorage.getItem('fh_custom_features') || '[]');
+    const incomingIds = new Set(data.fh_custom_features.map(f => f.id));
+    const merged = [...data.fh_custom_features, ...localCF.filter(f => !incomingIds.has(f.id))];
+    localStorage.setItem('fh_custom_features', JSON.stringify(merged));
+  }
+  if (data.fh_hidden_builtins) {
+    const localHB = JSON.parse(localStorage.getItem('fh_hidden_builtins') || '[]');
+    const mergedHB = [...new Set([...localHB, ...data.fh_hidden_builtins])];
+    localStorage.setItem('fh_hidden_builtins', JSON.stringify(mergedHB));
+  }
+  if (data.fh_deleted_features) {
+    const localDF = JSON.parse(localStorage.getItem('fh_deleted_features') || '[]');
+    const dfIds = new Set(localDF.map(f => f.id));
+    const mergedDF = [...localDF, ...data.fh_deleted_features.filter(f => !dfIds.has(f.id))];
+    localStorage.setItem('fh_deleted_features', JSON.stringify(mergedDF));
+  }
+  if (data.fh_feature_order)    localStorage.setItem('fh_feature_order',    JSON.stringify(data.fh_feature_order));
 }
 
 function updateSyncIndicator() {
@@ -8511,7 +8990,7 @@ function updateFileSyncUI() {
     lbl.textContent = 'No data file connected';
   } else if (_fs.status === 'needs-permission') {
     dot.classList.add('error');
-    lbl.textContent = 'Permission needed — disconnect and reconnect the file';
+    lbl.textContent = 'Permission needed. Disconnect and reconnect the file.';
   } else if (_fs.status === 'saving') {
     dot.classList.add('syncing');
     lbl.textContent = 'Saving…';
@@ -8676,21 +9155,9 @@ async function fsLoadFromBackup() {
     const text = await (await handle.getFile()).text();
     const data = JSON.parse(text);
     if (data.fh_state)            localStorage.setItem('fh_state',            JSON.stringify(data.fh_state));
-    if (data.fh_custom_features) {
-    const localCF = JSON.parse(localStorage.getItem('fh_custom_features') || '[]');
-    const incomingIds = new Set(data.fh_custom_features.map(f => f.id));
-    const merged = [...data.fh_custom_features, ...localCF.filter(f => !incomingIds.has(f.id))];
-    localStorage.setItem('fh_custom_features', JSON.stringify(merged));
-  }
-    if (data.fh_hidden_builtins) {
-      const localHB = JSON.parse(localStorage.getItem('fh_hidden_builtins') || '[]');
-      localStorage.setItem('fh_hidden_builtins', JSON.stringify([...new Set([...localHB, ...data.fh_hidden_builtins])]));
-    }
-    if (data.fh_deleted_features) {
-      const localDF = JSON.parse(localStorage.getItem('fh_deleted_features') || '[]');
-      const dfIds = new Set(localDF.map(f => f.id));
-      localStorage.setItem('fh_deleted_features', JSON.stringify([...localDF, ...data.fh_deleted_features.filter(f => !dfIds.has(f.id))]));
-    }
+    if (data.fh_custom_features)  localStorage.setItem('fh_custom_features',  JSON.stringify(data.fh_custom_features));
+    if (data.fh_hidden_builtins)  localStorage.setItem('fh_hidden_builtins',  JSON.stringify(data.fh_hidden_builtins));
+    if (data.fh_deleted_features) localStorage.setItem('fh_deleted_features', JSON.stringify(data.fh_deleted_features));
     if (data.fh_feature_order)    localStorage.setItem('fh_feature_order',    JSON.stringify(data.fh_feature_order));
     STATE = loadState();
     init();
@@ -8852,6 +9319,41 @@ document.addEventListener('click', () => {
     <div style="font-size:11px;color:var(--text-dim);margin-top:8px">Chrome and Edge only — not supported in Safari or Firefox.</div>
   </div>
 
+  <!-- Integrations -->
+  <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim)">Confluence</div>
+      <button onclick="disconnectCFConfig()" id="cf-disconnect-btn" style="display:none;padding:3px 10px;background:none;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted);font-size:11px;cursor:pointer" onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">Disconnect</button>
+    </div>
+    <div style="font-size:12px;color:var(--text-dim);margin-bottom:12px">Connect your Confluence account to import PRDs and push changes back.</div>
+    <!-- Status -->
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:14px">
+      <div class="sync-dot" id="cf-section-dot"></div>
+      <span id="cf-settings-status" style="font-size:12px;color:var(--text-muted);flex:1">Not connected</span>
+    </div>
+    <!-- Fields card — hidden when connected -->
+    <div id="cf-fields-card" style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:12px">
+      <div style="margin-bottom:10px">
+        <label style="font-size:11px;font-weight:600;color:var(--text-dim);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em">Confluence Domain</label>
+        <input id="cf-domain" class="cf-input" placeholder="e.g. yourcompany.atlassian.net" oninput="_cfCheckConnectBtn()" style="width:100%;box-sizing:border-box" />
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div>
+          <label style="font-size:11px;font-weight:600;color:var(--text-dim);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em">Email</label>
+          <input id="cf-email" class="cf-input" type="email" placeholder="your@email.com" oninput="_cfCheckConnectBtn()" style="width:100%;box-sizing:border-box" />
+        </div>
+        <div>
+          <label style="font-size:11px;font-weight:600;color:var(--text-dim);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em">API Token <a href="https://id.atlassian.com/manage-profile/security/api-tokens" target="_blank" style="font-size:10px;color:var(--accent);margin-left:4px;text-transform:none;font-weight:400">Get token ↗</a></label>
+          <input id="cf-token" class="cf-input" type="password" placeholder="Atlassian API token" oninput="_cfCheckConnectBtn()" style="width:100%;box-sizing:border-box" />
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text-dim)">Stored locally · only sent to the Confluence API</div>
+    </div>
+    <div id="cf-connect-btn-row">
+      <button id="cf-connect-btn" onclick="saveCFConfig()" disabled style="padding:0 16px;height:33.5px;background:var(--accent);border:none;border-radius:var(--radius-sm);color:#fff;font-size:12px;font-weight:600;cursor:default;opacity:0.45;transition:opacity .15s">Connect</button>
+    </div>
+  </div>
+
   <!-- Appearance -->
   <div style="padding:16px 20px">
     <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px">Appearance</div>
@@ -8871,6 +9373,18 @@ document.addEventListener('click', () => {
     <div style="display:flex;justify-content:flex-end;gap:10px">
       <button onclick="_ghCancelDisconnect()" style="padding:7px 16px;background:none;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted);font-size:13px;cursor:pointer" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">Cancel</button>
       <button onclick="_ghDoDisconnect()" style="padding:7px 16px;background:var(--red,#ef4444);border:none;border-radius:var(--radius-sm);color:#fff;font-size:13px;font-weight:600;cursor:pointer">Disconnect</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ CF DISCONNECT CONFIRM MODAL -->
+<div id="cf-disconnect-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10001;align-items:center;justify-content:center">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);width:360px;max-width:90vw;box-shadow:0 16px 48px rgba(0,0,0,.4);padding:24px">
+    <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px">Disconnect Confluence?</div>
+    <div style="font-size:13px;color:var(--text-muted);line-height:1.5;margin-bottom:20px">Your saved credentials will be removed. Your local data and any imported PRDs are not affected.</div>
+    <div style="display:flex;justify-content:flex-end;gap:10px">
+      <button onclick="_cfCancelDisconnect()" style="padding:7px 16px;background:none;border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-muted);font-size:13px;cursor:pointer" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">Cancel</button>
+      <button onclick="_cfDoDisconnect()" style="padding:7px 16px;background:var(--red,#ef4444);border:none;border-radius:var(--radius-sm);color:#fff;font-size:13px;font-weight:600;cursor:pointer">Disconnect</button>
     </div>
   </div>
 </div>
@@ -8904,7 +9418,7 @@ document.addEventListener('click', () => {
       <p style="font-size:13px;color:var(--text-muted);margin:0 0 10px;line-height:1.5">Your data lives in this browser only. If you clear your browser or switch machines, it's gone. Connect GitHub Sync to back it up automatically on every change.</p>
       <div style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;margin-bottom:16px">
         <span class="material-symbols-rounded" style="font-size:13px;color:var(--text-dim)">info</span>
-        <span style="font-size:11px;color:var(--text-dim)">Optional — find this later in <strong style="color:var(--text-muted)">Settings → GitHub Sync</strong></span>
+        <span style="font-size:11px;color:var(--text-dim)">Optional: find this later in <strong style="color:var(--text-muted)">Settings → GitHub Sync</strong></span>
       </div>
       <!-- Fields card -->
       <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px">
@@ -9037,6 +9551,914 @@ document.addEventListener('click', () => {
   "fh_deleted_features": []
 }
 </script>
-<script>loadFromSeed();STATE=loadState();init();initGitSync();initFileStorage();initGHSync();</script>
+
+<script>const _prdEditing = {};const _prdSavedSel = {};const _prdInputTimer = {};loadFromSeed();STATE=loadState();init();initGitSync();initFileStorage();initGHSync();
+// ══════════════════════════════════════════════════════════════════════════════
+// CONFLUENCE INTEGRATION
+// ══════════════════════════════════════════════════════════════════════════════
+
+function loadIntegrations() {
+  try { return JSON.parse(localStorage.getItem('fh_integrations') || '{}'); } catch { return {}; }
+}
+function saveIntegrations(v) { localStorage.setItem('fh_integrations', JSON.stringify(v)); }
+function loadCFConfig() {
+  const i = loadIntegrations();
+  return { domain: i.cf_domain || '', email: i.cf_email || '', token: i.cf_token || '' };
+}
+
+function _cfIsConnected() {
+  const cfg = loadCFConfig();
+  return !!(cfg.domain && cfg.email && cfg.token);
+}
+
+function _cfCheckConnectBtn() {
+  const btn = document.getElementById('cf-connect-btn');
+  if (!btn) return;
+  const v = id => (document.getElementById(id)?.value || '').trim();
+  const filled = v('cf-domain') && v('cf-email') && v('cf-token');
+  btn.disabled     = !filled;
+  btn.style.opacity = filled ? '1' : '0.45';
+  btn.style.cursor  = filled ? 'pointer' : 'default';
+}
+
+function _cfRefreshSettingsStatus() {
+  const statusEl   = document.getElementById('cf-settings-status');
+  const dot        = document.getElementById('cf-section-dot');
+  const disBtn     = document.getElementById('cf-disconnect-btn');
+  const fieldsCard = document.getElementById('cf-fields-card');
+  const connectRow = document.getElementById('cf-connect-btn-row');
+  if (!statusEl) return;
+  const connected = _cfIsConnected();
+  if (dot) dot.className = 'sync-dot' + (connected ? ' synced' : '');
+  if (connected) {
+    const cfg = loadCFConfig();
+    statusEl.textContent = 'Connected: ' + cfg.domain;
+  } else {
+    statusEl.textContent = 'Not connected';
+  }
+  if (fieldsCard) fieldsCard.style.display = connected ? 'none' : 'block';
+  if (connectRow) connectRow.style.display = connected ? 'none' : 'block';
+  if (disBtn)     disBtn.style.display     = connected ? 'inline-block' : 'none';
+}
+
+function openSettings_cf() {
+  const cfg = loadCFConfig();
+  const d = document.getElementById('cf-domain'); if (d) d.value = cfg.domain;
+  const e = document.getElementById('cf-email'); if (e) e.value = cfg.email;
+  const t = document.getElementById('cf-token'); if (t) t.value = cfg.token;
+  _cfCheckConnectBtn();
+  _cfRefreshSettingsStatus();
+}
+
+function saveCFConfig() {
+  const domain = (document.getElementById('cf-domain')?.value || '').trim();
+  const email  = (document.getElementById('cf-email')?.value || '').trim();
+  const token  = (document.getElementById('cf-token')?.value || '').trim();
+  const i = loadIntegrations();
+  saveIntegrations({ ...i, cf_domain: domain, cf_email: email, cf_token: token });
+  _cfRefreshSettingsStatus();
+}
+
+function disconnectCFConfig() {
+  const modal = document.getElementById('cf-disconnect-modal');
+  if (modal) modal.style.display = 'flex';
+}
+function _cfCancelDisconnect() {
+  const modal = document.getElementById('cf-disconnect-modal');
+  if (modal) modal.style.display = 'none';
+}
+function _cfDoDisconnect() {
+  const modal = document.getElementById('cf-disconnect-modal');
+  if (modal) modal.style.display = 'none';
+  const prevCfg = loadCFConfig();
+  const i = loadIntegrations();
+  delete i.cf_domain; delete i.cf_email; delete i.cf_token;
+  saveIntegrations(i);
+  // Repopulate fields with previous values so user can reconnect easily
+  const el = id => document.getElementById(id);
+  if (el('cf-domain')) el('cf-domain').value = prevCfg.domain || '';
+  if (el('cf-email'))  el('cf-email').value  = prevCfg.email  || '';
+  if (el('cf-token'))  el('cf-token').value  = prevCfg.token  || '';
+  _cfCheckConnectBtn();
+  _cfRefreshSettingsStatus();
+}
+
+// ── Header button ─────────────────────────────────────────────────────────────
+function buildCFHeaderBtn(featureId) {
+  const st = getFeatureState(featureId);
+  const tip = st.prdPageId ? 'Re-import PRD from Confluence' : 'Import PRD from Confluence';
+  return `<button class="q-icon-btn" title="${tip}" onclick="openConfluenceImport('${featureId}')">
+    <span class="material-symbols-rounded">cloud_download</span>
+  </button>`;
+}
+
+function refreshCFHeaderBtn(featureId) {
+  const el = document.getElementById('cf-hdr-' + featureId);
+  if (el) el.innerHTML = buildCFHeaderBtn(featureId);
+}
+
+// ── Import flow ───────────────────────────────────────────────────────────────
+function openConfluenceImport(featureId) {
+  // If Confluence credentials aren't saved yet, open Settings to the Confluence section
+  if (!_cfIsConnected()) {
+    openSettings();
+    setTimeout(() => {
+      const cfSection = document.getElementById('cf-fields-card');
+      if (cfSection) cfSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const domainInput = document.getElementById('cf-domain');
+      if (domainInput) domainInput.focus();
+    }, 100);
+    showToast('Connect Confluence in Settings first');
+    return;
+  }
+
+  const modal = document.getElementById('cf-import-modal');
+  modal.dataset.featureId = featureId;
+  // Pre-fill URL from previous import so re-import is one click
+  const fst = getFeatureState(featureId);
+  document.getElementById('cf-import-url').value = fst.prdPageUrl || '';
+  document.getElementById('cf-claude-response').value = '';
+  const st = document.getElementById('cf-import-status'); st.textContent = ''; st.className = 'cf-status';
+  document.getElementById('cf-import-preview').style.display = 'none';
+  document.getElementById('cf-import-apply-btn').style.display = 'none';
+  document.getElementById('cf-step1').style.display = 'block';
+  document.getElementById('cf-step2').style.display = 'none';
+  modal.style.display = 'flex';
+  setTimeout(() => document.getElementById('cf-import-url').focus(), 50);
+}
+function closeCFImport() { document.getElementById('cf-import-modal').style.display = 'none'; }
+function cfGoBack() {
+  document.getElementById('cf-step1').style.display = 'block';
+  document.getElementById('cf-step2').style.display = 'none';
+}
+
+async function fetchConfluencePage() {
+  const url = document.getElementById('cf-import-url').value.trim();
+  if (!url) return;
+  const cfg = loadCFConfig();
+  const statusEl = document.getElementById('cf-import-status');
+  const setStatus = (msg, isErr) => { statusEl.textContent = msg; statusEl.className = 'cf-status' + (isErr ? ' error' : ''); };
+
+  if (!cfg.domain || !cfg.email || !cfg.token) {
+    return setStatus('Set Confluence credentials in Settings → Integrations first.', true);
+  }
+
+  const btn = document.getElementById('cf-import-fetch-btn');
+  btn.disabled = true;
+  setStatus('Fetching page from Confluence…');
+
+  try {
+    const fetchRes = await fetch(`/api/confluence/fetch?url=${encodeURIComponent(url)}`, {
+      headers: { 'x-cf-email': cfg.email, 'x-cf-token': cfg.token }
+    });
+    const fetchData = await fetchRes.json();
+    if (!fetchData.ok) throw new Error(fetchData.error || 'Confluence fetch failed');
+
+    const modal = document.getElementById('cf-import-modal');
+    modal.dataset.pageId      = fetchData.pageId;
+    modal.dataset.pageTitle   = fetchData.title;
+    modal.dataset.pageVersion = fetchData.version;
+    modal.dataset.rawContent  = fetchData.content;
+
+    // Build the Claude prompt and store it
+    modal.dataset.cfPrompt = buildCFPrompt(fetchData.title, fetchData.content);
+
+    setStatus('');
+    // Move to step 2
+    document.getElementById('cf-step1').style.display = 'none';
+    document.getElementById('cf-step2').style.display = 'block';
+    document.getElementById('cf-import-preview').style.display = 'none';
+    document.getElementById('cf-import-apply-btn').style.display = 'none';
+    document.getElementById('cf-claude-response').value = '';
+  } catch (err) {
+    setStatus('Error: ' + err.message, true);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function buildCFPrompt(title, content) {
+  // Strip HTML tags but preserve line breaks at block elements
+  const text = content
+    .replace(/<\/(p|li|tr|h[1-6]|div|br)>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ')
+    .replace(/\n{3,}/g, '\n\n').trim();
+  return `You are importing a Confluence PRD page into a design tool. Your job is to map the page content into structured fields.
+
+IMPORTANT RULES:
+- Return ONLY a valid JSON object, no markdown fences, no explanation
+- For "questions": ONLY extract items from a section explicitly labeled "Open Questions", "TBD", "Unresolved", or similar. Do NOT invent questions. Return [] if no such section exists.
+- For "tasks": ONLY extract items from a section explicitly labeled "Next Steps", "Action Items", "Tasks", or "TODO". Do NOT invent tasks. Return [] if no such section exists.
+- For "suggestedTabs": only include tabs where matching content genuinely exists in this PRD.
+
+JSON fields (use empty string or empty array if not found):
+{
+  "summary": "the main problem statement, background, or overview — copy it fully, do not summarize",
+  "keyDecisions": ["each confirmed decision or goal as a complete sentence"],
+  "constraints": ["each constraint, limitation, or out-of-scope item"],
+  "team": [{"name": "person name", "role": "their role"}],
+  "links": [{"label": "link text or description", "url": "the URL if present"}],
+  "questions": ["questions from an explicit open-questions section only — return [] if none"],
+  "tasks": ["action items from an explicit next-steps or tasks section only — return [] if none"],
+  "suggestedTabs": ["tab IDs relevant to this PRD — choose from: calls, questions, spec, design, notes, tasks"]
+}
+
+Page title: ${title}
+
+Page content:
+${text.slice(0, 30000)}`;
+}
+
+function copyCFPrompt() {
+  const modal = document.getElementById('cf-import-modal');
+  const prompt = modal.dataset.cfPrompt || '';
+  navigator.clipboard.writeText(prompt).then(() => showToast('Prompt copied. Paste into Claude.ai'));
+}
+
+function parseCFResponse() {
+  const raw = document.getElementById('cf-claude-response').value.trim();
+  if (!raw) return;
+  try {
+    const cleaned = raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
+    const data = JSON.parse(cleaned);
+    document.getElementById('cf-import-modal').dataset.parsedData = JSON.stringify(data);
+    showCFPreview(data);
+  } catch (e) {
+    showToast('Could not parse response — make sure you pasted the full JSON from Claude');
+  }
+}
+
+function showCFPreview(data) {
+  const modal = document.getElementById('cf-import-modal');
+  const featureId = modal.dataset.featureId;
+  const f = getAllFeatures().find(x => x.id === featureId);
+
+  // Determine which Context fields will actually be filled (empty-only rule)
+  const ctxFills = [];
+  if (data.summary && !getCtxSummary(featureId, f?.summary || '')) ctxFills.push('Summary');
+  if (data.keyDecisions?.length && !getCtxArr(featureId, 'decisions', f?.decisions || []).length) ctxFills.push('Key Decisions');
+  if (data.constraints?.length && !getCtxArr(featureId, 'constraints', []).length) ctxFills.push('Constraints');
+  if (data.team?.length && !getCtxArr(featureId, 'team', f?.team || []).length) ctxFills.push('Team');
+  if (data.links?.length && !getCtxArr(featureId, 'links', f?.links || []).length) ctxFills.push('Links');
+
+  const rows = [
+    ['PRD tab', 'Full document — always imported'],
+    ctxFills.length && ['Context', 'Auto-fill: ' + ctxFills.join(', ')],
+    data.questions?.length && ['Q&A', data.questions.length + ' question(s) from PRD'],
+    data.tasks?.length     && ['To Do', data.tasks.length + ' task(s) from PRD'],
+  ].filter(Boolean);
+
+  const preview = document.getElementById('cf-import-preview');
+  preview.innerHTML = `
+    <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:8px">What will happen:</div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      ${rows.map(([k, v]) => `
+        <div style="display:flex;gap:8px;font-size:12px;align-items:flex-start">
+          <span class="material-symbols-rounded" style="font-size:14px;color:var(--accent);flex-shrink:0;margin-top:1px">check_circle</span>
+          <span><strong style="color:var(--text)">${escHtml(k)}</strong> <span style="color:var(--text-muted)">${escHtml(String(v))}</span></span>
+        </div>`).join('')}
+    </div>
+    <div style="font-size:11px;color:var(--text-dim);margin-top:10px;padding:8px;background:var(--surface2);border-radius:var(--radius-sm)">
+      Context fields are only auto-filled if currently empty. Notes, existing Q&amp;A, and To Do tasks are replaced by PRD content.
+    </div>`;
+  preview.style.display = 'block';
+  document.getElementById('cf-import-apply-btn').style.display = 'inline-flex';
+}
+
+function applyConfluenceData() {
+  const modal      = document.getElementById('cf-import-modal');
+  const featureId  = modal.dataset.featureId;
+  const data       = JSON.parse(modal.dataset.parsedData || '{}');
+  const pageId     = modal.dataset.pageId;
+  const pageTitle  = modal.dataset.pageTitle;
+  const version    = parseInt(modal.dataset.pageVersion || '1');
+  const rawContent = modal.dataset.rawContent || '';
+  const cfg        = loadCFConfig();
+  const f          = getAllFeatures().find(x => x.id === featureId);
+
+  // ── 1. Store full PRD content in the dedicated PRD tab ────────────────
+  const importUrl = document.getElementById('cf-import-url')?.value?.trim() || '';
+  updateFeatureState(featureId, {
+    prdContent:   rawContent,
+    prdPageId:    pageId,
+    prdDomain:    cfg.domain,
+    prdPageTitle: pageTitle,
+    prdPageUrl:   importUrl,   // saved so re-import pre-fills the URL
+    prdVersion:   version,
+    prdLastSync:  new Date().toISOString(),
+    // Keep legacy keys for push flow compatibility
+    confluencePageId:      pageId,
+    confluenceDomain:      cfg.domain,
+    confluencePageTitle:   pageTitle,
+    confluencePageVersion: version,
+    confluenceLastSync:    new Date().toISOString(),
+  });
+
+  // ── 2. Context — one-time auto-fill (empty fields only) ──────────────
+  const prdFilledFields = [];
+  const existingSummary = getCtxSummary(featureId, f?.summary || '');
+  if (data.summary && !existingSummary) {
+    updateFeatureState(featureId, { ctx_summary: data.summary });
+    prdFilledFields.push('summary');
+  }
+  const existingDec = getCtxArr(featureId, 'decisions', f?.decisions || []);
+  if (data.keyDecisions?.length && !existingDec.length) {
+    updateFeatureState(featureId, { ctx_decisions: data.keyDecisions });
+    prdFilledFields.push('decisions');
+  }
+  const existingConstraints = getCtxArr(featureId, 'constraints', []);
+  if (data.constraints?.length && !existingConstraints.length) {
+    updateFeatureState(featureId, { ctx_constraints: data.constraints });
+    prdFilledFields.push('constraints');
+  }
+  const existingTeam = getCtxArr(featureId, 'team', f?.team || []);
+  if (data.team?.length && !existingTeam.length) {
+    updateFeatureState(featureId, { ctx_team: data.team });
+    prdFilledFields.push('team');
+  }
+  const existingLinks = getCtxArr(featureId, 'links', f?.links || []);
+  if (data.links?.length && !existingLinks.length) {
+    updateFeatureState(featureId, { ctx_links: data.links });
+    prdFilledFields.push('links');
+  }
+  if (prdFilledFields.length) {
+    updateFeatureState(featureId, { prdFilledFields, prdImportBanner: true });
+  }
+
+  // ── 3. Q&A — replace with PRD questions; hide any builtin questions ──
+  const prdQuestions = (data.questions || []).map(q => typeof q === 'string' ? q : q.text || '').filter(Boolean);
+  const _builtinQCount = f?.questions?.length || 0;
+  const _deletedBase = {};
+  for (let i = 0; i < _builtinQCount; i++) _deletedBase[i] = true;
+  updateFeatureState(featureId, { customQuestions: prdQuestions, deletedBase: _deletedBase });
+
+  // ── 4. To Do — replace entirely with tasks from the PRD ──────────────
+  const prdTasks = (data.tasks || []).map((t, i) => ({
+    id: 'cf_task_' + Date.now() + '_' + i,
+    text: typeof t === 'string' ? t : t.text || '',
+    status: 'todo', reason: '', builtin: false
+  })).filter(t => t.text);
+  saveTasks(featureId, prdTasks);
+
+  // ── 5. PRD auto-appears via prdContent; un-hide any suggested tabs ────
+  // PRD tab is shown automatically when prdContent exists — no explicit action needed.
+  // Merge Claude-suggested optional tabs by removing them from the hidden set.
+  if (data.suggestedTabs?.length) {
+    const validIds = TAB_CONFIG.map(t => t.id).filter(id => id !== 'prd');
+    let hidden = getHiddenTabs(featureId);
+    data.suggestedTabs.filter(t => validIds.includes(t))
+      .forEach(t => { hidden = hidden.filter(id => id !== t); });
+    setHiddenTabs(featureId, hidden);
+  }
+
+  closeCFImport();
+  // Navigate to the feature (calls renderPrdTab internally)
+  showFeature(featureId);
+  // Rebuild only this feature's tabs row so the PRD tab button appears
+  _rerenderTabsRow(featureId);
+  // Switch to the PRD tab
+  const tabsRow = document.getElementById('tabs-row-' + featureId);
+  if (tabsRow) {
+    const prdTabBtn = tabsRow.querySelector('[data-tab-id="prd"]');
+    if (prdTabBtn) switchTab(featureId, 'prd', prdTabBtn);
+  }
+  showToast('PRD imported');
+}
+
+// ── PRD tab rendering ────────────────────────────────────────────────────────
+function sanitizePrdHtml(raw) {
+  return raw
+    // Convert Confluence info/note/warning panels to styled divs
+    .replace(/<ac:structured-macro[^>]*ac:name="(info|note|warning|tip)"[^>]*>[\s\S]*?<ac:rich-text-body>([\s\S]*?)<\/ac:rich-text-body>[\s\S]*?<\/ac:structured-macro>/gi,
+      (_, type, body) => `<div class="cf-panel cf-panel-${type}">${body}</div>`)
+    // Convert Confluence code blocks
+    .replace(/<ac:structured-macro[^>]*ac:name="code"[^>]*>[\s\S]*?<ac:plain-text-body><!\[CDATA\[([\s\S]*?)\]\]><\/ac:plain-text-body>[\s\S]*?<\/ac:structured-macro>/gi,
+      (_, code) => `<pre><code>${code.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code></pre>`)
+    // Strip remaining Confluence macros (but keep their rich-text-body content)
+    .replace(/<ac:structured-macro[^>]*>([\s\S]*?)<ac:rich-text-body>([\s\S]*?)<\/ac:rich-text-body>[\s\S]*?<\/ac:structured-macro>/gi, '$2')
+    .replace(/<ac:[^>]*>[\s\S]*?<\/ac:[^>]*>/gi, '')
+    .replace(/<ac:[^/][^>]*\/>/gi, '')
+    .replace(/<ri:[^>]*\/?>/gi, '')
+    // Remove dangerous elements
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/\son\w+="[^"]*"/gi, '')
+    .replace(/\shref="javascript:[^"]*"/gi, '')
+    // Clean up Confluence's inline styles that fight our CSS
+    .replace(/\sstyle="[^"]*font-family:[^"]*"/gi, '')
+    .replace(/\sstyle="[^"]*font-size:\s*(?:1[2-9]|[2-9]\d)px[^"]*"/gi, '');
+}
+
+function renderPrdTab(featureId) {
+  const panel = document.getElementById(featureId + '_prd_panel');
+  if (!panel) return;
+  const st  = getFeatureState(featureId);
+  const cfg = loadCFConfig();
+
+  if (!st.prdContent) {
+    panel.innerHTML = `
+      <div class="context-card" style="text-align:center;padding:48px 20px">
+        <span class="material-symbols-rounded" style="font-size:40px;color:var(--text-dim);display:block;margin-bottom:12px">description</span>
+        <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px">No PRD connected</div>
+        <div style="font-size:13px;color:var(--text-muted);margin-bottom:20px">Import a PRD from Confluence to see it here.<br>It stays isolated. Syncs won't touch your Notes, Q&amp;A, or To Do.</div>
+        <button class="btn btn-primary" onclick="openConfluenceImport('${featureId}')">
+          <span class="material-symbols-rounded" style="font-size:15px;vertical-align:middle;margin-right:4px">cloud_download</span>
+          Import from Confluence
+        </button>
+      </div>`;
+    return;
+  }
+
+  const isConnected = !!st.prdPageId;
+  const title       = st.prdPageTitle || 'PRD';
+  const lastSync    = st.prdLastSync  ? new Date(st.prdLastSync).toLocaleString([], {dateStyle:'medium',timeStyle:'short'}) : 'never';
+  const dotColor    = isConnected ? 'var(--green)' : 'var(--text-dim)';
+  const statusText  = isConnected ? 'Connected' : 'Disconnected';
+  const syncBtns    = isConnected ? `
+    <button class="btn" style="font-size:12px;padding:4px 12px;display:flex;align-items:center;gap:4px" onclick="openPrdPush('${featureId}')">
+      <span class="material-symbols-rounded" style="font-size:14px">cloud_upload</span> Push
+    </button>` : '';
+
+  const isEditing = !!_prdEditing[featureId];
+
+  // Render the PRD header bar into the sticky zone slot
+  const stickySlot = document.getElementById(featureId + '_prd_sticky');
+  const toolbarSlot = document.getElementById(featureId + '_prd_toolbar_sticky');
+  if (toolbarSlot) {
+    if (isEditing) {
+      toolbarSlot.innerHTML = prdRtToolbar(featureId);
+      toolbarSlot.style.display = 'block';
+    } else {
+      toolbarSlot.style.display = 'none';
+      toolbarSlot.innerHTML = '';
+    }
+  }
+
+  if (stickySlot) {
+    stickySlot.innerHTML = `
+      <div class="prd-tab-header">
+        <div class="prd-tab-title">
+          <span class="material-symbols-rounded" style="font-size:16px;color:var(--text-dim)">description</span>
+          <strong>${escHtml(title)}</strong>
+          <span class="prd-sync-dot" style="background:${dotColor}" title="${statusText}"></span>
+          <span class="prd-sync-label">${statusText} &middot; Last synced ${escHtml(lastSync)}</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          ${isEditing
+            ? `<button class="btn btn-primary" style="font-size:12px;padding:4px 12px" onclick="savePrdEdit('${featureId}')">Save</button>
+               <button class="btn" style="font-size:12px;padding:4px 12px" onclick="cancelPrdEdit('${featureId}')">Cancel</button>`
+            : `${syncBtns}
+               <button class="btn" style="font-size:12px;padding:4px 12px;display:flex;align-items:center;gap:4px" onclick="startPrdEdit('${featureId}')">
+                 <span class="material-symbols-rounded" style="font-size:14px">edit</span> Edit
+               </button>
+               <button class="q-icon-btn" title="Re-import from Confluence" onclick="openConfluenceImport('${featureId}')">
+                 <span class="material-symbols-rounded" style="font-size:16px">cloud_download</span>
+               </button>`
+          }
+        </div>
+      </div>`;
+  }
+
+  panel.innerHTML = `
+    ${isEditing
+      ? `<div class="prd-editor-wrap"><div id="prd-edit-${featureId}" class="context-card prd-content prd-content-edit" contenteditable="true" spellcheck="true">${sanitizePrdHtml(st.prdContent)}</div></div>`
+      : `<div class="context-card prd-content">${sanitizePrdHtml(st.prdContent)}</div>`
+    }`;
+}
+
+function startPrdEdit(featureId) {
+  _prdEditing[featureId] = true;
+  try { localStorage.setItem('fh_prd_editing_' + featureId, '1'); } catch {}
+  renderPrdTab(featureId);
+  setTimeout(() => {
+    const el = document.getElementById('prd-edit-' + featureId);
+    if (!el) return;
+    el.focus();
+    const r = document.createRange(); r.selectNodeContents(el); r.collapse(true);
+    const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    el.addEventListener('keyup', () => prdUpdateToolbar(featureId));
+    el.addEventListener('mouseup', () => prdUpdateToolbar(featureId));
+    // Autosave content as the user types so no data is lost on refresh
+    el.addEventListener('input', () => {
+      clearTimeout(_prdInputTimer[featureId]);
+      _prdInputTimer[featureId] = setTimeout(() => {
+        const e2 = document.getElementById('prd-edit-' + featureId);
+        if (e2) updateFeatureState(featureId, { prdContent: e2.innerHTML });
+      }, 500);
+    });
+  }, 30);
+}
+
+function savePrdEdit(featureId) {
+  const el = document.getElementById('prd-edit-' + featureId);
+  if (!el) return;
+  clearTimeout(_prdInputTimer[featureId]);
+  updateFeatureState(featureId, { prdContent: el.innerHTML });
+  delete _prdEditing[featureId];
+  try { localStorage.removeItem('fh_prd_editing_' + featureId); } catch {}
+  renderPrdTab(featureId);
+  showToast('PRD saved');
+}
+
+function cancelPrdEdit(featureId) {
+  delete _prdEditing[featureId];
+  try { localStorage.removeItem('fh_prd_editing_' + featureId); } catch {}
+  renderPrdTab(featureId);
+}
+
+// ── PRD rich-text toolbar ─────────────────────────────────────────────────────
+function prdRtToolbar(featureId) {
+  const ic = n => `<span class="material-symbols-rounded" style="font-size:16px;vertical-align:middle">${n}</span>`;
+  const btn = (cmd, title, inner) =>
+    `<button type="button" class="prd-rt-btn" data-cmd="${cmd}" title="${title}" onmousedown="event.preventDefault()" onclick="prdExecCmd('${featureId}','${cmd}')">${inner}</button>`;
+  return `<div class="prd-rt-toolbar" id="prd-rt-toolbar-${featureId}">
+    <select class="prd-rt-select" id="prd-rt-block-${featureId}" title="Paragraph style"
+      onmousedown="prdSaveSel('${featureId}')" onchange="prdFormatBlock('${featureId}',this)">
+      <option value="p">Normal</option>
+      <option value="h1">Heading 1</option>
+      <option value="h2">Heading 2</option>
+      <option value="h3">Heading 3</option>
+      <option value="h4">Heading 4</option>
+      <option value="pre">Code block</option>
+      <option value="blockquote">Quote</option>
+    </select>
+    <span class="prd-rt-sep"></span>
+    ${btn('bold',        'Bold (Ctrl+B)',   '<b>B</b>')}
+    ${btn('italic',      'Italic (Ctrl+I)', '<i>I</i>')}
+    ${btn('underline',   'Underline',       '<u>U</u>')}
+    ${btn('strikeThrough','Strikethrough',  '<s>S</s>')}
+    <button type="button" class="prd-rt-btn" title="Inline code" onmousedown="event.preventDefault()" onclick="prdInsertCode('${featureId}')"><code style="font-size:11px">&lt;/&gt;</code></button>
+    <span class="prd-rt-sep"></span>
+    ${btn('insertUnorderedList', 'Bullet list',    ic('format_list_bulleted'))}
+    ${btn('insertOrderedList',   'Numbered list',  ic('format_list_numbered'))}
+    <span class="prd-rt-sep"></span>
+    ${btn('outdent', 'Outdent', ic('format_indent_decrease'))}
+    ${btn('indent',  'Indent',  ic('format_indent_increase'))}
+    <span class="prd-rt-sep"></span>
+    <button type="button" class="prd-rt-btn" title="Horizontal rule" onmousedown="event.preventDefault()" onclick="prdExecCmd('${featureId}','insertHorizontalRule')"><span style="font-size:13px;font-weight:700">—</span></button>
+    <button type="button" class="prd-rt-btn" title="Insert / remove link" onmousedown="prdSaveSel('${featureId}')" onclick="prdInsertLink('${featureId}')">${ic('link')}</button>
+    <span class="prd-rt-sep"></span>
+    ${btn('undo', 'Undo (Ctrl+Z)', ic('undo'))}
+    ${btn('redo', 'Redo',          ic('redo'))}
+  </div>`;
+}
+
+function prdExecCmd(featureId, cmd) {
+  const el = document.getElementById('prd-edit-' + featureId);
+  if (!el) return;
+  el.focus();
+  document.execCommand(cmd, false, null);
+  prdUpdateToolbar(featureId);
+}
+
+function prdFormatBlock(featureId, select) {
+  const el = document.getElementById('prd-edit-' + featureId);
+  if (!el) return;
+  el.focus();
+  prdRestoreSel(featureId);
+  document.execCommand('formatBlock', false, select.value);
+  prdUpdateToolbar(featureId);
+}
+
+function prdInsertCode(featureId) {
+  const el = document.getElementById('prd-edit-' + featureId);
+  if (!el) return;
+  el.focus();
+  const text = (window.getSelection().toString() || 'code').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  document.execCommand('insertHTML', false, `<code>${text}</code>`);
+  prdUpdateToolbar(featureId);
+}
+
+function prdInsertLink(featureId) {
+  const el = document.getElementById('prd-edit-' + featureId);
+  if (!el) return;
+  prdRestoreSel(featureId);
+  el.focus();
+  const sel = window.getSelection();
+  const anchor = sel.anchorNode?.parentElement?.closest('a');
+  if (anchor) { document.execCommand('unlink', false, null); return; }
+  const url = prompt('Enter URL:', 'https://');
+  if (!url || url === 'https://') return;
+  if (!sel.toString()) document.execCommand('insertHTML', false, `<a href="${url}" target="_blank">${url}</a>`);
+  else { document.execCommand('createLink', false, url); const a = el.querySelector(`a[href="${url}"]`); if (a) a.target = '_blank'; }
+}
+
+function prdSaveSel(featureId) {
+  const sel = window.getSelection();
+  if (sel.rangeCount > 0) _prdSavedSel[featureId] = sel.getRangeAt(0).cloneRange();
+}
+
+function prdRestoreSel(featureId) {
+  const r = _prdSavedSel[featureId];
+  if (!r) return;
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(r);
+}
+
+function prdUpdateToolbar(featureId) {
+  const toolbar = document.getElementById('prd-rt-toolbar-' + featureId);
+  if (!toolbar) return;
+  ['bold','italic','underline','strikeThrough','insertUnorderedList','insertOrderedList'].forEach(cmd => {
+    const btn = toolbar.querySelector(`[data-cmd="${cmd}"]`);
+    if (btn) btn.classList.toggle('active', document.queryCommandState(cmd));
+  });
+  const select = document.getElementById('prd-rt-block-' + featureId);
+  if (select) {
+    const val = document.queryCommandValue('formatBlock').toLowerCase().replace(/[<>]/g, '');
+    select.value = ['p','h1','h2','h3','h4','pre','blockquote'].includes(val) ? val : 'p';
+  }
+}
+
+// ── PRD sync (pull from Confluence) ──────────────────────────────────────────
+async function syncPrdFromConfluence(featureId) {
+  const st  = getFeatureState(featureId);
+  const cfg = loadCFConfig();
+  if (!st.prdPageId) { showToast('No PRD connected'); return; }
+  if (!cfg.email || !cfg.token) { showToast('Set Confluence credentials in Settings → Integrations'); return; }
+
+  const btn = document.getElementById('prd-sync-btn-' + featureId);
+  if (btn) { btn.disabled = true; btn.querySelector('span').textContent = 'sync'; btn.querySelector('span').style.animation = 'spin 1s linear infinite'; }
+
+  try {
+    const domain = st.prdDomain || cfg.domain;
+    // Fetch by page ID directly to get latest version
+    const pageUrl = 'https://' + domain + '/wiki/rest/api/content/' + st.prdPageId + '?expand=body.storage,version';
+    const res = await fetch('/api/confluence/fetch?url=' + encodeURIComponent(pageUrl), {
+      headers: { 'x-cf-email': cfg.email, 'x-cf-token': cfg.token }
+    });
+    const data = await res.json();
+    if (!data.ok) throw new Error(data.error || 'Fetch failed');
+
+    if (data.version === st.prdVersion) {
+      showToast('Already up to date');
+      if (btn) { btn.disabled = false; btn.querySelector('span').style.animation = ''; }
+      return;
+    }
+
+    // Update PRD tab only — no other tabs are touched
+    updateFeatureState(featureId, {
+      prdContent:  data.content,
+      prdVersion:  data.version,
+      prdLastSync: new Date().toISOString(),
+      confluencePageVersion: data.version,
+      confluenceLastSync:    new Date().toISOString(),
+    });
+    renderPrdTab(featureId);
+    refreshCFHeaderBtn(featureId);
+    showToast('PRD synced. Your notes and tasks are unchanged.');
+  } catch (err) {
+    showToast('Sync failed: ' + err.message);
+    if (btn) { btn.disabled = false; btn.querySelector('span').style.animation = ''; }
+  }
+}
+
+// ── PRD push (send prdContent back to Confluence) ─────────────────────────────
+function openPrdPush(featureId) {
+  const st  = getFeatureState(featureId);
+  const cfg = loadCFConfig();
+  if (!st.prdPageId) return;
+
+  const modal = document.getElementById('cf-push-modal');
+  modal.dataset.featureId = featureId;
+  modal._content   = st.prdContent;
+  modal._pageId    = st.prdPageId;
+  modal._domain    = st.prdDomain || cfg.domain;
+  modal._pageTitle = st.prdPageTitle;
+  modal._version   = st.prdVersion || 1;
+
+  document.getElementById('cf-push-preview').innerHTML = `
+    <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px">
+      Will update: <strong style="color:var(--text)">${escHtml(st.prdPageTitle || 'PRD')}</strong>
+    </div>
+    <div style="font-size:12px;color:var(--text-dim);line-height:1.6">
+      Pushes the current PRD tab content back to Confluence.<br>
+      Your Notes, Q&amp;A, and To Do are not included.
+    </div>`;
+  document.getElementById('cf-push-status').textContent = '';
+  document.getElementById('cf-push-confirm-btn').disabled = false;
+  modal.style.display = 'flex';
+}
+
+function dismissPrdBanner(featureId) {
+  updateFeatureState(featureId, { prdImportBanner: false });
+  renderContextTab(featureId);
+}
+
+// ── Push flow ─────────────────────────────────────────────────────────────────
+function pushToConfluence(featureId) {
+  // In v2 the push is handled via openPrdPush (PRD tab only)
+  openPrdPush(featureId);
+}
+
+function buildPushSummaryRows(featureId, f) {
+  const st      = getFeatureState(featureId);
+  const summary = getCtxSummary(featureId, f.summary);
+  const decisions = getCtxArr(featureId, 'decisions', f.decisions || []);
+  const team    = getCtxArr(featureId, 'team', f.team || []);
+  const links   = getCtxArr(featureId, 'links', f.links || []);
+  const tasks   = getTasks(featureId).filter(t => t.type !== 'section');
+  const dkItems = getDomainKnowledge(featureId);
+  const ddItems = getDDEntries(featureId);
+  const customQ = st.customQuestions || [];
+
+  return [
+    summary                && `<div>✓ Summary</div>`,
+    decisions.length       && `<div>✓ Key Decisions (${decisions.length})</div>`,
+    team.length            && `<div>✓ Team (${team.length})</div>`,
+    links.length           && `<div>✓ Links (${links.length})</div>`,
+    ddItems.length         && `<div>✓ Feature Brief (${ddItems.length} section(s))</div>`,
+    dkItems.length         && `<div>✓ Domain Knowledge (${dkItems.length} entry(s))</div>`,
+    tasks.length           && `<div>✓ To Do (${tasks.filter(t=>t.status==='todo').length} open, ${tasks.filter(t=>t.status==='done').length} done)</div>`,
+    customQ.length         && `<div>✓ Q&amp;A (${customQ.length} question(s))</div>`,
+  ].filter(Boolean).join('');
+}
+
+function closeCFPush() { document.getElementById('cf-push-modal').style.display = 'none'; }
+
+async function confirmPushToConfluence() {
+  const modal   = document.getElementById('cf-push-modal');
+  const featureId  = modal.dataset.featureId;
+  const cfg     = loadCFConfig();
+  const statusEl  = document.getElementById('cf-push-status');
+  const confirmBtn = document.getElementById('cf-push-confirm-btn');
+
+  statusEl.textContent = 'Updating Confluence page…';
+  statusEl.className = 'cf-status';
+  confirmBtn.disabled = true;
+
+  try {
+    const res = await fetch('/api/confluence/update', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        domain:  modal._domain,
+        pageId:  modal._pageId,
+        version: modal._version,
+        title:   modal._pageTitle,
+        content: modal._content,
+        email:   cfg.email,
+        token:   cfg.token,
+      })
+    });
+    const data = await res.json();
+    if (!data.ok) {
+      let msg = data.error || 'Update failed';
+      if (data.details) {
+        try { const d = JSON.parse(data.details); msg += ': ' + (d.message || JSON.stringify(d)); } catch { msg += ': ' + String(data.details).slice(0, 200); }
+      }
+      throw new Error(msg);
+    }
+    updateFeatureState(featureId, {
+      prdVersion: data.newVersion,
+      confluencePageVersion: data.newVersion,
+      confluenceLastSync: new Date().toISOString()
+    });
+    closeCFPush();
+    showFeature(featureId);
+    showToast('Pushed to Confluence');
+  } catch (err) {
+    statusEl.textContent = 'Error: ' + err.message;
+    statusEl.className = 'cf-status error';
+    confirmBtn.disabled = false;
+  }
+}
+
+// ── Generate Confluence storage-format HTML ───────────────────────────────────
+function generateConfluenceContent(featureId, f) {
+  const st      = getFeatureState(featureId);
+  const summary = getCtxSummary(featureId, f.summary);
+  const decisions = getCtxArr(featureId, 'decisions', f.decisions || []);
+  const team    = getCtxArr(featureId, 'team', f.team || []);
+  const links   = getCtxArr(featureId, 'links', f.links || []);
+  const tasks   = getTasks(featureId).filter(t => t.type !== 'section');
+  const dkItems = getDomainKnowledge(featureId);
+  const ddItems = getDDEntries(featureId);
+  const customQ = st.customQuestions || [];
+
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const parts = [];
+
+  parts.push('<p><strong>Status:</strong> ' + esc(f.status || 'Discovery') + (f.customer ? ' &nbsp;|&nbsp; <strong>Customer:</strong> ' + esc(f.customer) : '') + '</p>');
+
+  if (summary) parts.push('<h2>Summary</h2><p>' + esc(summary) + '</p>');
+
+  if (decisions.length) {
+    parts.push('<h2>Key Decisions</h2><ul>' +
+      decisions.map(d => '<li>' + esc(typeof d === 'string' ? d : d.text || '') + '</li>').join('') +
+      '</ul>');
+  }
+
+  if (team.length) {
+    parts.push('<h2>Team</h2><ul>' +
+      team.map(m => '<li>' + esc(m.name || '') + (m.role ? ' &mdash; ' + esc(m.role) : '') + '</li>').join('') +
+      '</ul>');
+  }
+
+  if (links.length) {
+    parts.push('<h2>Links</h2><ul>' +
+      links.map(l => '<li><a href="' + esc(l.url) + '">' + esc(l.label || l.url) + '</a></li>').join('') +
+      '</ul>');
+  }
+
+  if (ddItems.length) {
+    parts.push('<h2>Feature Brief</h2>' +
+      ddItems.map(e => '<h3>' + esc(e.title) + '</h3><p>' + esc(e.content) + '</p>').join(''));
+  }
+
+  if (dkItems.length) {
+    parts.push('<h2>Domain Knowledge</h2>' +
+      dkItems.map(e => '<h3>' + esc(e.title) + '</h3><p>' + esc(e.content) + '</p>').join(''));
+  }
+
+  const todoTasks = tasks.filter(t => t.status === 'todo');
+  const doneTasks = tasks.filter(t => t.status === 'done');
+  const postponed = tasks.filter(t => t.status === 'postponed');
+  if (todoTasks.length) parts.push('<h2>To Do</h2><ul>' + todoTasks.map(t => '<li>' + esc(t.text) + '</li>').join('') + '</ul>');
+  if (doneTasks.length) parts.push('<h2>Done</h2><ul>' + doneTasks.map(t => '<li>' + esc(t.text) + '</li>').join('') + '</ul>');
+  if (postponed.length) parts.push('<h2>Postponed</h2><ul>' + postponed.map(t => '<li>' + esc(t.text) + (t.reason ? ' &mdash; ' + esc(t.reason) : '') + '</li>').join('') + '</ul>');
+
+  if (customQ.length) {
+    parts.push('<h2>Q&amp;A</h2><ul>' +
+      customQ.map(q => '<li>' + esc(typeof q === 'string' ? q : q.text || '') + '</li>').join('') +
+      '</ul>');
+  }
+
+  return parts.join('\n');
+}
+
+</script>
+
+<!-- ══════════════════════════════════ CONFLUENCE IMPORT MODAL ══════ -->
+<div id="cf-import-modal" style="display:none" class="cf-modal-overlay">
+  <div class="cf-modal-box">
+    <div class="cf-modal-title">
+      <span class="material-symbols-rounded" style="color:var(--accent)">cloud_download</span>
+      Import from Confluence
+    </div>
+
+    <!-- Step 1 -->
+    <div id="cf-step1">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px">Step 1: Fetch page</div>
+      <div class="cf-field-label" style="margin-bottom:4px">Confluence Page URL</div>
+      <input id="cf-import-url" class="cf-input" placeholder="https://yourcompany.atlassian.net/wiki/x/…"
+        onkeydown="if(event.key==='Enter')fetchConfluencePage()" style="margin-bottom:8px" />
+      <div id="cf-import-status" class="cf-status"></div>
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+        <button onclick="closeCFImport()" class="btn" style="font-size:12px;padding:5px 14px">Cancel</button>
+        <button id="cf-import-fetch-btn" onclick="fetchConfluencePage()" class="btn btn-primary" style="font-size:12px;padding:5px 14px">Fetch</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div id="cf-step2" style="display:none">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px">Step 2: Parse with Claude.ai</div>
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:10px;line-height:1.6">
+        Copy the prompt below, paste it into <strong>Claude.ai</strong>, then paste Claude's response back here.
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <button onclick="copyCFPrompt()" class="btn btn-primary" style="font-size:12px;padding:5px 14px;display:flex;align-items:center;gap:5px">
+          <span class="material-symbols-rounded" style="font-size:14px">content_copy</span>
+          Copy prompt
+        </button>
+        <a href="https://claude.ai" target="_blank" class="btn" style="font-size:12px;padding:5px 14px;display:flex;align-items:center;gap:5px;text-decoration:none">
+          <span class="material-symbols-rounded" style="font-size:14px">open_in_new</span>
+          Open Claude.ai
+        </a>
+      </div>
+      <div class="cf-field-label" style="margin-bottom:4px">Paste Claude's response here</div>
+      <textarea id="cf-claude-response" class="cf-input" rows="7"
+        style="resize:vertical;font-family:monospace;font-size:11px"
+        placeholder='Paste the JSON response from Claude here…'></textarea>
+      <div id="cf-import-preview" class="cf-preview" style="display:none;margin-top:10px"></div>
+      <div style="display:flex;gap:8px;margin-top:12px;justify-content:space-between;align-items:center">
+        <button onclick="cfGoBack()" class="btn" style="font-size:12px;padding:5px 14px">← Back</button>
+        <div style="display:flex;gap:8px">
+          <button onclick="closeCFImport()" class="btn" style="font-size:12px;padding:5px 14px">Cancel</button>
+          <button onclick="parseCFResponse()" class="btn btn-primary" style="font-size:12px;padding:5px 14px">Preview</button>
+          <button id="cf-import-apply-btn" onclick="applyConfluenceData()" class="btn btn-primary" style="display:none;font-size:12px;padding:5px 14px;background:var(--green)">Apply to tabs</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════ CONFLUENCE PUSH MODAL ════════ -->
+<div id="cf-push-modal" style="display:none" class="cf-modal-overlay">
+  <div class="cf-modal-box">
+    <div class="cf-modal-title">
+      <span class="material-symbols-rounded" style="color:var(--accent)">cloud_upload</span>
+      Push to Confluence
+    </div>
+    <div id="cf-push-preview"></div>
+    <div id="cf-push-status" class="cf-status"></div>
+    <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end">
+      <button onclick="closeCFPush()" class="btn" style="font-size:12px;padding:5px 14px">Cancel</button>
+      <button id="cf-push-confirm-btn" onclick="confirmPushToConfluence()" class="btn btn-primary" style="font-size:12px;padding:5px 14px">Confirm &amp; Push</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
