@@ -7970,9 +7970,21 @@ function loadFromSeed() {
     if (!existing || Object.keys(JSON.parse(existing)).length === 0) {
       // Fresh start — load everything from seed
       if (data.fh_state)           localStorage.setItem('fh_state', JSON.stringify(data.fh_state));
-      if (data.fh_custom_features) localStorage.setItem('fh_custom_features', JSON.stringify(data.fh_custom_features));
-      if (data.fh_hidden_builtins) localStorage.setItem('fh_hidden_builtins', JSON.stringify(data.fh_hidden_builtins));
-      if (data.fh_deleted_features)localStorage.setItem('fh_deleted_features', JSON.stringify(data.fh_deleted_features));
+      if (data.fh_custom_features) {
+      const localCF2 = JSON.parse(localStorage.getItem('fh_custom_features') || '[]');
+      const incomingIds2 = new Set(data.fh_custom_features.map(f => f.id));
+      const merged2 = [...data.fh_custom_features, ...localCF2.filter(f => !incomingIds2.has(f.id))];
+      localStorage.setItem('fh_custom_features', JSON.stringify(merged2));
+    }
+      if (data.fh_hidden_builtins) {
+        const localHB = JSON.parse(localStorage.getItem('fh_hidden_builtins') || '[]');
+        localStorage.setItem('fh_hidden_builtins', JSON.stringify([...new Set([...localHB, ...data.fh_hidden_builtins])]));
+      }
+      if (data.fh_deleted_features) {
+        const localDF = JSON.parse(localStorage.getItem('fh_deleted_features') || '[]');
+        const dfIds = new Set(localDF.map(f => f.id));
+        localStorage.setItem('fh_deleted_features', JSON.stringify([...localDF, ...data.fh_deleted_features.filter(f => !dfIds.has(f.id))]));
+      }
       console.log('[git-sync] Seeded localStorage from embedded snapshot.');
     } else if (data.fh_state) {
       // Merge: restore any field that has data in seed but is empty in localStorage
@@ -8561,9 +8573,23 @@ async function _fsLoadIntoStorage() {
       });
       if (changed) localStorage.setItem('fh_state', JSON.stringify(cur));
     }
-    if (data.fh_custom_features) localStorage.setItem('fh_custom_features', JSON.stringify(data.fh_custom_features));
-    if (data.fh_hidden_builtins)  localStorage.setItem('fh_hidden_builtins',  JSON.stringify(data.fh_hidden_builtins));
-    if (data.fh_deleted_features) localStorage.setItem('fh_deleted_features', JSON.stringify(data.fh_deleted_features));
+    if (data.fh_custom_features) {
+      const localCF2 = JSON.parse(localStorage.getItem('fh_custom_features') || '[]');
+      const incomingIds2 = new Set(data.fh_custom_features.map(f => f.id));
+      const merged2 = [...data.fh_custom_features, ...localCF2.filter(f => !incomingIds2.has(f.id))];
+      localStorage.setItem('fh_custom_features', JSON.stringify(merged2));
+    }
+    if (data.fh_hidden_builtins) {
+      const localHB2 = JSON.parse(localStorage.getItem('fh_hidden_builtins') || '[]');
+      const mergedHB2 = [...new Set([...localHB2, ...data.fh_hidden_builtins])];
+      localStorage.setItem('fh_hidden_builtins', JSON.stringify(mergedHB2));
+    }
+    if (data.fh_deleted_features) {
+      const localDF2 = JSON.parse(localStorage.getItem('fh_deleted_features') || '[]');
+      const dfIds2 = new Set(localDF2.map(f => f.id));
+      const mergedDF2 = [...localDF2, ...data.fh_deleted_features.filter(f => !dfIds2.has(f.id))];
+      localStorage.setItem('fh_deleted_features', JSON.stringify(mergedDF2));
+    }
     if (data.fh_feature_order)    localStorage.setItem('fh_feature_order',    JSON.stringify(data.fh_feature_order));
     return true;
   } catch(e) {
@@ -8650,9 +8676,21 @@ async function fsLoadFromBackup() {
     const text = await (await handle.getFile()).text();
     const data = JSON.parse(text);
     if (data.fh_state)            localStorage.setItem('fh_state',            JSON.stringify(data.fh_state));
-    if (data.fh_custom_features)  localStorage.setItem('fh_custom_features',  JSON.stringify(data.fh_custom_features));
-    if (data.fh_hidden_builtins)  localStorage.setItem('fh_hidden_builtins',  JSON.stringify(data.fh_hidden_builtins));
-    if (data.fh_deleted_features) localStorage.setItem('fh_deleted_features', JSON.stringify(data.fh_deleted_features));
+    if (data.fh_custom_features) {
+    const localCF = JSON.parse(localStorage.getItem('fh_custom_features') || '[]');
+    const incomingIds = new Set(data.fh_custom_features.map(f => f.id));
+    const merged = [...data.fh_custom_features, ...localCF.filter(f => !incomingIds.has(f.id))];
+    localStorage.setItem('fh_custom_features', JSON.stringify(merged));
+  }
+    if (data.fh_hidden_builtins) {
+      const localHB = JSON.parse(localStorage.getItem('fh_hidden_builtins') || '[]');
+      localStorage.setItem('fh_hidden_builtins', JSON.stringify([...new Set([...localHB, ...data.fh_hidden_builtins])]));
+    }
+    if (data.fh_deleted_features) {
+      const localDF = JSON.parse(localStorage.getItem('fh_deleted_features') || '[]');
+      const dfIds = new Set(localDF.map(f => f.id));
+      localStorage.setItem('fh_deleted_features', JSON.stringify([...localDF, ...data.fh_deleted_features.filter(f => !dfIds.has(f.id))]));
+    }
     if (data.fh_feature_order)    localStorage.setItem('fh_feature_order',    JSON.stringify(data.fh_feature_order));
     STATE = loadState();
     init();
